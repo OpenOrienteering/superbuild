@@ -101,11 +101,11 @@ superbuild_package(
         --without-threads
         --with-liblzma
         --with-pcre
-        "--with-libz=${CMAKE_STAGING_PREFIX}"
-        "--with-jpeg=${CMAKE_STAGING_PREFIX}"
-        "--with-libtiff=${CMAKE_STAGING_PREFIX}"
-        "--with-png=${CMAKE_STAGING_PREFIX}"
-        "--with-sqlite3=${CMAKE_STAGING_PREFIX}"
+        "--with-jpeg=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
+        "--with-libtiff=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
+        "--with-libz=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
+        "--with-png=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
+        "--with-sqlite3=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
         --without-curl
         --without-expat
         --without-geos
@@ -122,8 +122,8 @@ superbuild_package(
         --without-python
         --without-xerces
         --without-xml2
-        "CPPFLAGS=-I${CMAKE_STAGING_PREFIX}/include"
-        "LDFLAGS=-L${CMAKE_STAGING_PREFIX}/lib"
+        "CPPFLAGS=-I${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/include"
+        "LDFLAGS=-L${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/lib"
         "PKG_CONFIG="
     BUILD_COMMAND
       "$(MAKE)" USER_DEFS=-Wno-format   # no missing-sentinel warnings

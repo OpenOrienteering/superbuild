@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016 Kai Pastor
+# Copyright 2016, 2017 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -76,16 +76,13 @@ superbuild_package(
   BUILD [[
     CMAKE_ARGS
       "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
-      "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
-      "-DCMAKE_STAGING_PREFIX=${CMAKE_STAGING_PREFIX}"
       # This cache entry is a fallback, needed for MinGW
       "-DFILE_OFFSET_BITS=32"
       # USE_WIN32_FILEIO causes build problems and doesn't seem to be the
       # default for autoconf/configure controlled builds. In addition, more
       # trouble is pending, http://bugzilla.maptools.org/show_bug.cgi?id=1941.
       "-DUSE_WIN32_FILEIO:BOOL=OFF"
-    # tiff uses CMAKE_INSTALL_PREFIX incorrectly
     INSTALL_COMMAND
-      "$(MAKE)" -j1 install/strip "DESTDIR=${INSTALL_DIR}"
+      "${CMAKE_COMMAND}" --build . --target install/strip -- "DESTDIR=${INSTALL_DIR}"
   ]]
 )

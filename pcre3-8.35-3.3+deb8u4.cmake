@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016 Kai Pastor
+# Copyright 2016, 2017 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -72,12 +72,12 @@ superbuild_package(
   BUILD [[
     CMAKE_ARGS
       "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
-      "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
-      "-DCMAKE_STAGING_PREFIX=${CMAKE_STAGING_PREFIX}"
       "-DCMAKE_BUILD_TYPE:STRING=$<CONFIG>"
       "-DBUILD_SHARED_LIBS:BOOL=ON"
       "-DPCRE_BUILD_PCRE16:BOOL=ON"
       "-DPCRE_SUPPORT_UTF:BOOL=ON"
       "-DPCRE_SUPPORT_UNICODE_PROPERTIES:BOOL=ON"
+    INSTALL_COMMAND
+      "${CMAKE_COMMAND}" --build . --target install/strip -- "DESTDIR=${INSTALL_DIR}"
   ]]
 )

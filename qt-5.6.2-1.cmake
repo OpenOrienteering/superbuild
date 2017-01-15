@@ -113,7 +113,7 @@ superbuild_package(
       -no-glib
       -no-audio-backend
       -prefix "${CMAKE_INSTALL_PREFIX}"
-      -extprefix "${CMAKE_STAGING_PREFIX}"
+      -extprefix "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
       $<${crosscompiling}:
         -no-pkg-config
         -hostprefix "${TOOLCHAIN_DIR}"
@@ -127,8 +127,8 @@ superbuild_package(
           -android-sdk   "${ANDROID_SDK_ROOT}"
         >
       >
-      -I "${CMAKE_STAGING_PREFIX}/include"
-      -L "${CMAKE_STAGING_PREFIX}/lib"
+      -I "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/include"
+      -L "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/lib"
   ]]
 )
 

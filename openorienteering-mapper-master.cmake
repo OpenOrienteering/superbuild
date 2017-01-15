@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016 Kai Pastor
+# Copyright 2016, 2017 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -67,8 +67,6 @@ superbuild_package(
       > # UNIX AND NOT APPLE
       "${CMAKE_COMMAND}" "${SOURCE_DIR}"
       "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
-      "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
-      "-DCMAKE_STAGING_PREFIX=${CMAKE_STAGING_PREFIX}"
       "-DMapper_BUILD_CLIPPER=0"
       $<$<NOT:$<STREQUAL:${SYSTEM_NAME},default>>:
       "-DPOLYCLIPPING_LIBRARY_LOCATION=${CMAKE_STAGING_PREFIX}/lib/libpolyclipping${CMAKE_SHARED_LIBRARY_SUFFIX}"
