@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016 Kai Pastor
+# Copyright 2016, 2017 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -64,13 +64,14 @@ superbuild_package(
   VERSION        ${patch_version}
   DEPENDS
     source:gdal-patches-${patch_version}
+    curl
     libjpeg
+    liblzma
     libpng
     pcre3
     proj
     sqlite3
     tiff
-    liblzma
     zlib
   
   SOURCE
@@ -101,12 +102,12 @@ superbuild_package(
         --without-threads
         --with-liblzma
         --with-pcre
+        "--with-curl=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/bin/curl-config"
         "--with-jpeg=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
         "--with-libtiff=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
         "--with-libz=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
         "--with-png=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
         "--with-sqlite3=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
-        --without-curl
         --without-expat
         --without-geos
         --without-grib
