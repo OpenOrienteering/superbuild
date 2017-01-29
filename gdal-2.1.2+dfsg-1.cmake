@@ -65,6 +65,7 @@ superbuild_package(
   DEPENDS
     source:gdal-patches-${patch_version}
     curl
+    expat
     libjpeg
     liblzma
     libpng
@@ -103,12 +104,12 @@ superbuild_package(
         --with-liblzma
         --with-pcre
         "--with-curl=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/bin/curl-config"
+        "--with-expat=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
         "--with-jpeg=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
         "--with-libtiff=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
         "--with-libz=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
         "--with-png=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
         "--with-sqlite3=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
-        --without-expat
         --without-geos
         --without-grib
         --without-java
