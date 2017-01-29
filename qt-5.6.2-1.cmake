@@ -187,6 +187,7 @@ superbuild_package(
   NAME           qtlocation
   VERSION        ${version}
   DEPENDS        qtbase-${version}
+                 qtserialport-${version}
   
   SOURCE
     DOWNLOAD_NAME  qtlocation_${version}.orig.tar.gz
@@ -213,6 +214,27 @@ superbuild_package(
     DOWNLOAD_NAME  qtsensors_${version}.orig.tar.gz
     URL            ${base_url}/qtsensors-opensource-src-${version}.tar.gz
     URL_HASH       SHA256=463e2b3545cb7502bc02401b325557eae6cbf5556a31aba378dfdabd41695917
+    PATCH_COMMAND  "${CMAKE_COMMAND}" -E touch "<SOURCE_DIR>/.git"
+  
+  USING version
+  
+  BUILD [[
+    CONFIGURE_COMMAND
+      "${BINARY_DIR}/../qtbase-${version}/bin/qmake" "${SOURCE_DIR}"
+  ]]
+)
+
+# qtserialport
+
+superbuild_package(
+  NAME           qtserialport
+  VERSION        ${version}
+  DEPENDS        qtbase-${version}
+  
+  SOURCE
+    DOWNLOAD_NAME  qtserialport_${version}.orig.tar.gz
+    URL            ${base_url}/qtserialport-opensource-src-${version}.tar.gz
+    URL_HASH       SHA256=dfd98aad2e87939394e624c797ec162012f5b0dcd30323fa4d5e28841a90d17b
     PATCH_COMMAND  "${CMAKE_COMMAND}" -E touch "<SOURCE_DIR>/.git"
   
   USING version
