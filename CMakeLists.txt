@@ -44,6 +44,26 @@ include(ExternalProject)
 
 
 # Global utilities
+function(sb_install_dir var system_name)
+	if(DEFINED ${SYSTEM_NAME}_INSTALL_DIR)
+		set(${var} "${SYSTEM_NAME}_INSTALL_DIR" PARENT_SCOPE)
+	else()
+		set(${var} "${PROJECT_BINARY_DIR}/${system_name}/install" PARENT_SCOPE)
+	endif()
+endfunction()
+
+
+
+function(sb_toolchain_dir var system_name)
+	if(DEFINED ${SYSTEM_NAME}_TOOLCHAIN_DIR)
+		set(${var} "${SYSTEM_NAME}_TOOLCHAIN_DIR" PARENT_SCOPE)
+	else()
+		set(${var} "${PROJECT_BINARY_DIR}/${system_name}/toolchain" PARENT_SCOPE)
+	endif()
+endfunction()
+
+
+
 function(_sb_write_if_different filepath)
 	string(CONCAT output ${ARGN})
 	if(EXISTS "${filepath}")
@@ -54,6 +74,8 @@ function(_sb_write_if_different filepath)
 	endif()
 	file(WRITE "${filepath}" "${output}")
 endfunction()
+
+
 
 function(_sb_get_build_command var)
 	if(ARGC GREATER 1)
@@ -66,6 +88,8 @@ function(_sb_get_build_command var)
 	endif()
 endfunction()
 
+
+
 function(_sb_get_build_command_2 var target)
 	if(CMAKE_GENERATOR MATCHES "Make")
 		set(${var} "$(MAKE)" "${target}" PARENT_SCOPE)
@@ -73,6 +97,8 @@ function(_sb_get_build_command_2 var target)
 		set(${var} "${CMAKE_COMMAND}" --build . --target "${target}" PARENT_SCOPE)
 	endif()
 endfunction()
+
+
 
 function(_sb_write_debian_patch_script)
 	set (APPLY_PATCHES_SERIES "${PROJECT_BINARY_DIR}/source/apply-debian-patches.cmake")
@@ -116,19 +142,18 @@ endif()
 	set (APPLY_PATCHES_SERIES "${APPLY_PATCHES_SERIES}" PARENT_SCOPE)
 endfunction()
 
+
+
 function(_sb_write_config dir)
 	set(output [[
 # Created by ]] ${CMAKE_CURRENT_LIST_FILE} [[
 
-set(INSTALL_DIR "]] ${INSTALL_DIR} [[" CACHE PATH
-  "The directory where all installed files will be placed"
-)
-set(TOOLCHAIN_DIR "]] ${TOOLCHAIN_DIR} [[" CACHE PATH
-  "The path where to look for toolchain files"
-)
+
+if (NOT DEFINED SYSTEM_NAME)
+	message(FATAL_ERROR "SYSTEM_NAME must be defined when using ${CMAKE_CURRENT_LIST_FILE}")
+endif()
 
 ]])
-	list(REMOVE_ITEM ARGN TOOLCHAIN_DIR INSTALL_DIR CMAKE_INSTALL_PREFIX)
 	foreach(name ${ARGN})
 		list(APPEND output "set(${name}")
 		foreach(item ${${name}})
@@ -140,12 +165,19 @@ set(TOOLCHAIN_DIR "]] ${TOOLCHAIN_DIR} [[" CACHE PATH
 "
 function(sb_test_build_condition)
 	set(BUILD_CONDITION 1)
+	# Protect the package from inadvertently finding it is own install results.
+	set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE NEVER)
+	set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY NEVER)
+	set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE NEVER)
+	set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 ${SB_PACKAGE_BUILD_CONDITION}
 	set(BUILD_CONDITION \${BUILD_CONDITION} PARENT_SCOPE)
 endfunction()
 ")
 	_sb_write_if_different("${dir}/${package}-config.cmake" ${output})
 endfunction()
+
+
 
 function(_sb_write_generator)
 	set(output
@@ -156,11 +188,9 @@ cmake_policy(SET CMP0053 NEW)
 
 if(NOT SYSTEM_NAME OR NOT PACKAGE)
 	message(FATAL_ERROR \"SYSTEM_NAME and PACKAGE must be given\")
+else()
+	message(STATUS \"Generating \${PACKAGE} for system \${SYSTEM_NAME}\")
 endif()
-
-# CMake would load this only on first run, but (most) settings are not cached,
-# and the user may want to use them for configuration
-include(\"\${CMAKE_TOOLCHAIN_FILE}\")
 
 project(\${PACKAGE}-\${SYSTEM_NAME}-generator NONE)
 
@@ -177,6 +207,8 @@ file(GENERATE OUTPUT \"\${TMP_DIR}/CMakeLists.txt\"
 ")
 	_sb_write_if_different("${PROJECT_BINARY_DIR}/config/CMakeLists.txt" ${output})
 endfunction()
+
+
 
 function(_sb_write_build dir)
 	_sb_get_build_command(build_command_list "${package}-@SYSTEM_NAME@")
@@ -199,17 +231,17 @@ function(_sb_write_build dir)
 cmake_minimum_required(VERSION 3.1)
 cmake_policy(SET CMP0053 NEW)
 
-# CMake would load this only on first run, but (most) settings are not cached,
-# and the user may want to use them for configuration
-include(\"\${CMAKE_TOOLCHAIN_FILE}\")
+message(STATUS \"Configuring @PACKAGE@ for system @SYSTEM_NAME@\")
 
 project(${package}-@SYSTEM_NAME@ NONE)
 
 set_property(GLOBAL PROPERTY RULE_MESSAGES 0)
 set_property(GLOBAL PROPERTY TARGET_MESSAGES 0)
 
-set(SYSTEM_NAME @SYSTEM_NAME@)
 include(\"${dir}/${package}-config.cmake\")
+set(INSTALL_DIR      \"@INSTALL_DIR@\")
+set(TOOLCHAIN_DIR    \"@TOOLCHAIN_DIR@\")
+set(CMAKE_BUILD_TYPE \"@CMAKE_BUILD_TYPE@\")
 
 sb_test_build_condition()
 if(NOT BUILD_CONDITION)
@@ -232,7 +264,7 @@ add_custom_target(${package}-@SYSTEM_NAME@-env
 include(ExternalProject)
 
 ExternalProject_Add(${package}-@SYSTEM_NAME@
-  DOWNLOAD_DIR \"${PROJECT_SOURCE_DIR}\"
+  DOWNLOAD_DIR \"\${DOWNLOAD_DIR}\"
   SOURCE_DIR   \"\${SOURCE_DIR}\"
   BINARY_DIR   \"\${BINARY_DIR}\"
   TMP_DIR      \"\${TMP_DIR}\"
@@ -285,6 +317,8 @@ ExternalProject_Add_StepTargets(${package}-@SYSTEM_NAME@ package)
 	_sb_write_if_different("${dir}/${package}-CMakeLists.txt.in" ${output})
 endfunction()
 
+
+
 function(_sb_source_write list_name dir rel_path var)
 	if(NOT var MATCHES "^[-_.+A-Za-z0-9]")
 		message(FATAL_ERROR "Invalid variable name '${var}'")
@@ -298,6 +332,8 @@ function(_sb_source_write list_name dir rel_path var)
 	set(${list_name} ${${list_name}} PARENT_SCOPE)
 endfunction()
 
+
+
 function(_sb_create_main_c)
 	_sb_write_if_different("${PROJECT_BINARY_DIR}/source/main.c"
 	  "// Placeholder file\n"
@@ -305,14 +341,27 @@ function(_sb_create_main_c)
 	)
 endfunction()
 
+
+
 # Provide default toolchain settings, if not existing
 function(_sb_create_default_toolchain)
+	if(NOT DEFINED default_INSTALL_PREFIX)
+		set(default_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
+	endif()
 	set(toolchain_content [[
 # Generated by ]] "${CMAKE_CURRENT_LIST_FILE}\n" [[
 
-set(INSTALL_DIR            ""
+set(SYSTEM_NAME            "default")
+
+# TOOLCHAIN_DIR will be changed for building toolchains,
+# so it must be cached for the default toolchain
+set(TOOLCHAIN_DIR          "]] "${default_INSTALL_DIR}" [["
     CACHE PATH             "The install root for this toolchain")
-set(CMAKE_INSTALL_PREFIX   "]] "${CMAKE_CURRENT_BINARY_DIR}/default/install${CMAKE_INSTALL_PREFIX}" [["
+# INSTALL_DIR will be changed for building toolchains,
+# so it must be cached for the default toolchain
+set(INSTALL_DIR            "]] "${default_INSTALL_DIR}" [["
+    CACHE PATH             "The install root for the output of this toolchain")
+set(CMAKE_INSTALL_PREFIX   "]] "${default_INSTALL_PREFIX}" [["
     CACHE PATH             "Install path prefix, prepended onto install directories")
 
 set(CMAKE_RULE_MESSAGES    OFF CACHE BOOL "Whether to report a message for each make rule")
@@ -513,23 +562,20 @@ function(_sb_make_toolchained_project package toolchain)
 		set(suffix "-${SYSTEM_NAME}")
 	endif()
 	
-	set(TOOLCHAIN_OVERRIDES )
-	foreach(var TOOLCHAIN_DIR INSTALL_DIR CMAKE_INSTALL_PREFIX)
-		string(REPLACE "CMAKE_" "" src_var ${var})
-		if(DEFINED ${SYSTEM_NAME}_${src_var})
-			# Explicit overwrite
-			list(APPEND TOOLCHAIN_OVERRIDES "-D${var}=${${SYSTEM_NAME}_${src_var}}")
-		elseif(SYSTEM_NAME STREQUAL "default")
-			# Packages for the default toolchain (including toolchains!)
-			if(SB_PACKAGE_SYSTEM_NAME)
-				# Toolchains
-				if(var STREQUAL "CMAKE_INSTALL_PREFIX")
-					# Redirect installation
-					list(APPEND TOOLCHAIN_OVERRIDES "-D${var}=${PROJECT_BINARY_DIR}/${SB_PACKAGE_SYSTEM_NAME}/toolchain")
-				endif()
-			endif()
+	set(target_install_dir_option "")
+	if(SB_PACKAGE_SYSTEM_NAME)
+		set(${SYSTEM_NAME}_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/${SB_PACKAGE_SYSTEM_NAME}/toolchain/install")
+		if(NOT DEFINED ${SB_PACKAGE_SYSTEM_NAME}_INSTALL_DIR)
+			set(${SB_PACKAGE_SYSTEM_NAME}_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/${SB_PACKAGE_SYSTEM_NAME}/install")
+			set(target_install_dir_option "-D${SB_PACKAGE_SYSTEM_NAME}_INSTALL_DIR=${${SB_PACKAGE_SYSTEM_NAME}_INSTALL_DIR}")
 		endif()
-	endforeach()
+	elseif(NOT DEFINED ${SYSTEM_NAME}_INSTALL_DIR)
+		set(${SYSTEM_NAME}_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/${SYSTEM_NAME}/install")
+	endif()
+	
+	if(NOT DEFINED ${SYSTEM_NAME}_TOOLCHAIN_DIR)
+		set(${SYSTEM_NAME}_TOOLCHAIN_DIR "${CMAKE_CURRENT_BINARY_DIR}/${SYSTEM_NAME}/toolchain")
+	endif()
 	
 	set(toolchain_file "${PROJECT_BINARY_DIR}/${SYSTEM_NAME}/toolchain/toolchain.cmake")
 	add_custom_command(OUTPUT "${tmp_dir}/CMakeLists.txt"
@@ -544,13 +590,13 @@ function(_sb_make_toolchained_project package toolchain)
 	      "-DSYSTEM_NAME:STRING=${SYSTEM_NAME}"
 	      "-DPACKAGE:STRING=${package}"
 	      "-DCMAKE_BUILD_TYPE=$<CONFIG>"
-	      ${TOOLCHAIN_OVERRIDES}
+	      "-D${SYSTEM_NAME}_INSTALL_DIR=${${SYSTEM_NAME}_INSTALL_DIR}"
+	      "-D${SYSTEM_NAME}_TOOLCHAIN_DIR=${${SYSTEM_NAME}_TOOLCHAIN_DIR}"
+	      "${target_install_dir_option}"
 	  COMMAND ${CMAKE_COMMAND} -E touch_nocreate "${tmp_dir}/CMakeLists.txt"
 	  COMMAND ${CMAKE_COMMAND} -E chdir "${tmp_dir}/config"
 	    ${CMAKE_COMMAND} "${tmp_dir}"
 	      "-DCMAKE_TOOLCHAIN_FILE:FILEPATH=${toolchain_file}"
-	      "-DCMAKE_BUILD_TYPE=$<CONFIG>"
-	      ${TOOLCHAIN_OVERRIDES}
 	  WORKING_DIRECTORY "${PROJECT_BINARY_DIR}"
 	  COMMENT "Generating configuration for ${package}${suffix}"
 	)
@@ -621,30 +667,41 @@ function(superbuild_package)
 	set(config_dir "${PROJECT_BINARY_DIR}/config")
 	file(MAKE_DIRECTORY "${config_dir}")
 	
-	_sb_make_source(${package})
-	get_property(SOURCE_DIR TARGET ${package}-source PROPERTY SB_SOURCE_DIR)
+	if(NOT DEFINED default_INSTALL_DIR)
+		set(default_INSTALL_DIR "${PROJECT_BINARY_DIR}/default/install")
+	endif()
+	if(NOT DEFINED host_INSTALL_DIR)
+		set(host_INSTALL_DIR "${default_INSTALL_DIR}")
+	endif()
+	set(HOST_INSTALL_DIR "${host_INSTALL_DIR}")
 	if(SB_PACKAGE_SYSTEM_NAME)
 		# toolchain
-		set(TMP_DIR     "${PROJECT_BINARY_DIR}/${SB_PACKAGE_SYSTEM_NAME}/toolchain/build/tmp.superbuild")
-		set(BINARY_DIR  "${PROJECT_BINARY_DIR}/${SB_PACKAGE_SYSTEM_NAME}/toolchain/build")
-		set(INSTALL_DIR "${PROJECT_BINARY_DIR}/${SB_PACKAGE_SYSTEM_NAME}/toolchain")
-		set(TOOLCHAIN_DIR "${PROJECT_BINARY_DIR}/default/install/\${CMAKE_INSTALL_PREFIX}" PARENT_SCOPE)
+		set(TOOLCHAIN_DIR "${HOST_INSTALL_DIR}")
+		set(BINARY_DIR    "${PROJECT_BINARY_DIR}/${SB_PACKAGE_SYSTEM_NAME}/toolchain/build")
+		set(TMP_DIR       "${PROJECT_BINARY_DIR}/${SB_PACKAGE_SYSTEM_NAME}/toolchain/build/tmp.superbuild")
+		set(INSTALL_DIR   "${PROJECT_BINARY_DIR}/${SB_PACKAGE_SYSTEM_NAME}/toolchain")
+		if(NOT DEFINED ${SB_PACKAGE_SYSTEM_NAME}_INSTALL_DIR)
+			set(${SB_PACKAGE_SYSTEM_NAME}_INSTALL_DIR "${PROJECT_BINARY_DIR}/${SB_PACKAGE_SYSTEM_NAME}/install")
+		endif()
 	else()
 		# regular package
-		set(TMP_DIR     "${PROJECT_BINARY_DIR}/\${SYSTEM_NAME}/${package}/tmp.superbuild")
-		set(BINARY_DIR  "${PROJECT_BINARY_DIR}/\${SYSTEM_NAME}/${package}")
-		set(INSTALL_DIR "${PROJECT_BINARY_DIR}/\${SYSTEM_NAME}/install")
-		set(TOOLCHAIN_DIR "${PROJECT_BINARY_DIR}/\${SYSTEM_NAME}/toolchain")
+		set(TOOLCHAIN_DIR [[${${SYSTEM_NAME}_TOOLCHAIN_DIR}]])
+		set(BINARY_DIR    "${PROJECT_BINARY_DIR}/\${SYSTEM_NAME}/${package}")
+		set(TMP_DIR       "${PROJECT_BINARY_DIR}/\${SYSTEM_NAME}/${package}/tmp.superbuild")
+		set(INSTALL_DIR   [[${${SYSTEM_NAME}_INSTALL_DIR}]])
 	endif()
-	set(HOST_INSTALL_DIR "${PROJECT_BINARY_DIR}/default/install${CMAKE_INSTALL_PREFIX}")
+	_sb_make_source(${package})
+	get_property(SOURCE_DIR TARGET ${package}-source PROPERTY SB_SOURCE_DIR)
+	set(DOWNLOAD_DIR     "${PROJECT_SOURCE_DIR}")
 	
 	_sb_write_config("${config_dir}"
 	  HOST_INSTALL_DIR
 	  TOOLCHAIN_DIR
+	  DOWNLOAD_DIR
 	  SOURCE_DIR
 	  BINARY_DIR
-	  INSTALL_DIR
 	  TMP_DIR
+	  INSTALL_DIR
 	  ${SB_PACKAGE_USING} # May use the previous variables
 	)
 	_sb_write_build("${config_dir}")

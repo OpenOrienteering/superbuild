@@ -70,15 +70,15 @@ superbuild_package(
         -P "${APPLY_PATCHES_SERIES}"
     # Don't accidently used bundled copies
     COMMAND
-      "${CMAKE_COMMAND}" -E remove_directory src/3rd-party/libjpeg
+      "${CMAKE_COMMAND}" -E rename src/3rdparty/libjpeg src/3rdparty/libjpeg.unused
     COMMAND
-      "${CMAKE_COMMAND}" -E remove_directory src/3rd-party/libpng
+      "${CMAKE_COMMAND}" -E rename src/3rdparty/libpng src/3rdparty/libpng.unused
     COMMAND
-      "${CMAKE_COMMAND}" -E remove_directory src/3rd-party/pcre
+      "${CMAKE_COMMAND}" -E rename src/3rdparty/pcre src/3rdparty/pcre.unused
     COMMAND
-      "${CMAKE_COMMAND}" -E remove_directory src/3rd-party/sqlite
+      "${CMAKE_COMMAND}" -E rename src/3rdparty/sqlite src/3rdparty/sqlite.unused
     COMMAND
-      "${CMAKE_COMMAND}" -E remove_directory src/3rd-party/zlib
+      "${CMAKE_COMMAND}" -E rename src/3rdparty/zlib src/3rdparty/zlib.unused
   
   USING default crosscompiling windows android
   
@@ -169,9 +169,9 @@ superbuild_package(
       "${CMAKE_COMMAND}" -E touch "<SOURCE_DIR>/.git"
     # Don't accidently used bundled copies
     COMMAND
-      "${CMAKE_COMMAND}" -E remove_directory src/3rd-party/jasper
+      "${CMAKE_COMMAND}" -E rename src/3rdparty/jasper src/3rdparty/jasper.unused
     COMMAND
-      "${CMAKE_COMMAND}" -E remove_directory src/3rd-party/tiff
+      "${CMAKE_COMMAND}" -E rename src/3rdparty/tiff src/3rdparty/tiff.unused
   
   USING version
   

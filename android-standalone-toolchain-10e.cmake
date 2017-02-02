@@ -295,7 +295,7 @@ foreach(cpu arm x86)
 	endif()
 	
 	if(NOT DEFINED ${system_name_${cpu}}_INSTALL_PREFIX)
-		set(${system_name_${cpu}}_INSTALL_PREFIX} "/usr")
+		set(${system_name_${cpu}}_INSTALL_PREFIX "/usr")
 	endif()
 	
 	set(cmakelists
