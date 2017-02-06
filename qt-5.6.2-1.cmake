@@ -37,6 +37,7 @@ set(crosscompiling [[$<BOOL:${CMAKE_CROSSCOMPILING}>]])
 set(windows        [[$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>]])
 set(android        [[$<BOOL:${ANDROID}>]])
 set(use_sysroot    [[$<NOT:$<AND:$<BOOL:${CMAKE_CROSSCOMPILING}>,$<BOOL:${ANDROID}>>>]])
+set(qmake          [[$<$<BOOL:${CMAKE_CROSSCOMPILING}>:${TOOLCHAIN_DIR}>$<$<NOT:$<BOOL:${CMAKE_CROSSCOMPILING}>>:${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}>/bin/qmake]])
 
 
 superbuild_package(
@@ -145,11 +146,10 @@ superbuild_package(
     URL_HASH       SHA256=44d6b30dde1d1e99ccd735d9a28cf8eba5ca61923cb54712e0c0ef6422cfdccd
     PATCH_COMMAND  "${CMAKE_COMMAND}" -E touch "<SOURCE_DIR>/.git"
   
-  USING version
-  
+  USING qmake
   BUILD [[
     CONFIGURE_COMMAND
-      "${BINARY_DIR}/../qtbase-${version}/bin/qmake" "${SOURCE_DIR}"
+      "${qmake}" "${SOURCE_DIR}"
   ]]
 )
 
@@ -173,11 +173,10 @@ superbuild_package(
     COMMAND
       "${CMAKE_COMMAND}" -E rename src/3rdparty/tiff src/3rdparty/tiff.unused
   
-  USING version
-  
+  USING qmake
   BUILD [[
     CONFIGURE_COMMAND
-      "${BINARY_DIR}/../qtbase-${version}/bin/qmake" "${SOURCE_DIR}"
+      "${qmake}" "${SOURCE_DIR}"
   ]]
 )
 
@@ -195,11 +194,10 @@ superbuild_package(
     URL_HASH       SHA256=b153a4ab39f85d801699fe8adfa9e36496ecb392d2ded3c28e68a74b1c50e8d8
     PATCH_COMMAND  "${CMAKE_COMMAND}" -E touch "<SOURCE_DIR>/.git"
   
-  USING version
-  
+  USING qmake
   BUILD [[
     CONFIGURE_COMMAND
-      "${BINARY_DIR}/../qtbase-${version}/bin/qmake" "${SOURCE_DIR}"
+      "${qmake}" "${SOURCE_DIR}"
   ]]
 )
 
@@ -216,11 +214,10 @@ superbuild_package(
     URL_HASH       SHA256=463e2b3545cb7502bc02401b325557eae6cbf5556a31aba378dfdabd41695917
     PATCH_COMMAND  "${CMAKE_COMMAND}" -E touch "<SOURCE_DIR>/.git"
   
-  USING version
-  
+  USING qmake
   BUILD [[
     CONFIGURE_COMMAND
-      "${BINARY_DIR}/../qtbase-${version}/bin/qmake" "${SOURCE_DIR}"
+      "${qmake}" "${SOURCE_DIR}"
   ]]
 )
 
@@ -237,11 +234,10 @@ superbuild_package(
     URL_HASH       SHA256=dfd98aad2e87939394e624c797ec162012f5b0dcd30323fa4d5e28841a90d17b
     PATCH_COMMAND  "${CMAKE_COMMAND}" -E touch "<SOURCE_DIR>/.git"
   
-  USING version
-  
+  USING qmake
   BUILD [[
     CONFIGURE_COMMAND
-      "${BINARY_DIR}/../qtbase-${version}/bin/qmake" "${SOURCE_DIR}"
+      "${qmake}" "${SOURCE_DIR}"
   ]]
 )
 
@@ -273,13 +269,10 @@ superbuild_package(
 	URL_HASH       SHA256=5f57ce5e612b2f7e1c3064ff0f8b12f1cfa4b615220d63c08c8e45234e8685b0
     PATCH_COMMAND  "${CMAKE_COMMAND}" -E touch "<SOURCE_DIR>/.git"
   
-  USING version qttools_install_android
-  
+  USING qmake qttools_install_android
   BUILD [[
     CONFIGURE_COMMAND
-      # We must use qmake from qtbase build directory because otherwise
-      # building host tools fails when cross-building Qt.
-      "${BINARY_DIR}/../qtbase-${version}/bin/qmake" "${SOURCE_DIR}"
+      "${qmake}" "${SOURCE_DIR}"
     $<$<AND:$<BOOL:${CMAKE_CROSSCOMPILING}>,$<BOOL:${ANDROID}>>:${qttools_install_android}>
   ]]
 )
@@ -297,10 +290,9 @@ superbuild_package(
     URL_HASH       SHA256=0394ecf6e9ad97860d049cb475d948459fea0c7dd6bf001ddd67f4a7e0857db0
     PATCH_COMMAND  "${CMAKE_COMMAND}" -E touch "<SOURCE_DIR>/.git"
   
-  USING version
-  
+  USING qmake
   BUILD [[
     CONFIGURE_COMMAND
-      "${BINARY_DIR}/../qtbase-${version}/bin/qmake" "${SOURCE_DIR}"
+      "${qmake}" "${SOURCE_DIR}"
   ]]
 )
