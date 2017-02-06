@@ -59,6 +59,7 @@ superbuild_package(
   VERSION        ${patch_version}
   DEPENDS
     source:curl-patches-${patch_version}
+    zlib
   
   SOURCE
     URL            http://http.debian.net/debian/pool/main/c/curl/curl_${version}.orig.tar.gz
