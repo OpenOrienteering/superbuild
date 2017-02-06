@@ -171,7 +171,7 @@ superbuild_package(
     COMMAND
       "${CMAKE_COMMAND}" -E rename src/3rdparty/jasper src/3rdparty/jasper.unused
     COMMAND
-      "${CMAKE_COMMAND}" -E rename src/3rdparty/tiff src/3rdparty/tiff.unused
+      "${CMAKE_COMMAND}" -E rename src/3rdparty/libtiff src/3rdparty/libtiff.unused
   
   USING qmake
   BUILD [[
