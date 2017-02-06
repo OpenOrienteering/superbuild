@@ -67,50 +67,27 @@ superbuild_package(
       > # UNIX AND NOT APPLE
       "${CMAKE_COMMAND}" "${SOURCE_DIR}"
       "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
-      "-DMapper_BUILD_CLIPPER=0"
-      $<$<NOT:$<STREQUAL:${SYSTEM_NAME},default>>:
-      "-DPOLYCLIPPING_LIBRARY_LOCATION=${CMAKE_STAGING_PREFIX}/lib/libpolyclipping${CMAKE_SHARED_LIBRARY_SUFFIX}"
-      "-DPOLYCLIPPING_INCLUDE_DIRS=${CMAKE_STAGING_PREFIX}/include/polyclipping"
-      "-DPOLYCLIPPING_INCLUDEDIR=${CMAKE_STAGING_PREFIX}/include/polyclipping"
-      "-DPOLYCLIPPING_LIBDIR=${CMAKE_STAGING_PREFIX}/lib"
-      $<$<AND:$<BOOL:${CMAKE_CROSSCOMPILING}>,$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>>:
-        "-DPOLYCLIPPING_LIBRARY_LOCATION=${CMAKE_STAGING_PREFIX}/bin/libpolyclipping${CMAKE_SHARED_LIBRARY_SUFFIX}"
-        "-DPOLYCLIPPING_LIBDIR=${CMAKE_STAGING_PREFIX}/bin"
-      >
-      > # SYSTEM_NAME default
-      "-DMapper_BUILD_PROJ=0"
-      $<$<NOT:$<STREQUAL:${SYSTEM_NAME},default>>:
-      "-DPROJ_INCLUDE_DIR=${CMAKE_STAGING_PREFIX}/include"
-      "-DPROJ_LIBRARY=${CMAKE_STAGING_PREFIX}/lib/libproj.so"
-      $<$<BOOL:${APPLE}>:
-        "-DPROJ_LIBRARY=${CMAKE_STAGING_PREFIX}/lib/libproj.9.dylib"
-      >
-      $<$<AND:$<BOOL:${CMAKE_CROSSCOMPILING}>,$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>>:
-        "-DPROJ_LIBRARY=${CMAKE_STAGING_PREFIX}/lib/libproj_4_9.dll.a"
-      >
-      > # SYSTEM_NAME default
-      "-DMapper_BUILD_GDAL=0"
-      "-DMapper_USE_GDAL=1"
-      "-DMapper_BUILD_QT=0"
-      "-DMapper_BUILD_DOXYGEN=0"
-      "-UDOXYGEN_EXECUTABLE"
-      "-DMapper_BUILD_PACKAGE=1"
-      "-DMapper_PACKAGE_ASSISTANT=0"
-      "-DMapper_PACKAGE_LINGUIST=0"
-      "-DMapper_AUTORUN_UNIT_TESTS=0"
-      "-DMapper_AUTORUN_SYSTEM_TESTS=0"
       "-DBUILD_SHARED_LIBS=0"
+      "-DMapper_AUTORUN_SYSTEM_TESTS=0"
       "-DBIN_INSTALL_DIR=bin"
       "-DLIB_INSTALL_DIR=bin"
       "-DSHARE_INSTALL_DIR=share"
+      "-DMapper_BUILD_PACKAGE=1"
+      "-DMapper_BUILD_CLIPPER=0"
+      "-DMapper_BUILD_PROJ=0"
+        "-DMapper_PACKAGE_PROJ=1"
+      "-DMapper_USE_GDAL=1"
+        "-DMapper_BUILD_GDAL=0"
+        "-DMapper_PACKAGE_GDAL=1"
+      "-DMapper_BUILD_DOXYGEN=0"
+      "-DMapper_PACKAGE_QT=1"
+        "-DMapper_BUILD_QT=0"
+        "-DMapper_PACKAGE_ASSISTANT=1"
       $<$<STREQUAL:${SYSTEM_NAME},default>:
         # Cf. https://cmake.org/Wiki/CMake_RPATH_handling#Always_full_RPATH
         "-DCMAKE_INSTALL_RPATH=${CMAKE_STAGING_PREFIX}/lib"
         "-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=1"
-       >
-       $<$<BOOL:${CMAKE_CROSSCOMPILING}>:
-        -DPKG_CONFIG_EXECUTABLE=false
-       >
+      >
     INSTALL_COMMAND
       "${CMAKE_COMMAND}" --build . --target install/strip
     $<$<NOT:$<BOOL:${CMAKE_CROSSCOMPILING}>>:
