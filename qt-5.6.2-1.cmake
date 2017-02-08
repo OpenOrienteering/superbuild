@@ -71,15 +71,25 @@ superbuild_package(
         -P "${APPLY_PATCHES_SERIES}"
     # Don't accidently used bundled copies
     COMMAND
-      "${CMAKE_COMMAND}" -E rename src/3rdparty/libjpeg src/3rdparty/libjpeg.unused
+      "${CMAKE_COMMAND}" -E copy_directory src/3rdparty/libjpeg src/3rdparty/libjpeg.unused
     COMMAND
-      "${CMAKE_COMMAND}" -E rename src/3rdparty/libpng src/3rdparty/libpng.unused
+      "${CMAKE_COMMAND}" -E remove_directory src/3rdparty/libjpeg
     COMMAND
-      "${CMAKE_COMMAND}" -E rename src/3rdparty/pcre src/3rdparty/pcre.unused
+      "${CMAKE_COMMAND}" -E copy_directory src/3rdparty/libpng src/3rdparty/libpng.unused
     COMMAND
-      "${CMAKE_COMMAND}" -E rename src/3rdparty/sqlite src/3rdparty/sqlite.unused
+      "${CMAKE_COMMAND}" -E remove_directory src/3rdparty/libpng
     COMMAND
-      "${CMAKE_COMMAND}" -E rename src/3rdparty/zlib src/3rdparty/zlib.unused
+      "${CMAKE_COMMAND}" -E copy_directory src/3rdparty/pcre src/3rdparty/pcre.unused
+    COMMAND
+      "${CMAKE_COMMAND}" -E remove_directory src/3rdparty/pcre
+    COMMAND
+      "${CMAKE_COMMAND}" -E copy_directory src/3rdparty/sqlite src/3rdparty/sqlite.unused
+    COMMAND
+      "${CMAKE_COMMAND}" -E remove_directory src/3rdparty/sqlite
+    COMMAND
+      "${CMAKE_COMMAND}" -E copy_directory src/3rdparty/zlib src/3rdparty/zlib.unused
+    COMMAND
+      "${CMAKE_COMMAND}" -E remove_directory src/3rdparty/zlib
   
   USING default crosscompiling windows android
   
@@ -169,9 +179,13 @@ superbuild_package(
       "${CMAKE_COMMAND}" -E touch "<SOURCE_DIR>/.git"
     # Don't accidently used bundled copies
     COMMAND
-      "${CMAKE_COMMAND}" -E rename src/3rdparty/jasper src/3rdparty/jasper.unused
+      "${CMAKE_COMMAND}" -E copy_directory src/3rdparty/jasper src/3rdparty/jasper.unused
     COMMAND
-      "${CMAKE_COMMAND}" -E rename src/3rdparty/libtiff src/3rdparty/libtiff.unused
+      "${CMAKE_COMMAND}" -E remove_directory src/3rdparty/jasper
+    COMMAND
+      "${CMAKE_COMMAND}" -E copy_directory src/3rdparty/libtiff src/3rdparty/libtiff.unused
+    COMMAND
+      "${CMAKE_COMMAND}" -E remove_directory src/3rdparty/libtiff
   
   USING qmake
   BUILD [[
