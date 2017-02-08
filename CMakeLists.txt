@@ -101,6 +101,8 @@ endfunction()
 
 
 function(_sb_write_debian_patch_script)
+	option(IGNORE_REVERSED_PATCHES
+	  "Ignore patches which appear to be reversed or already applied." OFF)
 	set (APPLY_PATCHES_SERIES "${PROJECT_BINARY_DIR}/source/apply-debian-patches.cmake")
 	_sb_write_if_different("${APPLY_PATCHES_SERIES}" [[
 # Created by ]] ${CMAKE_CURRENT_LIST_FILE} [[
@@ -114,6 +116,7 @@ endif()
 
 set(dir "]] "${PROJECT_BINARY_DIR}" [[/source/${package}")
 if(EXISTS "${dir}/patches/series")
+	set(IGNORE_REVERSED_PATCHES "]] ${IGNORE_REVERSED_PATCHES} [[")
 	file(STRINGS "${dir}/patches/series" series)
 	foreach(line ${series})
 		string(STRIP "${line}" line)
@@ -122,12 +125,17 @@ if(EXISTS "${dir}/patches/series")
 		endif()
 		message(STATUS "Applying ${line}")
 		execute_process(
-		  COMMAND patch -p1 
+		  COMMAND patch -N -p1
 		  INPUT_FILE "${dir}/patches/${line}"
 		  RESULT_VARIABLE exit_code
+		  OUTPUT_VARIABLE output
 		)
+		if(IGNORE_REVERSED_PATCHES
+		   AND output MATCHES "Reversed.* patch detected")
+			continue()
+		endif()
 		if(NOT exit_code EQUAL 0)
-			message(FATAL_ERROR)
+			message(FATAL_ERROR "Could not apply patch ${line}")
 		endif()
 	endforeach()
 else()
