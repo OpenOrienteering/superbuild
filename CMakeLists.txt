@@ -372,6 +372,9 @@ set(INSTALL_DIR            "]] "${default_INSTALL_DIR}" [["
     CACHE PATH             "The install root for the output of this toolchain")
 set(CMAKE_INSTALL_PREFIX   "]] "${default_INSTALL_PREFIX}" [["
     CACHE PATH             "Install path prefix, prepended onto install directories")
+if(APPLE AND NOT CMAKE_INSTALL_NAME_DIR)
+	set(CMAKE_INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
+endif()
 
 set(CMAKE_RULE_MESSAGES    OFF CACHE BOOL "Whether to report a message for each make rule")
 set(CMAKE_TARGET_MESSAGES  OFF CACHE BOOL "Whether to report a message for each target")
