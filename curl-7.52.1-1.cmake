@@ -35,11 +35,12 @@ set(patch_hash     SHA256=c2d962814c274e1ec5c962a3346631ec93a18fcb2da9438fdd44b7
 option(USE_SYSTEM_CURL "Use the system curl if possible" ON)
 
 set(test_system_curl [[
-	if(${USE_SYSTEM_CURL})
+	if(USE_SYSTEM_CURL)
 		enable_language(C)
-		find_package(CURL CONFIG NO_CMAKE_FIND_ROOT_PATH QUIET)
-		find_package(CURL MODULE)
+		find_package(CURL CONFIG QUIET)
+		find_package(CURL MODULE QUIET)
 		if(CURL_FOUND)
+			message(STATUS "Found curl: ${CURL_LIBRARIES}")
 			set(BUILD_CONDITION 0)
 		endif()
 	endif()

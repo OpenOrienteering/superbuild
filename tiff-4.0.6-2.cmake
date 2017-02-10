@@ -35,11 +35,12 @@ set(patch_hash     SHA256=82a0ef3f713d2a22d40b9be71fd121b9136657d313ae6b76b51430
 option(USE_SYSTEM_LIBTIFF "Use the system libtiff if possible" ON)
 
 set(test_system_tiff [[
-	if(${USE_SYSTEM_LIBTIFF})
+	if(USE_SYSTEM_LIBTIFF)
 		enable_language(C)
-		find_package(TIFF CONFIG NO_CMAKE_FIND_ROOT_PATH QUIET)
-		find_package(TIFF MODULE)
+		find_package(TIFF CONFIG QUIET)
+		find_package(TIFF MODULE QUIET)
 		if(TARGET TIFF::TIFF)
+			message(STATUS "Found tiff: ${TIFF_LIBRARIES}")
 			set(BUILD_CONDITION 0)
 		endif()
 	endif()

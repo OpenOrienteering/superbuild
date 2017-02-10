@@ -35,10 +35,12 @@ set(patch_hash     MD5=ea36f15f106f19cfad8ea0896606c11c)
 option(USE_SYSTEM_PCRE3 "Use the system sqlite if possible" ON)
 
 set(test_system_pcre3 [[
-	if(${USE_SYSTEM_PCRE3})
+	if(USE_SYSTEM_PCRE3)
 		enable_language(C)
-		find_library(PCRE3_LIBRARY NAMES pcre3 pcre32 NO_CMAKE_FIND_ROOT_PATH QUIET)
-		if(PCRE3_LIBRARY)
+		find_library(PCRE3_LIBRARY NAMES pcre QUIET)
+		find_path(PCRE3_INCLUDE_DIR NAMES pcre.h QUIET)
+		if(PCRE3_LIBRARY AND PCRE3_INCLUDE_DIR)
+			message(STATUS "Found pcre3: ${PCRE3_LIBRARY}")
 			set(BUILD_CONDITION 0)
 		endif()
 	endif()
@@ -75,6 +77,7 @@ superbuild_package(
       "-DCMAKE_BUILD_TYPE:STRING=$<CONFIG>"
       "-DBUILD_SHARED_LIBS:BOOL=ON"
       "-DPCRE_BUILD_PCRE16:BOOL=ON"
+      "-DPCRE_BUILD_PCRE32:BOOL=ON"
       "-DPCRE_SUPPORT_UTF:BOOL=ON"
       "-DPCRE_SUPPORT_UNICODE_PROPERTIES:BOOL=ON"
     INSTALL_COMMAND

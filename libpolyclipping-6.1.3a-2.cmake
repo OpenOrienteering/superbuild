@@ -35,10 +35,11 @@ set(patch_hash     MD5=cb26c087f6fb4519f234db1846dd97ac)
 option(USE_SYSTEM_POLYCLIPPING "Use the system libpolyclipping if possible" ON)
 
 set(test_system_libpolyclipping [[
-	if(${USE_SYSTEM_POLYCLIPPING})
+	if(USE_SYSTEM_POLYCLIPPING)
 		enable_language(C)
-		find_library(POLYCLIPPING_LIBRARY NAMES polyclipping NO_CMAKE_FIND_ROOT_PATH QUIET)
+		find_library(POLYCLIPPING_LIBRARY NAMES polyclipping QUIET)
 		if(POLYCLIPPING_LIBRARY)
+			message(STATUS "Found libpolyclipping: ${POLYCLIPPING_LIBRARY}")
 			set(BUILD_CONDITION 0)
 		endif()
 	endif()

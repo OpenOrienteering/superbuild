@@ -34,10 +34,11 @@ set(download_hash     SHA1=b34cb4ee9710368598c62df0222f5c24dfc9c860)
 option(USE_SYSTEM_SQLITE3 "Use the system sqlite if possible" ON)
 
 set(test_system_sqlite3 [[
-	if(${USE_SYSTEM_SQLITE3})
+	if(USE_SYSTEM_SQLITE3)
 		enable_language(C)
-		find_library(SQLITE3_LIBRARY NAMES sqlite3 NO_CMAKE_FIND_ROOT_PATH QUIET)
+		find_library(SQLITE3_LIBRARY NAMES sqlite3 QUIET)
 		if(SQLITE3_LIBRARY)
+			message(STATUS "Found sqlite3: ${SQLITE3_LIBRARY}")
 			set(BUILD_CONDITION 0)
 		endif()
 	endif()

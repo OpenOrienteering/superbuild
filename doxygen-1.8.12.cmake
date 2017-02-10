@@ -33,9 +33,10 @@ set(download_hash  MD5=08e0f7850c4d22cb5188da226b209a96)
 option(USE_SYSTEM_DOXYGEN "Use the system DOXYGEN if possible" ON)
 
 set(test_system_doxygen [[
-	if(${USE_SYSTEM_DOXYGEN})
-		find_program(DOXYGEN_EXECUTABLE NAMES doxygen)
+	if(USE_SYSTEM_DOXYGEN)
+		find_program(DOXYGEN_EXECUTABLE NAMES doxygen QUIET)
 		if(DOXYGEN_EXECUTABLE)
+			message(STATUS "Found doxygen: ${DOXYGEN_EXECUTABLE}")
 			set(BUILD_CONDITION 0)
 		endif()
 	endif()

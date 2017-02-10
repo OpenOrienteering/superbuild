@@ -35,11 +35,12 @@ set(patch_hash     MD5=2d1dda318fe4edee21afca4384fc5f5c)
 option(USE_SYSTEM_LIBPNG "Use the system libpng if possible" ON)
 
 set(test_system_png [[
-	if(${USE_SYSTEM_LIBPNG})
+	if(USE_SYSTEM_LIBPNG)
 		enable_language(C)
 		find_package(PNG CONFIG QUIET)
 		find_package(PNG MODULE QUIET)
 		if(TARGET PNG::PNG)
+			message(STATUS "Found libpng: ${PNG_LIBRARIES}")
 			set(BUILD_CONDITION 0)
 		endif()
 	endif()

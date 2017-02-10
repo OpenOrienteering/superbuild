@@ -41,13 +41,22 @@ endif()
 option(USE_SYSTEM_GDAL "Use the system GDAL if possible" ON)
 
 set(test_system_gdal [[
-	if(${USE_SYSTEM_GDAL})
+	if(USE_SYSTEM_GDAL)
 		enable_language(C)
-		find_package(GDAL 2 NO_CMAKE_FIND_ROOT_PATH QUIET)
+		find_package(GDAL 2 QUIET)
 		if(GDAL_FOUND)
+			message(STATUS "Found gdal: ${GDAL_LIBRARY}")
 			set(BUILD_CONDITION 0)
 		endif()
 	endif()
+	# Make gdal aware of system libraries
+	find_program(CURL_CONFIG NAMES curl-config HINTS "${INSTALL_DIR}" QUIET)
+	find_path(EXPAT_INCLUDE_DIR NAMES expat.h HINTS "${INSTALL_DIR}" QUIET)
+	get_filename_component(EXPAT_DIR "${EXPAT_INCLUDE_DIR}" DIRECTORY CACHE)
+	find_path(LIBZ_INCLUDE_DIR NAMES zlib.h HINTS "${INSTALL_DIR}" QUIET)
+	get_filename_component(LIBZ_DIR "${LIBZ_INCLUDE_DIR}" DIRECTORY CACHE)
+	find_path(SQLITE3_INCLUDE_DIR NAMES sqlite3.h HINTS "${INSTALL_DIR}" QUIET)
+	get_filename_component(SQLITE3_DIR "${SQLITE3_INCLUDE_DIR}" DIRECTORY CACHE)
 ]])
 
 superbuild_package(
@@ -103,13 +112,13 @@ superbuild_package(
         --without-threads
         --with-liblzma
         --with-pcre
-        "--with-curl=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/bin/curl-config"
-        "--with-expat=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
+        "--with-curl=$${}{CURL_CONFIG}"
+        "--with-expat=$${}{EXPAT_DIR}"
         "--with-jpeg=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
         "--with-libtiff=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
-        "--with-libz=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
+        "--with-libz=$${}{LIBZ_DIR}"
         "--with-png=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
-        "--with-sqlite3=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
+        "--with-sqlite3=$${}{SQLITE3_DIR}"
         --without-geos
         --without-grib
         --without-java

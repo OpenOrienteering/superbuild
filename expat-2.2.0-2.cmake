@@ -35,10 +35,11 @@ set(patch_hash     MD5=f7b4b7d3d2b172ea40c2cac54733fe3e)
 option(USE_SYSTEM_EXPAT "Use the system Expat if possible" ON)
 
 set(test_system_expat [[
-	if(${USE_SYSTEM_EXPAT})
+	if(USE_SYSTEM_EXPAT)
 		enable_language(C)
-		find_package(EXPAT NO_CMAKE_FIND_ROOT_PATH QUIET)
+		find_package(EXPAT QUIET)
 		if(EXPAT_LIBRARIES)
+			message(STATUS "Found expat: ${EXPAT_LIBRARIES}")
 			set(BUILD_CONDITION 0)
 		endif()
 	endif()
