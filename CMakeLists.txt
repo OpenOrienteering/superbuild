@@ -558,6 +558,11 @@ function(_sb_make_source package)
 			  DEPENDERS patch update
 			)
 		endif()
+		# There must be no stamp files when the source dir is missing.
+		# We do the cleanup here, at configuration time.
+		if(NOT EXISTS "${SOURCE_DIR}" AND EXISTS "${TMP_DIR}")
+			file(REMOVE_RECURSE "${TMP_DIR}")
+		endif()
 	endif()
 	set_property(TARGET ${package}-source PROPERTY SB_SOURCE_DIR "${SOURCE_DIR}")
 	set_property(TARGET ${package}-source PROPERTY SB_SOURCE_FILES "${source_files}")
