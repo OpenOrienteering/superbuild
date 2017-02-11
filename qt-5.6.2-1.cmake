@@ -89,7 +89,7 @@ superbuild_package(
     COMMAND
       "${CMAKE_COMMAND}" -E copy_directory src/3rdparty/zlib src/3rdparty/zlib.unused
     COMMAND
-      "${CMAKE_COMMAND}" -E remove_directory src/3rdparty/zlib
+      "${CMAKE_COMMAND}" -E remove -f src/3rdparty/zlib/*.c
   
   USING default crosscompiling windows android
   
