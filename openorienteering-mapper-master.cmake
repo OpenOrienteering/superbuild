@@ -69,27 +69,19 @@ superbuild_package(
       "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
       "-DBUILD_SHARED_LIBS=0"
       "-DMapper_AUTORUN_SYSTEM_TESTS=0"
-      "-DBIN_INSTALL_DIR=bin"
-      "-DLIB_INSTALL_DIR=bin"
-      "-DSHARE_INSTALL_DIR=share"
-      "-DMapper_BUILD_PACKAGE=1"
       "-DMapper_BUILD_CLIPPER=0"
+      "-DMapper_BUILD_GDAL=0"
       "-DMapper_BUILD_PROJ=0"
-        "-DMapper_PACKAGE_PROJ=1"
-      "-DMapper_USE_GDAL=1"
-        "-DMapper_BUILD_GDAL=0"
-        "-DMapper_PACKAGE_GDAL=1"
+      "-DMapper_BUILD_QT=0"
       "-DMapper_BUILD_DOXYGEN=0"
-      "-DMapper_PACKAGE_QT=1"
-        "-DMapper_BUILD_QT=0"
+      "-DMapper_USE_GDAL=1"
+      "-DMapper_BUILD_PACKAGE=1"
         "-DMapper_PACKAGE_ASSISTANT=1"
-      $<$<STREQUAL:${SYSTEM_NAME},default>:
-        # Cf. https://cmake.org/Wiki/CMake_RPATH_handling#Always_full_RPATH
-        "-DCMAKE_INSTALL_RPATH=${CMAKE_STAGING_PREFIX}/lib"
-        "-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=1"
-      >
+        "-DMapper_PACKAGE_GDAL=1"
+        "-DMapper_PACKAGE_PROJ=1"
+        "-DMapper_PACKAGE_QT=1"
     INSTALL_COMMAND
-      "${CMAKE_COMMAND}" --build . --target install/strip
+      "${CMAKE_COMMAND}" --build . --target install/strip -- "DESTDIR=${INSTALL_DIR}/openorienteering"
     $<$<NOT:$<BOOL:${CMAKE_CROSSCOMPILING}>>:
       TEST_BEFORE_INSTALL 1
     >
