@@ -169,20 +169,28 @@ endif()
 		endforeach()
 		list(APPEND output ")\n")
 	endforeach()
-	list(APPEND output
-"
+	list(APPEND output [[
+
 function(sb_test_build_condition)
 	set(BUILD_CONDITION 1)
 	# Protect the package from inadvertently finding it is own install results.
-	if(SYSTEM_NAME STREQUAL \"default\")
-		list(REMOVE_ITEM CMAKE_SYSTEM_PREFIX_PATH \"\${CMAKE_INSTALL_PREFIX}\")
-	elseif(DEFINED CMAKE_FIND_ROOT_PATH)
-		list(REMOVE_ITEM CMAKE_FIND_ROOT_PATH \"\${INSTALL_DIR}\")
+	list(FIND CMAKE_SYSTEM_PREFIX_PATH "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}" index)
+	if(NOT index EQUAL -1)
+		list(REMOVE_AT CMAKE_SYSTEM_PREFIX_PATH ${index})
+	elseif(NOT CMAKE_FIND_ROOT_PATH)
+		message(WARNING "CMAKE_FIND_ROOT_PATH is not set")
+	elseif(NOT CMAKE_FIND_ROOT_PATH STREQUAL INSTALL_DIR)
+		list(REMOVE_ITEM CMAKE_FIND_ROOT_PATH "${INSTALL_DIR}")
+	else()
+		set(CMAKE_FIND_ROOT_PATH "${INSTALL_DIR}-IGNORE-")
+		if(EXISTS "${INSTALL_DIR}-IGNORE")
+			message(FATAL_ERROR "${INSTALL_DIR}-IGNORE- must not exist")
+		endif()
 	endif()
-${SB_PACKAGE_BUILD_CONDITION}
-	set(BUILD_CONDITION \${BUILD_CONDITION} PARENT_SCOPE)
+]] "${SB_PACKAGE_BUILD_CONDITION}" [[
+	set(BUILD_CONDITION ${BUILD_CONDITION} PARENT_SCOPE)
 endfunction()
-")
+]])
 	_sb_write_if_different("${dir}/${package}-config.cmake" ${output})
 endfunction()
 
