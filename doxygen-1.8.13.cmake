@@ -27,59 +27,36 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        1.2.8.dfsg)
-set(download_hash  MD5=b752e88a9717131354bd07aa1e1c505d)
-set(patch_version  ${version}-2)
-set(patch_hash     MD5=33acd96a3311d6fe60d94b64427a296e)
+set(version        1.8.13)
+set(download_hash  SHA256=af667887bd7a87dc0dbf9ac8d86c96b552dfb8ca9c790ed1cbffaa6131573f6b)
 
-option(USE_SYSTEM_ZLIB "Use the system zlib if possible" ON)
+option(USE_SYSTEM_DOXYGEN "Use the system DOXYGEN if possible" ON)
 
-set(test_system_zlib [[
-	if(USE_SYSTEM_ZLIB)
-		enable_language(C)
-		find_package(ZLIB CONFIG QUIET)
-		find_package(ZLIB MODULE QUIET)
-		if(TARGET ZLIB::ZLIB)
-			message(STATUS "Found zlib: ${ZLIB_LIBRARY}")
+set(test_system_doxygen [[
+	if(USE_SYSTEM_DOXYGEN)
+		find_program(DOXYGEN_EXECUTABLE NAMES doxygen QUIET)
+		if(DOXYGEN_EXECUTABLE)
+			message(STATUS "Found doxygen: ${DOXYGEN_EXECUTABLE}")
 			set(BUILD_CONDITION 0)
-		elseif(NOT WIN32)
-			message(FATAL_ERROR "Missing zlib on ${SYSTEM_NAME}")
 		endif()
 	endif()
 ]])
 
 superbuild_package(
-  NAME           zlib-patches
-  VERSION        ${patch_version}
+  NAME           doxygen
+  VERSION        ${version}
+  DEPENDS        zlib
   
   SOURCE
-    URL            http://http.debian.net/debian/pool/main/z/zlib/zlib_${patch_version}.debian.tar.xz
-    URL_HASH       ${patch_hash}
-)
-
-superbuild_package(
-  NAME           zlib
-  VERSION        ${patch_version}
-  DEPENDS
-    source:zlib-patches-${patch_version}
-  
-  SOURCE
-    URL            http://http.debian.net/debian/pool/main/z/zlib/zlib_${version}.orig.tar.gz
+    URL            http://http.debian.net/debian/pool/main/d/doxygen/doxygen_${version}.orig.tar.gz
     URL_HASH       ${download_hash}
-    PATCH_COMMAND
-      "${CMAKE_COMMAND}"
-        -Dpackage=zlib-patches-${patch_version}
-        -P "${APPLY_PATCHES_SERIES}"
-    COMMAND
-      ${CMAKE_COMMAND} -E
-        echo "set_target_properties(zlib zlibstatic PROPERTIES OUTPUT_NAME z)"
-          >> "<SOURCE_DIR>/CMakeLists.txt"
   
-  USING            USE_SYSTEM_ZLIB
-  BUILD_CONDITION  ${test_system_zlib}
+  USING            USE_SYSTEM_DOXYGEN
+  BUILD_CONDITION  ${test_system_doxygen}
   BUILD [[
     CMAKE_ARGS
       "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
+      -Denglish_only=1
     INSTALL_COMMAND
       "${CMAKE_COMMAND}" --build . --target install/strip -- "DESTDIR=${INSTALL_DIR}"
   ]]

@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2017 Kai Pastor
+# Copyright 2016, 2017 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -27,84 +27,60 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        7.52.1)
-set(download_hash  SHA256=a8984e8b20880b621f61a62d95ff3c0763a3152093a9f9ce4287cfd614add6ae)
-set(patch_version  ${version}-1)
-set(patch_hash     SHA256=c2d962814c274e1ec5c962a3346631ec93a18fcb2da9438fdd44b7e8deda4e1a)
+set(version        1.2.8.dfsg)
+set(download_hash  SHA256=2caecc2c3f1ef8b87b8f72b128a03e61c307e8c14f5ec9b422ef7914ba75cf9f)
+set(patch_version  ${version}-5)
+set(patch_hash     SHA256=7b88f58d1bfe8e873b8362ede3d0bc569793decc60094189fad1a110599cdd95)
 
-option(USE_SYSTEM_CURL "Use the system curl if possible" ON)
+option(USE_SYSTEM_ZLIB "Use the system zlib if possible" ON)
 
-set(test_system_curl [[
-	if(USE_SYSTEM_CURL)
+set(test_system_zlib [[
+	if(USE_SYSTEM_ZLIB)
 		enable_language(C)
-		find_package(CURL CONFIG QUIET)
-		find_package(CURL MODULE QUIET)
-		if(CURL_FOUND)
-			message(STATUS "Found curl: ${CURL_LIBRARIES}")
+		find_package(ZLIB CONFIG QUIET)
+		find_package(ZLIB MODULE QUIET)
+		if(TARGET ZLIB::ZLIB)
+			message(STATUS "Found zlib: ${ZLIB_LIBRARY}")
 			set(BUILD_CONDITION 0)
+		elseif(NOT WIN32)
+			message(FATAL_ERROR "Missing zlib on ${SYSTEM_NAME}")
 		endif()
 	endif()
 ]])
 
 superbuild_package(
-  NAME           curl-patches
+  NAME           zlib-patches
   VERSION        ${patch_version}
   
   SOURCE
-    URL            http://http.debian.net/debian/pool/main/c/curl/curl_${patch_version}.debian.tar.xz
+    URL            http://http.debian.net/debian/pool/main/z/zlib/zlib_${patch_version}.debian.tar.xz
     URL_HASH       ${patch_hash}
 )
-  
+
 superbuild_package(
-  NAME           curl
+  NAME           zlib
   VERSION        ${patch_version}
   DEPENDS
-    source:curl-patches-${patch_version}
-    zlib
+    source:zlib-patches-${patch_version}
   
   SOURCE
-    URL            http://http.debian.net/debian/pool/main/c/curl/curl_${version}.orig.tar.gz
+    URL            http://http.debian.net/debian/pool/main/z/zlib/zlib_${version}.orig.tar.gz
     URL_HASH       ${download_hash}
     PATCH_COMMAND
       "${CMAKE_COMMAND}"
-        -Dpackage=curl-patches-${patch_version}
+        -Dpackage=zlib-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
+    COMMAND
+      ${CMAKE_COMMAND} -E
+        echo "set_target_properties(zlib zlibstatic PROPERTIES OUTPUT_NAME z)"
+          >> "<SOURCE_DIR>/CMakeLists.txt"
   
-  USING            USE_SYSTEM_CURL
-  BUILD_CONDITION  ${test_system_curl}
+  USING            USE_SYSTEM_ZLIB
+  BUILD_CONDITION  ${test_system_zlib}
   BUILD [[
-    CONFIGURE_COMMAND
-      "${SOURCE_DIR}/configure"
-        "--prefix=${CMAKE_INSTALL_PREFIX}"
-        $<$<BOOL:${CMAKE_CROSSCOMPILING}>:
-        --host=${SUPERBUILD_TOOLCHAIN_TRIPLET}
-        >
-        --disable-silent-rules
-        --enable-symbol-hiding
-        --disable-largefile
-        --enable-shared
-        --disable-static
-        --enable-threadsafe
-        --disable-ldap
-        --disable-ldaps
-        --disable-rtsp
-        --disable-dict
-        --disable-telnet
-        --disable-tftp
-        --disable-pop3
-        --disable-imap
-        --disable-smb
-        --disable-smtp
-        --disable-gopher
-        --disable-manual
-        --enable-ipv6
-      $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>:
-        --with-winssl
-      > # Windows
-      $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>:
-        --with-darwinssl
-      > # Darwin
+    CMAKE_ARGS
+      "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
     INSTALL_COMMAND
-      "$(MAKE)" install "DESTDIR=${INSTALL_DIR}"
+      "${CMAKE_COMMAND}" --build . --target install/strip -- "DESTDIR=${INSTALL_DIR}"
   ]]
 )

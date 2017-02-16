@@ -28,9 +28,9 @@
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 set(version        6.1.3a)
-set(download_hash  MD5=94b0a06a0d21624bce53e9e788db5fb5)
+set(download_hash  SHA256=d18d889ee44ef7516e9524aa4bbd5abd6f50f5dc2e10fefb27228fd3c8e65610)
 set(patch_version  ${version}-2)
-set(patch_hash     MD5=cb26c087f6fb4519f234db1846dd97ac)
+set(patch_hash     SHA256=6ea5bf1bb9ca7fb429257ec33418b2ce4efca8dc7059a98476e06ba4f14b1652)
 
 option(USE_SYSTEM_POLYCLIPPING "Use the system libpolyclipping if possible" ON)
 

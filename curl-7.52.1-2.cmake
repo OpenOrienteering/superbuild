@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016 Kai Pastor
+# Copyright 2017 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -27,91 +27,84 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        1.5.1)
-set(download_hash  SHA256=41429d3d253017433f66e3d472b8c7d998491d2f41caa7306b8d9a6f2a2c666c)
+set(version        7.52.1)
+set(download_hash  SHA256=a8984e8b20880b621f61a62d95ff3c0763a3152093a9f9ce4287cfd614add6ae)
 set(patch_version  ${version}-2)
-set(patch_hash     SHA256=0077c9e2b7ec2abe25c7a591e65a08750045a28dcd00207a928079a3d31b3cc4)
+set(patch_hash     SHA256=8035569106a2604711810bbdf629cad81a0b94532ba1e18637cf6c748d9d674f)
 
-option(USE_SYSTEM_LIBJPEG "Use the system libjpeg if possible" ON)
+option(USE_SYSTEM_CURL "Use the system curl if possible" ON)
 
-set(test_system_jpeg [[
-	if(USE_SYSTEM_LIBJPEG)
+set(test_system_curl [[
+	if(USE_SYSTEM_CURL)
 		enable_language(C)
-		find_package(JPEG CONFIG QUIET)
-		find_package(JPEG MODULE QUIET)
-		if(JPEG_FOUND)
-			message(STATUS "Found libjpeg: ${JPEG_LIBRARIES}")
+		find_package(CURL CONFIG QUIET)
+		find_package(CURL MODULE QUIET)
+		if(CURL_FOUND)
+			message(STATUS "Found curl: ${CURL_LIBRARIES}")
 			set(BUILD_CONDITION 0)
 		endif()
 	endif()
 ]])
 
-find_program(NASM_EXECUTABLE NAMES nasm)
-if(NASM_EXECUTABLE)
-	execute_process(
-	  COMMAND "${NASM_EXECUTABLE}" -v
-	  OUTPUT_VARIABLE NASM_VERSION
-	)
-	if(NASM_VERSION MATCHES "version [01]\.")
-		unset(NASM_EXECUTABLE CACHE)
-		set(NASM_EXECUTABLE NASM_EXECUTABLE-NOTFOUND)
-	endif()
-endif()
-
 superbuild_package(
-  NAME           libjpeg-turbo-patches
+  NAME           curl-patches
   VERSION        ${patch_version}
   
   SOURCE
-    URL            http://http.debian.net/debian/pool/main/libj/libjpeg-turbo/libjpeg-turbo_${patch_version}.debian.tar.xz
+    URL            http://http.debian.net/debian/pool/main/c/curl/curl_${patch_version}.debian.tar.xz
     URL_HASH       ${patch_hash}
 )
   
 superbuild_package(
-  NAME           libjpeg-turbo
+  NAME           curl
   VERSION        ${patch_version}
   DEPENDS
-    source:libjpeg-turbo-patches-${patch_version}
+    source:curl-patches-${patch_version}
+    zlib
   
   SOURCE
-    DOWNLOAD_NAME  libjpeg-turbo_${version}.orig.tar.gz
-    URL            http://http.debian.net/debian/pool/main/libj/libjpeg-turbo/libjpeg-turbo_${version}.orig.tar.gz
+    URL            http://http.debian.net/debian/pool/main/c/curl/curl_${version}.orig.tar.gz
     URL_HASH       ${download_hash}
     PATCH_COMMAND
       "${CMAKE_COMMAND}"
-        -Dpackage=libjpeg-turbo-patches-${patch_version}
+        -Dpackage=curl-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
   
-  USING            USE_SYSTEM_LIBJPEG NASM_EXECUTABLE
-  BUILD_CONDITION  ${test_system_jpeg}
+  USING            USE_SYSTEM_CURL
+  BUILD_CONDITION  ${test_system_curl}
   BUILD [[
     CONFIGURE_COMMAND
       "${SOURCE_DIR}/configure"
         "--prefix=${CMAKE_INSTALL_PREFIX}"
         $<$<BOOL:${CMAKE_CROSSCOMPILING}>:
-          --host=${SUPERBUILD_TOOLCHAIN_TRIPLET}
+        --host=${SUPERBUILD_TOOLCHAIN_TRIPLET}
         >
-        --disable-static
-        --enable-shared
         --disable-silent-rules
-        --without-12bit
-        $<$<NOT:$<STREQUAL:${NASM_EXECUTABLE},NASM_EXECUTABLE-NOTFOUND>>:
-        "NASM=${NASM_EXECUTABLE}"
-        >$<$<STREQUAL:${NASM_EXECUTABLE},NASM_EXECUTABLE-NOTFOUND>:
-        --without-simd
-        >
-        $<$<BOOL:${ANDROID}>:
-        # No SIZE_MAX before android-20
-        CPPFLAGS=-DSIZE_MAX=UINT32_MAX
-        > # ANDROID
+        --enable-symbol-hiding
+        --disable-largefile
+        --enable-shared
+        --disable-static
+        --enable-threadsafe
+        --disable-ldap
+        --disable-ldaps
+        --disable-rtsp
+        --disable-dict
+        --disable-telnet
+        --disable-tftp
+        --disable-pop3
+        --disable-imap
+        --disable-smb
+        --disable-smtp
+        --disable-gopher
+        --disable-manual
+        --enable-ipv6
+      $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>:
+        --with-winssl
+      > # Windows
+      $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>:
+        --with-darwinssl
+      > # Darwin
     INSTALL_COMMAND
       "$(MAKE)" install "DESTDIR=${INSTALL_DIR}"
   ]]
-)
-
-superbuild_package(
-  NAME           libjpeg
-  VERSION        99-${patch_version}-turbo
-  DEPENDS
-    libjpeg-turbo-${patch_version}
 )

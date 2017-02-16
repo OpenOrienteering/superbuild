@@ -28,9 +28,9 @@
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 set(version        2.1.2+dfsg)
-set(download_hash  MD5=b7b7387130c32a4a4e88e7b4145438bc)
-set(patch_version  ${version}-1)
-set(patch_hash     MD5=b99ef2e37273773fe8f6ea8234d2bfdb)
+set(download_hash  SHA256=8c0961400ad64d54cb387d7ebf54411ad91ba4b3955121e56baaaa61785f9b1c)
+set(patch_version  ${version}-3)
+set(patch_hash     SHA256=2db5d34363b03b18766b94dd5cbd479df30b563f021de4954b6c559fa7de9db7)
 
 if(APPLE)
 	set(copy_dir cp -aR)

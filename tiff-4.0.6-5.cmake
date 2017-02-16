@@ -27,10 +27,10 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        4.0.6)
-set(download_hash  SHA256=4d57a50907b510e3049a4bba0d7888930fdfc16ce49f1bf693e5b6247370d68c)
-set(patch_version  ${version}-2)
-set(patch_hash     SHA256=82a0ef3f713d2a22d40b9be71fd121b9136657d313ae6b76b51430302a7b9f8b)
+set(version        4.0.7)
+set(download_hash  SHA256=9f43a2cfb9589e5cecaa66e16bf87f814c945f22df7ba600d63aac4632c4f019)
+set(patch_version  ${version}-5)
+set(patch_hash     SHA256=f4183c48ed74b6c3c3a74ff1f10f0cf972d3dba0f840cf28b5a3f3846ceb2be6)
 
 option(USE_SYSTEM_LIBTIFF "Use the system libtiff if possible" ON)
 

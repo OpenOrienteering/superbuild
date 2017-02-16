@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016, 2017 Kai Pastor
+# Copyright 2016 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -27,62 +27,44 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        1.6.26)
-set(download_hash  MD5=faed9bb495d2e12dd0c9ec561ca60cd8)
-set(patch_version  ${version}-1)
-set(patch_hash     MD5=2d1dda318fe4edee21afca4384fc5f5c)
+set(download_version  autoconf-3170000)
+set(version           3.17.0-${download_version})
+set(download_hash     SHA1=7bcff1c158ed9e2c0e159c1b4b6c36d4d65dff8c)
 
-option(USE_SYSTEM_LIBPNG "Use the system libpng if possible" ON)
+option(USE_SYSTEM_SQLITE3 "Use the system sqlite if possible" ON)
 
-set(test_system_png [[
-	if(USE_SYSTEM_LIBPNG)
+set(test_system_sqlite3 [[
+	if(USE_SYSTEM_SQLITE3)
 		enable_language(C)
-		find_package(PNG CONFIG QUIET)
-		find_package(PNG MODULE QUIET)
-		if(TARGET PNG::PNG)
-			message(STATUS "Found libpng: ${PNG_LIBRARIES}")
+		find_library(SQLITE3_LIBRARY NAMES sqlite3 QUIET)
+		if(SQLITE3_LIBRARY)
+			message(STATUS "Found sqlite3: ${SQLITE3_LIBRARY}")
 			set(BUILD_CONDITION 0)
 		endif()
 	endif()
 ]])
 
 superbuild_package(
-  NAME           libpng1.6-patches
-  VERSION        ${patch_version}
+  NAME           sqlite3
+  VERSION        ${version}
   
   SOURCE
-    URL            http://http.debian.net/debian/pool/main/libp/libpng1.6/libpng1.6_${patch_version}.debian.tar.xz
-    URL_HASH       ${patch_hash}
-)
-
-superbuild_package(
-  NAME           libpng1.6
-  VERSION        ${patch_version}
-  DEPENDS
-    source:libpng1.6-patches-${patch_version}
-    zlib
-  
-  SOURCE
-    URL            http://http.debian.net/debian/pool/main/libp/libpng1.6/libpng1.6_${version}.orig.tar.xz
+    URL            https://www.sqlite.org/2017/sqlite-${download_version}.tar.gz
     URL_HASH       ${download_hash}
-    PATCH_COMMAND
-      "${CMAKE_COMMAND}"
-        -Dpackage=libpng1.6-patches-${patch_version}
-        -P "${APPLY_PATCHES_SERIES}"
   
-  USING            USE_SYSTEM_LIBPNG
-  BUILD_CONDITION  ${test_system_png}
+  USING            USE_SYSTEM_SQLITE3
+  BUILD_CONDITION  ${test_system_sqlite3}
   BUILD [[
-    CMAKE_ARGS
-      "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
-      "-DPNG_STATIC=0"
+    CONFIGURE_COMMAND
+      "${SOURCE_DIR}/configure"
+        "--prefix=${CMAKE_INSTALL_PREFIX}"
+        $<$<BOOL:${CMAKE_CROSSCOMPILING}>:
+        --host=${SUPERBUILD_TOOLCHAIN_TRIPLET}
+        >
+        --disable-static
+        --enable-shared
+        --enable-threadsafe
     INSTALL_COMMAND
-      "${CMAKE_COMMAND}" --build . --target install/strip -- "DESTDIR=${INSTALL_DIR}"
+      "$(MAKE)" install "DESTDIR=${INSTALL_DIR}"
   ]]
-)
-
-superbuild_package(
-  NAME           libpng
-  VERSION        ${patch_version}
-  DEPENDS        libpng1.6
 )

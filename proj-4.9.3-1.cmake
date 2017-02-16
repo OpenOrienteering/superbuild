@@ -28,9 +28,9 @@
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 set(version        4.9.3)
-set(download_hash  MD5=d598336ca834742735137c5674b214a1)
+set(download_hash  SHA256=6984542fea333488de5c82eea58d699e4aff4b359200a9971537cd7e047185f7)
 set(patch_version  ${version}-1)
-set(patch_hash     MD5=766b9ebedbc282ce2996794c722dc43a)
+set(patch_hash     SHA256=8adf9c8172ef73aa6a437e56ebf8246c52e081f23390cd157b77d7c4f3c3347a)
 
 option(USE_SYSTEM_PROJ "Use the system PROJ4 if possible" ON)
 

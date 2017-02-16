@@ -28,12 +28,12 @@
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 set(version        5.2.2)
-set(download_hash  MD5=e26772b69940085c0632589ab1d52e64)
+set(download_hash  SHA256=f341b1906ebcdde291dd619399ae944600edc9193619dd0c0110a5f05bfcc89e)
 
 # Note: None of the patches from 5.2.2-1.2 are actually used.
 # They are Debian specific and require autotools for reconfiguration.
 set(patch_version  ${version}-1.2)
-set(patch_hash     MD5=0862985af8480d65a5d0836feaa4b70e)
+set(patch_hash     SHA256=231c08d5c2c4e5c8ef5d6d58cac91aaeb2e4fcddc35e1ed3c69d730a2375c948)
 
 option(USE_SYSTEM_LZMA "Use the system XZ-Utils/LZMA library if possible" ON)
 

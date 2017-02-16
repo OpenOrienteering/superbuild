@@ -28,9 +28,9 @@
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 set(version        2.2.0)
-set(download_hash  MD5=2f47841c829facb346eb6e3fab5212e2)
+set(download_hash  SHA256=d9e50ff2d19b3538bd2127902a89987474e1a4db8e43a66a4d1a712ab9a504ff)
 set(patch_version  ${version}-2)
-set(patch_hash     MD5=f7b4b7d3d2b172ea40c2cac54733fe3e)
+set(patch_hash     SHA256=3e99516590c6719bcba54281b16900be19651b7d3b29ba8e4e9632306235f29b)
 
 option(USE_SYSTEM_EXPAT "Use the system Expat if possible" ON)
 

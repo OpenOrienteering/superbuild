@@ -27,10 +27,10 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        8.35)
-set(download_hash  MD5=ed58bcbe54d3b1d59e9f5415ef45ce1c)
-set(patch_version  ${version}-3.3+deb8u4)
-set(patch_hash     MD5=ea36f15f106f19cfad8ea0896606c11c)
+set(version        8.39)
+set(download_hash  SHA256=b858099f82483031ee02092711689e7245586ada49e534a06e678b8ea9549e8b)
+set(patch_version  ${version}-2)
+set(patch_hash     SHA256=375c8c6c746553dd3c7364d53c4e85f68694c58763e4bc541821060cbb52eef6)
 
 option(USE_SYSTEM_PCRE3 "Use the system sqlite if possible" ON)
 
@@ -62,7 +62,7 @@ superbuild_package(
     source:pcre3-patches-${patch_version}
   
   SOURCE
-    URL            http://http.debian.net/debian/pool/main/p/pcre3/pcre3_${version}.orig.tar.gz
+    URL            http://http.debian.net/debian/pool/main/p/pcre3/pcre3_${version}.orig.tar.bz2
     URL_HASH       ${download_hash}
     PATCH_COMMAND
       "${CMAKE_COMMAND}"
