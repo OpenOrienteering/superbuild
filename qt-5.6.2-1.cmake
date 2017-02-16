@@ -35,6 +35,7 @@ set(base_url https://download.qt.io/archive/qt/5.6/${version}/submodules/)
 set(default        [[$<STREQUAL:${SYSTEM_NAME},default>]])
 set(crosscompiling [[$<BOOL:${CMAKE_CROSSCOMPILING}>]])
 set(windows        [[$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>]])
+set(macos          [[$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>]])
 set(android        [[$<BOOL:${ANDROID}>]])
 set(use_sysroot    [[$<NOT:$<AND:$<BOOL:${CMAKE_CROSSCOMPILING}>,$<BOOL:${ANDROID}>>>]])
 set(qmake          [[$<$<BOOL:${CMAKE_CROSSCOMPILING}>:${TOOLCHAIN_DIR}>$<$<NOT:$<BOOL:${CMAKE_CROSSCOMPILING}>>:${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}>/bin/qmake]])
@@ -91,7 +92,7 @@ superbuild_package(
     COMMAND
       "${CMAKE_COMMAND}" -E remove -f src/3rdparty/zlib/*.c
   
-  USING default crosscompiling windows android
+  USING default crosscompiling windows android macos
   
   BUILD [[
     CONFIGURE_COMMAND "${SOURCE_DIR}/configure"
@@ -117,6 +118,9 @@ superbuild_package(
       -no-openssl
       -no-directfb
       -no-linuxfb
+      $<$<OR:${android},${macos},${windows}>:
+        -no-dbus
+      >
       -make tools
       -nomake examples
       -nomake tests
