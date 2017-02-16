@@ -34,6 +34,9 @@ set(version     1)
 option(ENABLE_${system_name_32} "Enable the ${system_name_32} toolchain" 0)
 option(ENABLE_${system_name_64} "Enable the ${system_name_64} toolchain" 0)
 
+set(i686-w64-mingw32_SYSTEM_PROCESSOR   x86)
+set(x86_64-w64-mingw32_SYSTEM_PROCESSOR AMD64)
+
 foreach(system_name ${system_name_32} ${system_name_64})
 	if(NOT ENABLE_${system_name})
 		continue()
@@ -63,6 +66,7 @@ foreach(system_name ${system_name_32} ${system_name_64})
 
 set(SYSTEM_NAME            "]] ${system_name} [[")
 set(CMAKE_SYSTEM_NAME      "Windows")
+set(CMAKE_SYSTEM_PROCESSOR "]] "${${system_name}_SYSTEM_PROCESSOR}" [[")
 set(SUPERBUILD_TOOLCHAIN_TRIPLET "]] ${system_name} [[")
 set(CMAKE_C_COMPILER       "]] "${${system_name}-gcc_EXECUTABLE}" [[")
 set(CMAKE_CXX_COMPILER     "]] "${${system_name}-g++_EXECUTABLE}" [[")
