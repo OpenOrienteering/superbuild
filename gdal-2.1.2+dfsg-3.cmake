@@ -169,6 +169,9 @@ superbuild_package(
         --without-xml2
         "CPPFLAGS=-I${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/include"
         "LDFLAGS=-L${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/lib"
+        $<$<BOOL:${ANDROID}>:
+          "LIBS=-lgnustl_shared"
+        >
         "PKG_CONFIG="
     BUILD_COMMAND
       "$(MAKE)" USER_DEFS=-Wno-format   # no missing-sentinel warnings
