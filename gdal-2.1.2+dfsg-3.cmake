@@ -92,6 +92,29 @@ set(test_system_gdal [[
 			message(FATAL_ERROR "Could not find sqlite3.h")
 		endif()
 		get_filename_component(SQLITE3_DIR "${SQLITE3_INCLUDE_DIR}" DIRECTORY CACHE)
+		
+		if(WIN32)
+			# The PROJ4 DLL from the superbuild is named like libproj_4_9.dll,
+			# but GDAL expects a name like libproj-0.dll
+			# (exactly this name when loading the lib at runtime).
+			# Try hard to link the correct library, at build time.
+			find_package(PROJ4 CONFIG
+			  ONLY_CMAKE_FIND_ROOT_PATH
+			  QUIET
+			)
+			if(NOT TARGET proj)
+				message(FATAL_ERROR "Could not find PROJ4")
+			endif()
+			get_target_property(proj4_configurations proj IMPORTED_CONFIGURATIONS)
+			list(GET proj4_configurations 0 config)
+			get_target_property(proj4_lib proj IMPORTED_IMPLIB_${config})
+			get_filename_component(proj4_lib "${proj4_lib}" NAME)
+			get_filename_component(proj4_lib "${proj4_lib}" NAME_WE)
+			string(REPLACE "libproj" "proj" proj4_lib "${proj4_lib}")
+		else()
+			set(proj4_lib proj)
+		endif()
+		set(PROJ4_LIB "${proj4_lib}" CACHE STRING "internal" FORCE)
 	endif(BUILD_CONDITION)
 ]])
 
@@ -136,6 +159,12 @@ superbuild_package(
     COMMAND
       ${copy_dir} "${SOURCE_DIR}/" "${BINARY_DIR}"
     COMMAND
+      # Insert another library name if needed (MinGW)
+      sed -i -e "/ PROJ_LIB=/ s,-lproj[-_0-9]*,-l$${}{PROJ4_LIB}," "${BINARY_DIR}/configure"
+    COMMAND
+      # Remove duplicate -lproj
+      sed -i -e "/LIBS=/ s,-lproj ,," "${BINARY_DIR}/configure"
+    COMMAND
       "${BINARY_DIR}/configure"
         "--prefix=${CMAKE_INSTALL_PREFIX}"
         $<$<BOOL:${CMAKE_CROSSCOMPILING}>:
@@ -148,6 +177,7 @@ superbuild_package(
         --without-threads
         --with-liblzma
         --with-pcre
+        --with-static-proj4
         "--with-curl=$${}{CURL_CONFIG}"
         "--with-expat=$${}{EXPAT_DIR}"
         "--with-jpeg=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
@@ -177,6 +207,12 @@ superbuild_package(
         "PKG_CONFIG="
     BUILD_COMMAND
       "$(MAKE)" USER_DEFS=-Wno-format   # no missing-sentinel warnings
+    $<$<BOOL:${WIN32}>:
+    COMMAND
+      # Verify that libgdal is linked to libproj
+      "$<$<BOOL:${CMAKE_CROSSCOMPILING}>:${SYSTEM_NAME}->objdump" -x .libs/libgdal-20.dll
+        | grep "DLL Name: libproj"
+    >
     INSTALL_COMMAND
       "$(MAKE)" install "DESTDIR=${INSTALL_DIR}"
   ]]
