@@ -50,47 +50,49 @@ set(test_system_gdal [[
 		endif()
 	endif()
 	
-	# Make gdal aware of system libraries
-	list(INSERT CMAKE_FIND_ROOT_PATH 0 "${INSTALL_DIR}")
-	
-	find_program(CURL_CONFIG
-	  NAMES curl-config
-	  ONLY_CMAKE_FIND_ROOT_PATH
-	  QUIET
-	)
-	if(NOT CURL_CONFIG)
-		message(FATAL_ERROR "Could not find curl-config")
-	endif()
-	
-	find_path(EXPAT_INCLUDE_DIR
-	  NAMES expat.h
-	  ONLY_CMAKE_FIND_ROOT_PATH
-	  QUIET
-	)
-	if(NOT EXPAT_INCLUDE_DIR)
-		message(FATAL_ERROR "Could not find expat.h")
-	endif()
-	get_filename_component(EXPAT_DIR "${EXPAT_INCLUDE_DIR}" DIRECTORY CACHE)
-	
-	find_path(LIBZ_INCLUDE_DIR
-	  NAMES zlib.h
-	  ONLY_CMAKE_FIND_ROOT_PATH
-	  QUIET
-	)
-	if(NOT LIBZ_INCLUDE_DIR)
-		message(FATAL_ERROR "Could not find zlib.h")
-	endif()
-	get_filename_component(LIBZ_DIR "${LIBZ_INCLUDE_DIR}" DIRECTORY CACHE)
-	
-	find_path(SQLITE3_INCLUDE_DIR
-	  NAMES sqlite3.h
-	  ONLY_CMAKE_FIND_ROOT_PATH
-	  QUIET
-	)
-	if(NOT SQLITE3_INCLUDE_DIR)
-		message(FATAL_ERROR "Could not find sqlite3.h")
-	endif()
-	get_filename_component(SQLITE3_DIR "${SQLITE3_INCLUDE_DIR}" DIRECTORY CACHE)
+	if(BUILD_CONDITION)
+		# Make CMake aware of libraries from the superbuild
+		list(INSERT CMAKE_FIND_ROOT_PATH 0 "${INSTALL_DIR}")
+		
+		find_program(CURL_CONFIG
+		  NAMES curl-config
+		  ONLY_CMAKE_FIND_ROOT_PATH
+		  QUIET
+		)
+		if(NOT CURL_CONFIG)
+			message(FATAL_ERROR "Could not find curl-config")
+		endif()
+		
+		find_path(EXPAT_INCLUDE_DIR
+		  NAMES expat.h
+		  ONLY_CMAKE_FIND_ROOT_PATH
+		  QUIET
+		)
+		if(NOT EXPAT_INCLUDE_DIR)
+			message(FATAL_ERROR "Could not find expat.h")
+		endif()
+		get_filename_component(EXPAT_DIR "${EXPAT_INCLUDE_DIR}" DIRECTORY CACHE)
+		
+		find_path(LIBZ_INCLUDE_DIR
+		  NAMES zlib.h
+		  ONLY_CMAKE_FIND_ROOT_PATH
+		  QUIET
+		)
+		if(NOT LIBZ_INCLUDE_DIR)
+			message(FATAL_ERROR "Could not find zlib.h")
+		endif()
+		get_filename_component(LIBZ_DIR "${LIBZ_INCLUDE_DIR}" DIRECTORY CACHE)
+		
+		find_path(SQLITE3_INCLUDE_DIR
+		  NAMES sqlite3.h
+		  ONLY_CMAKE_FIND_ROOT_PATH
+		  QUIET
+		)
+		if(NOT SQLITE3_INCLUDE_DIR)
+			message(FATAL_ERROR "Could not find sqlite3.h")
+		endif()
+		get_filename_component(SQLITE3_DIR "${SQLITE3_INCLUDE_DIR}" DIRECTORY CACHE)
+	endif(BUILD_CONDITION)
 ]])
 
 superbuild_package(
