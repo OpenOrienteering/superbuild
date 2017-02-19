@@ -260,6 +260,11 @@ set(INSTALL_DIR      \"@INSTALL_DIR@\")
 set(TOOLCHAIN_DIR    \"@TOOLCHAIN_DIR@\")
 set(CMAKE_BUILD_TYPE \"@CMAKE_BUILD_TYPE@\")
 
+if(\"${package}\" STREQUAL \"toolchain-info\")
+    include(\"${PROJECT_BINARY_DIR}/source/toolchain-info.cmake\")
+    print_toolchain_info()
+endif()
+
 sb_test_build_condition()
 if(NOT BUILD_CONDITION)
 	message(STATUS \"Not building ${SB_PACKAGE_NAME} for @SYSTEM_NAME@ toolchain\")
@@ -355,6 +360,158 @@ function(_sb_create_main_c)
 	_sb_write_if_different("${PROJECT_BINARY_DIR}/source/main.c"
 	  "// Placeholder file\n"
 	  "int main(int argc, char** argv) { return 0\; }\n"
+	)
+endfunction()
+
+
+
+function(_sb_create_toolchain_info)
+	_sb_write_if_different("${PROJECT_BINARY_DIR}/source/toolchain-info.cmake" [[
+# Created by ]] "${CMAKE_CURRENT_LIST_FILE}\n" [[
+
+function(toolchain_info_helper out_var headline)
+	set(output "${headline}\n\n")
+	foreach(var ${ARGN})
+		if(var MATCHES "^ENV{")
+			string(REPLACE "ENV{" "" var "${var}")
+			string(REPLACE "}" "" var "${var}")
+			if(DEFINED ENV{${var}})
+				set(output "${output}ENV{${var}}=\"$ENV{${var}}\"\n")
+			else()
+				set(output "${output}ENV{${var}} - not set\n")
+			endif()
+		elseif(DEFINED ${var})
+			set(output "${output}${var}=\"${${var}}\"\n")
+		else()
+			set(output "${output}${var} - not set\n")
+		endif()
+	endforeach()
+	set(${out_var} "${output}\n" PARENT_SCOPE)
+endfunction()
+
+set(toolchain_info_groups )
+
+list(APPEND toolchain_info_groups toolchain_info_var_information)
+set(toolchain_info_var_information  "Variables that provide information"
+  CMAKE_COMMAND
+  CMAKE_CROSSCOMPILING
+  CMAKE_GENERATOR
+  CMAKE_MAKE_PROGRAM
+  CMAKE_SIZEOF_VOID_P
+  CMAKE_TOOLCHAIN_FILE
+  CMAKE_VERSION
+  CMAKE_XCODE_PLATFORM_TOOLSET
+  PROJECT_BINARY_DIR
+  PROJECT_SOURCE_DIR
+)
+
+list(APPEND toolchain_info_groups toolchain_info_var_behavior)
+set(toolchain_info_var_behavior  "Variables that change behavior"
+  BUILD_SHARED_LIBS
+  CMAKE_BUILDTYPE
+  CMAKE_SYSROOT
+  CMAKE_FIND_ROOT_PATH
+  CMAKE_FIND_ROOT_PATH_MODE_INCLUDE
+  CMAKE_FIND_ROOT_PATH_MODE_LIBRARY
+  CMAKE_FIND_ROOT_PATH_MODE_PACKAGE
+  CMAKE_FIND_ROOT_PATH_MODE_PROGRAM
+  CMAKE_IGNORE_PATH
+  CMAKE_INSTALL_PREFIX
+  CMAKE_PREFIX_PATH
+  CMAKE_STAGING_PREFIX
+  CMAKE_SYSTEM_PREFIX_PATH
+)
+
+list(APPEND toolchain_info_groups toolchain_info_var_system)
+set(toolchain_info_var_system  "Variables that describe the system"
+  CMAKE_HOST_SYSTEM_NAME
+  CMAKE_HOST_SYSTEM_VERSION
+  CMAKE_HOST_SYSTEM_PROCESSOR
+  CMAKE_HOST_APPLE
+  CMAKE_HOST_UNIX
+  CMAKE_HOST_WIN32
+  CMAKE_SYSTEM_NAME
+  CMAKE_SYSTEM_VERSION
+  CMAKE_SYSTEM_PROCESSOR
+  CMAKE_LIBRARY_ARCHITECTURE
+  APPLE
+  MINGW
+  UNIX
+  WIN32
+  XCODE_VERSION
+)
+
+list(APPEND toolchain_info_groups toolchain_info_var_build)
+set(toolchain_info_var_build  "Variables that control the build"
+  CMAKE_EXE_LINKER_FLAGS
+  CMAKE_EXE_LINKER_FLAGS_DEBUG
+  CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO
+  CMAKE_EXE_LINKER_FLAGS_RELEASE
+  CMAKE_EXE_LINKER_FLAGS_MINSIZEREL
+  CMAKE_INSTALL_NAME_DIR
+  CMAKE_OSX_DEPLOYMENT_TARGET
+  CMAKE_POSITION_INDEPENDENT_CODE
+)
+
+list(APPEND toolchain_info_groups toolchain_info_var_languages)
+set(toolchain_info_var_languages  "Variables for languages"
+  CMAKE_C_COMPILER
+  CMAKE_C_COMPILER_VERSION
+  CMAKE_C_FLAGS
+  CMAKE_C_FLAGS_DEBUG
+  CMAKE_C_FLAGS_RELWITHDEBINFO
+  CMAKE_C_FLAGS_RELEASE
+  CMAKE_C_FLAGS_MINSIZEREL
+  CMAKE_C_IMPLICIT_LINK_DIRECTORIES
+  CMAKE_CXX_COMPILER
+  CMAKE_CXX_COMPILER_VERSION
+  CMAKE_CXX_FLAGS
+  CMAKE_CXX_FLAGS_DEBUG
+  CMAKE_CXX_FLAGS_RELWITHDEBINFO
+  CMAKE_CXX_FLAGS_RELEASE
+  CMAKE_CXX_FLAGS_MINSIZEREL
+  CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES
+  CMAKE_INTERNAL_PLATFORM_ABI
+  CMAKE_RC_COMPILER
+)
+
+list(APPEND toolchain_info_groups toolchain_info_var_superbuild)
+set(toolchain_info_var_superbuild  "Variables provided by superbuild"
+  HOST_INSTALL_DIR
+  INSTALL_DIR
+  PACKAGE_NAME
+  SOURCE_DIR
+  SYSTEM_NAME
+  TOOLCHAIN_DIR
+)
+
+list(APPEND toolchain_info_groups toolchain_info_var_env)
+set(toolchain_info_var_env "Environment variables"
+  ENV{CPP}
+  ENV{CPPFLAGS}
+  ENV{CC}
+  ENV{CFLAGS}
+  ENV{CXX}
+  ENV{CXXFLAGS}
+  ENV{LDFLAGS}
+  ENV{LIBS}
+  ENV{LD_LIBRARY_PATH}
+  ENV{PATH}
+  ENV{PKG_CONFIG_PATH}
+)
+
+function(print_toolchain_info)
+	foreach(group ${toolchain_info_groups})
+		toolchain_info_helper(info ${${group}})
+		string(REPLACE "toolchain-info" "<PACKAGE_NAME>-<VERSION>" info "${info}")
+		message(STATUS "${info}");
+	endforeach()
+endfunction()
+
+]])
+	superbuild_package(
+	  NAME           toolchain
+	  VERSION        info
 	)
 endfunction()
 
@@ -644,7 +801,13 @@ function(_sb_make_toolchained_project package toolchain)
 	  WORKING_DIRECTORY "${tmp_dir}/config"
 	  COMMENT "Building ${package}${suffix}"
 	)
-	add_dependencies(${package}${suffix} ${toolchain})
+	if(SB_PACKAGE_SYSTEM_NAME OR package STREQUAL "toolchain-info")
+		# Toolchains and toolchain-info may depend directly on the toolchain
+		add_dependencies(${package}${suffix} ${toolchain})
+	else()
+		# Normal packages depend on toolchain via toolchain-info
+		add_dependencies(${package}${suffix} "toolchain-info${suffix}")
+	endif()
 	
 	get_property(build_package TARGET ${package} PROPERTY SB_PACKAGE_PACKAGE SET)
 	if(build_package OR SB_PACKAGE_PACKAGE)
@@ -780,6 +943,7 @@ _sb_create_main_c()
 _sb_create_default_toolchain()
 _sb_write_generator()
 _sb_write_debian_patch_script()
+_sb_create_toolchain_info()
 _sb_read_packages()
 _sb_resolve_dependencies()
 _sb_handle_toolchains()
