@@ -93,9 +93,65 @@ superbuild_package(
       "${CMAKE_COMMAND}" -E remove -f src/3rdparty/zlib/*.c
   
   USING default crosscompiling windows android macos
-  
+  BUILD_CONDITION [[
+    # Not a build condition, but preparation for cross compiling
+    # Cf. qtbase configure "SYSTEM_VARIABLES"
+    set(pattern "^load(qt_config)")
+    if(ANDROID)
+        set(pattern "^include(.*/android-base-tail.conf)")
+    endif()
+    set(qmake_conf_changes )
+    if(DEFINED ENV_CFLAGS)
+        list(APPEND qmake_conf_changes "/${pattern}/ i QMAKE_CFLAGS   *= ${ENV_CFLAGS}\n")
+    endif()
+    if(DEFINED ENV_CXXFLAGS)
+        list(APPEND qmake_conf_changes "/${pattern}/ i QMAKE_CXXFLAGS *= ${ENV_CXXFLAGS}\n")
+    endif()
+    if(DEFINED ENV_LDFLAGS)
+        list(APPEND qmake_conf_changes "/${pattern}/ i QMAKE_LFLAGS   *= ${ENV_LDFLAGS}\n")
+    endif()
+    string(REGEX REPLACE "-f[^ ]*exceptions|-O[^ ]*|-g|-W[a-z][a-z][^ ]*|[^ ]*_FORTIFY_SOURCE[^ ]*" "" qmake_conf_changes "${qmake_conf_changes}")
+    file(WRITE "${BINARY_DIR}/qmake_conf_changes.sed" 
+      "/${pattern}/ i\n"
+      "/${pattern}/ i # Begin of changes from superbuild\n"
+      ${qmake_conf_changes}
+      "/${pattern}/ i QMAKE_INCDIR *= \"${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/include\"\n"
+      "/${pattern}/ i QMAKE_LIBDIR *= \"${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/lib\"\n"
+      "/${pattern}/ i # End of changes from superbuild\n"
+      "/${pattern}/ i\n"
+    )
+  ]]
   BUILD [[
-    CONFIGURE_COMMAND "${SOURCE_DIR}/configure"
+    CONFIGURE_COMMAND 
+    $<${crosscompiling}:
+      $<${windows}:
+        mkdir -p "${SOURCE_DIR}/mkspecs/win32-g++-${SYSTEM_NAME}"
+        COMMAND cp "${SOURCE_DIR}/mkspecs/win32-g++/qmake.conf" "${SOURCE_DIR}/mkspecs/win32-g++-${SYSTEM_NAME}/"
+        COMMAND cp "${SOURCE_DIR}/mkspecs/win32-g++/qplatformdefs.h" "${SOURCE_DIR}/mkspecs/win32-g++-${SYSTEM_NAME}/"
+        COMMAND sed -i -f "qmake_conf_changes.sed" "${SOURCE_DIR}/mkspecs/win32-g++-${SYSTEM_NAME}/qmake.conf"
+      >
+      $<${android}:
+        mkdir -p "${SOURCE_DIR}/mkspecs/android-g++-${SYSTEM_NAME}"
+        COMMAND cp "${SOURCE_DIR}/mkspecs/android-g++/qmake.conf" "${SOURCE_DIR}/mkspecs/android-g++-${SYSTEM_NAME}/"
+        COMMAND cp "${SOURCE_DIR}/mkspecs/android-g++/qplatformdefs.h" "${SOURCE_DIR}/mkspecs/android-g++-${SYSTEM_NAME}/"
+        COMMAND sed -i -f "qmake_conf_changes.sed" "${SOURCE_DIR}/mkspecs/android-g++-${SYSTEM_NAME}/qmake.conf"
+      >
+      COMMAND
+       # Cf. qtbase configure "SYSTEM_VARIABLES"
+       "${CMAKE_COMMAND}" -E env 
+         --unset=AR
+         --unset=RANLIB
+         --unset=STRIP
+         --unset=OBJDUMP
+         --unset=LD
+         --unset=CC
+         --unset=CXX
+         --unset=CFLAGS
+         --unset=CXXFLAGS
+         --unset=LDFLAGS
+         # fall through
+    >
+    "${SOURCE_DIR}/configure"
       -opensource
       -confirm-license
       $<$<CONFIG:Debug>:-debug>$<$<NOT:$<CONFIG:Debug>>:-release -no-qml-debug $<$<CONFIG:RelWithDebInfo>:-force-debug-info>>
@@ -134,16 +190,17 @@ superbuild_package(
         -hostprefix "${TOOLCHAIN_DIR}"
         -device-option CROSS_COMPILE=${SUPERBUILD_TOOLCHAIN_TRIPLET}-
         $<${windows}:
-          -xplatform     win32-g++
+          -xplatform     win32-g++-${SYSTEM_NAME}
         >
         $<${android}:
-          -xplatform     android-g++
+          -xplatform     android-g++-${SYSTEM_NAME}
           -android-ndk   "${ANDROID_NDK_ROOT}"
           -android-sdk   "${ANDROID_SDK_ROOT}"
         >
+      >$<$<NOT:${crosscompiling}>:
+        -I "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/include"
+        -L "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/lib"
       >
-      -I "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/include"
-      -L "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/lib"
   ]]
 )
 
