@@ -39,8 +39,9 @@ set(test_system_tiff [[
 		enable_language(C)
 		find_package(TIFF CONFIG QUIET)
 		find_package(TIFF MODULE QUIET)
-		if(TARGET TIFF::TIFF)
-			message(STATUS "Found tiff: ${TIFF_LIBRARIES}")
+		if(TARGET TIFF::TIFF
+		   AND NOT TIFF_INCLUDE_DIR MATCHES "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}")
+			message(STATUS "Found ${SYSTEM_NAME} tiff: ${TIFF_LIBRARIES}")
 			set(BUILD_CONDITION 0)
 		endif()
 	endif()

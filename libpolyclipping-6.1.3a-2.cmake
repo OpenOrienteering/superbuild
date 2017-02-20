@@ -38,8 +38,9 @@ set(test_system_libpolyclipping [[
 	if(USE_SYSTEM_POLYCLIPPING)
 		enable_language(C)
 		find_library(POLYCLIPPING_LIBRARY NAMES polyclipping QUIET)
-		if(POLYCLIPPING_LIBRARY)
-			message(STATUS "Found libpolyclipping: ${POLYCLIPPING_LIBRARY}")
+		if(POLYCLIPPING_LIBRARY
+		   AND NOT POLYCLIPPING_LIBRARY MATCHES "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}")
+			message(STATUS "Found ${SYSTEM_NAME} libpolyclipping: ${POLYCLIPPING_LIBRARY}")
 			set(BUILD_CONDITION 0)
 		endif()
 	endif()

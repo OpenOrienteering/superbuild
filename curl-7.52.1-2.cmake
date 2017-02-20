@@ -39,8 +39,9 @@ set(test_system_curl [[
 		enable_language(C)
 		find_package(CURL CONFIG QUIET)
 		find_package(CURL MODULE QUIET)
-		if(CURL_FOUND)
-			message(STATUS "Found curl: ${CURL_LIBRARIES}")
+		if(CURL_FOUND
+		   AND NOT CURL_INCLUDE_DIRS MATCHES "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}")
+			message(STATUS "Found ${SYSTEM_NAME} curl: ${CURL_LIBRARIES}")
 			set(BUILD_CONDITION 0)
 		endif()
 	endif()

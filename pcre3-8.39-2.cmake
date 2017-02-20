@@ -39,8 +39,9 @@ set(test_system_pcre3 [[
 		enable_language(C)
 		find_library(PCRE3_LIBRARY NAMES pcre QUIET)
 		find_path(PCRE3_INCLUDE_DIR NAMES pcre.h QUIET)
-		if(PCRE3_LIBRARY AND PCRE3_INCLUDE_DIR)
-			message(STATUS "Found pcre3: ${PCRE3_LIBRARY}")
+		if(PCRE3_LIBRARY AND PCRE3_INCLUDE_DIR
+		   AND NOT PCRE3_INCLUDE_DIR MATCHES "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}")
+			message(STATUS "Found ${SYSTEM_NAME} pcre3: ${PCRE3_LIBRARY}")
 			set(BUILD_CONDITION 0)
 		endif()
 	endif()

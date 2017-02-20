@@ -37,8 +37,9 @@ set(test_system_sqlite3 [[
 	if(USE_SYSTEM_SQLITE3)
 		enable_language(C)
 		find_library(SQLITE3_LIBRARY NAMES sqlite3 QUIET)
-		if(SQLITE3_LIBRARY)
-			message(STATUS "Found sqlite3: ${SQLITE3_LIBRARY}")
+		if(SQLITE3_LIBRARY
+		   AND NOT SQLITE3_LIBRARY MATCHES "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}")
+			message(STATUS "Found ${SYSTEM_NAME} sqlite3: ${SQLITE3_LIBRARY}")
 			set(BUILD_CONDITION 0)
 		endif()
 	endif()

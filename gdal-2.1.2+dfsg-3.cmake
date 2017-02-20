@@ -44,50 +44,32 @@ set(test_system_gdal [[
 	if(USE_SYSTEM_GDAL)
 		enable_language(C)
 		find_package(GDAL 2 QUIET)
-		if(GDAL_FOUND)
-			message(STATUS "Found gdal: ${GDAL_LIBRARY}")
+		if(GDAL_FOUND
+		   AND NOT GDAL_INCLUDE_DIR MATCHES "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}")
+			message(STATUS "Found ${SYSTEM_NAME} gdal: ${GDAL_LIBRARY}")
 			set(BUILD_CONDITION 0)
 		endif()
 	endif()
 	
 	if(BUILD_CONDITION)
-		# Make CMake aware of libraries from the superbuild
-		list(INSERT CMAKE_FIND_ROOT_PATH 0 "${INSTALL_DIR}")
-		
-		find_program(CURL_CONFIG
-		  NAMES curl-config
-		  ONLY_CMAKE_FIND_ROOT_PATH
-		  QUIET
-		)
+		find_program(CURL_CONFIG NAMES curl-config QUIET CMAKE_FIND_ROOT_PATH_BOTH)
 		if(NOT CURL_CONFIG)
 			message(FATAL_ERROR "Could not find curl-config")
 		endif()
 		
-		find_path(EXPAT_INCLUDE_DIR
-		  NAMES expat.h
-		  ONLY_CMAKE_FIND_ROOT_PATH
-		  QUIET
-		)
+		find_path(EXPAT_INCLUDE_DIR NAMES expat.h QUIET)
 		if(NOT EXPAT_INCLUDE_DIR)
 			message(FATAL_ERROR "Could not find expat.h")
 		endif()
 		get_filename_component(EXPAT_DIR "${EXPAT_INCLUDE_DIR}" DIRECTORY CACHE)
 		
-		find_path(LIBZ_INCLUDE_DIR
-		  NAMES zlib.h
-		  ONLY_CMAKE_FIND_ROOT_PATH
-		  QUIET
-		)
+		find_path(LIBZ_INCLUDE_DIR NAMES zlib.h QUIET)
 		if(NOT LIBZ_INCLUDE_DIR)
 			message(FATAL_ERROR "Could not find zlib.h")
 		endif()
 		get_filename_component(LIBZ_DIR "${LIBZ_INCLUDE_DIR}" DIRECTORY CACHE)
 		
-		find_path(SQLITE3_INCLUDE_DIR
-		  NAMES sqlite3.h
-		  ONLY_CMAKE_FIND_ROOT_PATH
-		  QUIET
-		)
+		find_path(SQLITE3_INCLUDE_DIR NAMES sqlite3.h QUIET)
 		if(NOT SQLITE3_INCLUDE_DIR)
 			message(FATAL_ERROR "Could not find sqlite3.h")
 		endif()
@@ -98,10 +80,7 @@ set(test_system_gdal [[
 			# but GDAL expects a name like libproj-0.dll
 			# (exactly this name when loading the lib at runtime).
 			# Try hard to link the correct library, at build time.
-			find_package(PROJ4 CONFIG
-			  ONLY_CMAKE_FIND_ROOT_PATH
-			  QUIET
-			)
+			find_package(PROJ4 CONFIG QUIET)
 			if(NOT TARGET proj)
 				message(FATAL_ERROR "Could not find PROJ4")
 			endif()

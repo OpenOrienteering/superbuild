@@ -42,8 +42,9 @@ set(test_system_lzma [[
 		enable_language(C)
 		find_package(LibLZMA CONFIG QUIET)
 		find_package(LibLZMA MODULE QUIET)
-		if(LIBLZMA_FOUND)
-			message(STATUS "Found xz-utils: ${LIBLZMA_LIBRARIES}")
+		if(LIBLZMA_FOUND
+		   AND NOT LIBLZMA_INCLUDE_DIRS MATCHES "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}")
+			message(STATUS "Found ${SYSTEM_NAME} LibLZMA (xz-utils): ${LIBLZMA_LIBRARIES}")
 			set(BUILD_CONDITION 0)
 		endif()
 	endif()

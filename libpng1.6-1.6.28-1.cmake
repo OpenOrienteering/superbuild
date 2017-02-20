@@ -39,8 +39,9 @@ set(test_system_png [[
 		enable_language(C)
 		find_package(PNG CONFIG QUIET)
 		find_package(PNG MODULE QUIET)
-		if(TARGET PNG::PNG)
-			message(STATUS "Found libpng: ${PNG_LIBRARIES}")
+		if(TARGET PNG::PNG
+		   AND NOT PNG_INCLUDE_DIRS MATCHES "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}")
+			message(STATUS "Found ${SYSTEM_NAME} libpng: ${PNG_LIBRARIES}")
 			set(BUILD_CONDITION 0)
 		endif()
 	endif()

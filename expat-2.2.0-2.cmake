@@ -38,8 +38,9 @@ set(test_system_expat [[
 	if(USE_SYSTEM_EXPAT)
 		enable_language(C)
 		find_package(EXPAT QUIET)
-		if(EXPAT_LIBRARIES)
-			message(STATUS "Found expat: ${EXPAT_LIBRARIES}")
+		if(EXPAT_FOUND
+		   AND NOT EXPAT_INCLUDE_DIRS MATCHES "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}")
+			message(STATUS "Found ${SYSTEM_NAME} expat: ${EXPAT_LIBRARIES}")
 			set(BUILD_CONDITION 0)
 		endif()
 	endif()
