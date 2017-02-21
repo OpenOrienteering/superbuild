@@ -780,6 +780,14 @@ function(_sb_make_toolchained_project package toolchain)
 		set(${SYSTEM_NAME}_TOOLCHAIN_DIR "${CMAKE_CURRENT_BINARY_DIR}/${SYSTEM_NAME}/toolchain")
 	endif()
 	
+	if(DEFINED ${SYSTEM_NAME}_BUILD_TYPE)
+		set(defined_build_type "-DCMAKE_BUILD_TYPE=${SYSTEM_NAME}_BUILD_TYPE")
+	elseif(DEFINED CMAKE_BUILD_TYPE)
+		set(defined_build_type "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}")
+	else()
+		set(defined_build_type )
+	endif()
+	
 	set(define_env )
 	foreach(var ${SUPERBUILD_HANDLE_ENV})
 		if(DEFINED ${SYSTEM_NAME}_ENV_${var})
@@ -801,7 +809,7 @@ function(_sb_make_toolchained_project package toolchain)
 	      "-DCMAKE_TOOLCHAIN_FILE:FILEPATH=${toolchain_file}"
 	      "-DSYSTEM_NAME:STRING=${SYSTEM_NAME}"
 	      "-DPACKAGE:STRING=${package}"
-	      "-DCMAKE_BUILD_TYPE=$<CONFIG>"
+	      ${defined_build_type}
 	      ${define_env}
 	      "-D${SYSTEM_NAME}_INSTALL_DIR=${${SYSTEM_NAME}_INSTALL_DIR}"
 	      "-D${SYSTEM_NAME}_TOOLCHAIN_DIR=${${SYSTEM_NAME}_TOOLCHAIN_DIR}"
