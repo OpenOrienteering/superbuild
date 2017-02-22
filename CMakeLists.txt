@@ -271,7 +271,7 @@ include(\"${dir}/${package}-config.cmake\")
 set(INSTALL_DIR      \"@INSTALL_DIR@\")
 set(TOOLCHAIN_DIR    \"@TOOLCHAIN_DIR@\")
 set(CMAKE_BUILD_TYPE \"@CMAKE_BUILD_TYPE@\")
-set(ENV_PATH \"\${TOOLCHAIN_DIR}/bin:\${HOST_INSTALL_DIR}/bin:\$ENV{PATH}\")
+set(ENV_PATH \"\${TOOLCHAIN_DIR}/bin:\${HOST_DIR}/bin:\$ENV{PATH}\")
 @DEFINE_ENV@
 
 if(\"${package}\" STREQUAL \"toolchain-info\")
@@ -498,7 +498,7 @@ set(toolchain_info_var_languages  "Variables for languages"
 
 list(APPEND toolchain_info_groups toolchain_info_var_superbuild)
 set(toolchain_info_var_superbuild  "Variables provided by superbuild"
-  HOST_INSTALL_DIR
+  HOST_DIR
   INSTALL_DIR
   PACKAGE_NAME
   SOURCE_DIR
@@ -897,10 +897,13 @@ function(superbuild_package)
 	if(NOT DEFINED host_INSTALL_DIR)
 		set(host_INSTALL_DIR "${default_INSTALL_DIR}")
 	endif()
-	set(HOST_INSTALL_DIR "${host_INSTALL_DIR}")
+	if(NOT DEFINED host_INSTALL_PREFIX)
+		set(host_INSTALL_PREFIX "${default_INSTALL_PREFIX}")
+	endif()
+	set(HOST_DIR "${host_INSTALL_DIR}${host_INSTALL_PREFIX}")
 	if(SB_PACKAGE_SYSTEM_NAME)
 		# toolchain
-		set(TOOLCHAIN_DIR "${HOST_INSTALL_DIR}")
+		set(TOOLCHAIN_DIR "${HOST_DIR}")
 		set(BINARY_DIR    "${PROJECT_BINARY_DIR}/${SB_PACKAGE_SYSTEM_NAME}/toolchain/build")
 		set(TMP_DIR       "${PROJECT_BINARY_DIR}/${SB_PACKAGE_SYSTEM_NAME}/toolchain/build/tmp.superbuild")
 		set(INSTALL_DIR   "${PROJECT_BINARY_DIR}/${SB_PACKAGE_SYSTEM_NAME}/toolchain")
@@ -919,7 +922,7 @@ function(superbuild_package)
 	set(DOWNLOAD_DIR     "${PROJECT_SOURCE_DIR}")
 	
 	_sb_write_config("${config_dir}"
-	  HOST_INSTALL_DIR
+	  HOST_DIR
 	  TOOLCHAIN_DIR
 	  DOWNLOAD_DIR
 	  SOURCE_DIR
