@@ -97,8 +97,10 @@ superbuild_package(
     # Not a build condition, but preparation for cross compiling
     # Cf. qtbase configure "SYSTEM_VARIABLES"
     set(pattern "^load(qt_config)")
+    set(qmake "QMAKE")
     if(ANDROID)
-        set(pattern "^include(.*/android-base-tail.conf)")
+        set(pattern "^include(.*\\/android-base-tail.conf)")
+        set(qmake "QMAKE_ANDROID_PLATFORM")
     endif()
     set(qmake_conf_changes )
     if(DEFINED ENV_CFLAGS)
@@ -115,8 +117,8 @@ superbuild_package(
       "/${pattern}/ i\n"
       "/${pattern}/ i # Begin of changes from superbuild\n"
       ${qmake_conf_changes}
-      "/${pattern}/ i QMAKE_INCDIR *= \"${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/include\"\n"
-      "/${pattern}/ i QMAKE_LIBDIR *= \"${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/lib\"\n"
+      "/${pattern}/ i ${qmake}_INCDIR *= \"${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/include\"\n"
+      "/${pattern}/ i ${qmake}_LIBDIR *= \"${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/lib\"\n"
       "/${pattern}/ i # End of changes from superbuild\n"
       "/${pattern}/ i\n"
     )
