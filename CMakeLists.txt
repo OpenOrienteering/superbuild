@@ -51,6 +51,7 @@ list(APPEND SUPERBUILD_HANDLE_ENV
   LDFLAGS
   LIBS
   LD_LIBRARY_PATH
+  PATH
   PKG_CONFIG_PATH
 )
 list(REMOVE_DUPLICATES SUPERBUILD_HANDLE_ENV)
@@ -199,7 +200,6 @@ endfunction()
 
 
 function(_sb_write_generator)
-	string(REPLACE ";" " " env_vars "${SUPERBUILD_HANDLE_ENV}")
 	set(output
 "# Created by ${CMAKE_CURRENT_LIST_FILE}
 
@@ -219,14 +219,6 @@ set_property(GLOBAL PROPERTY TARGET_MESSAGES 0)
 
 include(\"${PROJECT_BINARY_DIR}/config/\${PACKAGE}-config.cmake\")
 
-set(DEFINE_ENV )
-foreach(var ${env_vars})
-	if(DEFINED ENV_\${var})
-		set(DEFINE_ENV \"\${DEFINE_ENV}set(ENV_\${var} \\\"\${ENV_\${var}}\\\")\n\")
-	endif()
-endforeach()
-string(MD5 STAMP \"\${DEFINE_ENV}\")
-
 file(READ \"${PROJECT_BINARY_DIR}/config/\${PACKAGE}-CMakeLists.txt.in\" config)
 string(CONFIGURE \"\${config}\" config)
 file(GENERATE OUTPUT \"\${TMP_DIR}/CMakeLists.txt\"
@@ -239,11 +231,6 @@ endfunction()
 
 
 function(_sb_write_build dir)
-	_sb_get_build_command(build_command_list "${package}-@SYSTEM_NAME@")
-	set(build_command )
-	foreach(item ${build_command_list})
-		set(build_command "${build_command} \"${item}\"")
-	endforeach()
 	if(NOT SB_PACKAGE_BUILD)
 		set(SB_PACKAGE_BUILD [[
   CONFIGURE_COMMAND ""
@@ -251,7 +238,6 @@ function(_sb_write_build dir)
   INSTALL_COMMAND   ""
 ]]		)
 	endif()
-	string(REPLACE ";" " " env_vars "${SUPERBUILD_HANDLE_ENV}")
 	set(output
 "# Template created by ${CMAKE_CURRENT_LIST_FILE}
 # Instance created by @CMAKE_CURRENT_LIST_FILE@
@@ -272,8 +258,6 @@ include(\"${dir}/${package}-config.cmake\")
 set(INSTALL_DIR      \"@INSTALL_DIR@\")
 set(TOOLCHAIN_DIR    \"@TOOLCHAIN_DIR@\")
 set(CMAKE_BUILD_TYPE \"@CMAKE_BUILD_TYPE@\")
-set(ENV_PATH \"\${TOOLCHAIN_DIR}/bin:\${HOST_DIR}/bin:\$ENV{PATH}\")
-@DEFINE_ENV@
 
 if(\"${package}\" STREQUAL \"toolchain-info\")
     include(\"${PROJECT_BINARY_DIR}/source/toolchain-info.cmake\")
@@ -288,21 +272,9 @@ if(NOT BUILD_CONDITION)
 	  COMMAND \${CMAKE_COMMAND} -E make_directory \"\${TMP_DIR}/stamp\"
 	  COMMAND \${CMAKE_COMMAND} -E echo \"Not building ${SB_PACKAGE_NAME} for @SYSTEM_NAME@ toolchain\"
 	)
-	add_custom_target(${package}-@SYSTEM_NAME@-env-package)
+	add_custom_target(${package}-@SYSTEM_NAME@-package)
 	return()
 endif()
-
-set(define_env )
-foreach(var PATH ${env_vars})
-	if(DEFINED ENV_\$\${}{var})
-		list(APPEND define_env \"\$\${}{var}=\$\${}{ENV_\$\${}{var}}\")
-	endif()
-endforeach()
-add_custom_target(${package}-@SYSTEM_NAME@-env
-  ALL
-  COMMAND \${CMAKE_COMMAND} -E env \$\${}{define_env}
-    ${build_command}
-)
 
 include(ExternalProject)
 
@@ -313,7 +285,6 @@ ExternalProject_Add(${package}-@SYSTEM_NAME@
   TMP_DIR      \"\${TMP_DIR}\"
   STAMP_DIR    \"\${TMP_DIR}/stamp\"
   INSTALL_DIR  \"\${INSTALL_DIR}\"
-  EXCLUDE_FROM_ALL 1
   DOWNLOAD_COMMAND \"${CMAKE_COMMAND}\" -E touch_nocreate \"<SOURCE_DIR>/placeholder/@STAMP@\"
 ${SB_PACKAGE_BUILD})
 ExternalProject_Add_StepDependencies(${package}-@SYSTEM_NAME@ configure
@@ -336,17 +307,8 @@ ExternalProject_Add_StepDependencies(${package}-@SYSTEM_NAME@ install
 
 
 ")
-if(SB_PACKAGE_PACKAGE)
-	_sb_get_build_command(build_command_list "${package}-@SYSTEM_NAME@-package")
-	set(build_command )
-	foreach(item ${build_command_list})
-		set(build_command "${build_command} \"${item}\"")
-	endforeach()
-	list(APPEND output "
-add_custom_target(${package}-@SYSTEM_NAME@-env-package
-  COMMAND \${CMAKE_COMMAND} -E env \$\${}{define_env}
-	${build_command}
-)
+	if(SB_PACKAGE_PACKAGE)
+		list(APPEND output "
 ExternalProject_Add_Step(${package}-@SYSTEM_NAME@ package
   EXCLUDE_FROM_MAIN 1
   ALWAYS 1
@@ -509,8 +471,8 @@ set(toolchain_info_var_superbuild  "Variables provided by superbuild"
 
 list(APPEND toolchain_info_groups toolchain_info_var_env)
 set(toolchain_info_var_env "Environment variables")
-foreach(var PATH ]] "${env_vars}" [[)
-    list(APPEND toolchain_info_var_env "ENV_${var}")
+foreach(var ]] "${env_vars}" [[)
+	list(APPEND toolchain_info_var_env "ENV{${var}}")
 endforeach()
 
 function(print_toolchain_info)
@@ -802,14 +764,19 @@ function(_sb_make_toolchained_project package toolchain)
 		set(defined_build_type )
 	endif()
 	
+	if(NOT DEFINED ${SYSTEM_NAME}_ENV_PATH)
+		set(${SYSTEM_NAME}_ENV_PATH "${${SYSTEM_NAME}_TOOLCHAIN_DIR}/bin:${HOST_DIR}/bin:$ENV{PATH}")
+	endif()
+	
 	set(define_env )
 	foreach(var ${SUPERBUILD_HANDLE_ENV})
 		if(DEFINED ${SYSTEM_NAME}_ENV_${var})
-			list(APPEND define_env "-DENV_${var}=${${SYSTEM_NAME}_ENV_${var}}")
+			list(APPEND define_env "${var}=${${SYSTEM_NAME}_ENV_${var}}")
 		elseif(SYSTEM_NAME STREQUAL "default" AND DEFINED ENV{${var}})
-			list(APPEND define_env "-DENV_${var}=$ENV{${var}}")
+			list(APPEND define_env "${var}=$ENV{${var}}")
 		endif()
 	endforeach()
+	string(MD5 stamp "${define_env}")
 	
 	set(toolchain_file "${PROJECT_BINARY_DIR}/${SYSTEM_NAME}/toolchain/toolchain.cmake")
 	add_custom_command(OUTPUT "${tmp_dir}/CMakeLists.txt"
@@ -819,17 +786,19 @@ function(_sb_make_toolchained_project package toolchain)
 	          "${toolchain_file}"
 	  COMMAND ${CMAKE_COMMAND} -E make_directory "${tmp_dir}/config/generator"
 	  COMMAND ${CMAKE_COMMAND} -E chdir "${tmp_dir}/config/generator"
+	    ${CMAKE_COMMAND} -E env ${define_env}
 	    ${CMAKE_COMMAND} "${PROJECT_BINARY_DIR}/config"
 	      "-DCMAKE_TOOLCHAIN_FILE:FILEPATH=${toolchain_file}"
 	      "-DSYSTEM_NAME:STRING=${SYSTEM_NAME}"
 	      "-DPACKAGE:STRING=${package}"
 	      ${defined_build_type}
-	      ${define_env}
 	      "-D${SYSTEM_NAME}_INSTALL_DIR=${${SYSTEM_NAME}_INSTALL_DIR}"
 	      "-D${SYSTEM_NAME}_TOOLCHAIN_DIR=${${SYSTEM_NAME}_TOOLCHAIN_DIR}"
+	      "-DSTAMP=${stamp}"
 	      "${target_install_dir_option}"
 	  COMMAND ${CMAKE_COMMAND} -E touch_nocreate "${tmp_dir}/CMakeLists.txt"
 	  COMMAND ${CMAKE_COMMAND} -E chdir "${tmp_dir}/config"
+	    ${CMAKE_COMMAND} -E env ${define_env}
 	    ${CMAKE_COMMAND} "${tmp_dir}"
 	      "-DCMAKE_TOOLCHAIN_FILE:FILEPATH=${toolchain_file}"
 	  WORKING_DIRECTORY "${PROJECT_BINARY_DIR}"
@@ -841,7 +810,8 @@ function(_sb_make_toolchained_project package toolchain)
 	add_custom_target(${package}${suffix}
 	  DEPENDS "${tmp_dir}/CMakeLists.txt"
 	          ${source_files}
-	  COMMAND ${build_command}
+	  COMMAND ${CMAKE_COMMAND} -E env ${define_env}
+	    ${build_command}
 	  WORKING_DIRECTORY "${tmp_dir}/config"
 	  COMMENT "Building ${package}${suffix}"
 	)
@@ -855,10 +825,11 @@ function(_sb_make_toolchained_project package toolchain)
 	
 	get_property(build_package TARGET ${package} PROPERTY SB_PACKAGE_PACKAGE SET)
 	if(build_package OR SB_PACKAGE_PACKAGE)
-		_sb_get_build_command(build_command ${package}-${SYSTEM_NAME}-env-package)
+		_sb_get_build_command(build_command ${package}-${SYSTEM_NAME}-package)
 		add_custom_target(${package}${suffix}-package
 		  DEPENDS ${package}${suffix}
-		  COMMAND ${build_command}
+		  COMMAND ${CMAKE_COMMAND} -E env ${define_env}
+		    ${build_command}
 		  WORKING_DIRECTORY "${tmp_dir}/config"
 		  COMMENT "Building ${package}${suffix}-package"
 		)
