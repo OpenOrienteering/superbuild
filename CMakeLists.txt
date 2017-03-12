@@ -764,6 +764,11 @@ function(_sb_make_toolchained_project package toolchain)
 		set(${SYSTEM_NAME}_TOOLCHAIN_DIR "${CMAKE_CURRENT_BINARY_DIR}/${SYSTEM_NAME}/toolchain")
 	endif()
 	
+	if(DEFINED ${SYSTEM_NAME}_CMAKE_COMMAND)
+		# Scoped to the current function.
+		set(CMAKE_COMMAND "${${SYSTEM_NAME}_CMAKE_COMMAND}")
+	endif()
+	
 	if(DEFINED ${SYSTEM_NAME}_BUILD_TYPE)
 		set(defined_build_type "-DCMAKE_BUILD_TYPE=${${SYSTEM_NAME}_BUILD_TYPE}")
 	elseif(DEFINED CMAKE_BUILD_TYPE)
