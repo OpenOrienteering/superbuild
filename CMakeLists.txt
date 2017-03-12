@@ -581,6 +581,19 @@ set(CMAKE_VERBOSE_MAKEFILE ON  CACHE BOOL "Enable verbose output from Makefile b
 endfunction()
 
 
+# Provide host toolchain settings, if not existing
+function(_sb_create_host_toolchain)
+	# TODO This is just a stub
+	if(NOT DEFINED host_INSTALL_DIR)
+		set(host_INSTALL_DIR "${default_INSTALL_DIR}")
+	endif()
+	if(NOT DEFINED host_INSTALL_PREFIX)
+		set(host_INSTALL_PREFIX "${default_INSTALL_PREFIX}")
+	endif()
+	set(HOST_DIR "${host_INSTALL_DIR}${host_INSTALL_PREFIX}" PARENT_SCOPE)
+endfunction()
+
+
 # Read all definitions
 function(_sb_read_packages)
 	file(GLOB sb_definitions RELATIVE ${PROJECT_SOURCE_DIR} *.cmake)
@@ -894,13 +907,6 @@ function(superbuild_package)
 	set(config_dir "${PROJECT_BINARY_DIR}/config")
 	file(MAKE_DIRECTORY "${config_dir}")
 	
-	if(NOT DEFINED host_INSTALL_DIR)
-		set(host_INSTALL_DIR "${default_INSTALL_DIR}")
-	endif()
-	if(NOT DEFINED host_INSTALL_PREFIX)
-		set(host_INSTALL_PREFIX "${default_INSTALL_PREFIX}")
-	endif()
-	set(HOST_DIR "${host_INSTALL_DIR}${host_INSTALL_PREFIX}")
 	if(SB_PACKAGE_SYSTEM_NAME)
 		# toolchain
 		set(TOOLCHAIN_DIR "${HOST_DIR}")
@@ -974,6 +980,7 @@ add_custom_target(doc SOURCES ${documentation})
 
 _sb_create_main_c()
 _sb_create_default_toolchain()
+_sb_create_host_toolchain()
 _sb_write_generator()
 _sb_write_debian_patch_script()
 _sb_create_toolchain_info()
