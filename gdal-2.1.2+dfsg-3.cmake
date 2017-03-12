@@ -143,6 +143,16 @@ superbuild_package(
     COMMAND
       # Remove duplicate -lproj
       sed -i -e "/LIBS=/ s,-lproj ,," "${BINARY_DIR}/configure"
+    $<$<BOOL:${ANDROID}>:
+    COMMAND
+      # Fix .so versioning
+      sed -i -e "/ -avoid-version/! s,^LD.*=.*LIBTOOL_LINK.*,& -avoid-version," "${BINARY_DIR}/GDALmake.opt.in"
+    >
+    $<$<NOT:$<CONFIG:Debug>>:
+    COMMAND
+      # Strip library
+      sed -i -e "/ -s/! s,^INSTALL_LIB.*=.*LIBTOOL_INSTALL.*,& -s," "${BINARY_DIR}/GDALmake.opt.in"
+    >
     COMMAND
       "${BINARY_DIR}/configure"
         "--prefix=${CMAKE_INSTALL_PREFIX}"
