@@ -219,6 +219,17 @@ set_property(GLOBAL PROPERTY TARGET_MESSAGES 0)
 
 include(\"${PROJECT_BINARY_DIR}/config/\${PACKAGE}-config.cmake\")
 
+if(PACKAGE STREQUAL \"toolchain-info\")
+	set(LANGUAGES      \"C CXX\")
+	set(TOOLCHAIN_INFO \"
+include(\\\"${PROJECT_BINARY_DIR}/source/toolchain-info.cmake\\\")
+print_toolchain_info()
+\")
+else()
+	set(LANGUAGES      NONE)
+	set(TOOLCHAIN_INFO )
+endif()
+
 file(READ \"${PROJECT_BINARY_DIR}/config/\${PACKAGE}-CMakeLists.txt.in\" config)
 string(CONFIGURE \"\${config}\" config)
 file(GENERATE OUTPUT \"\${TMP_DIR}/CMakeLists.txt\"
@@ -248,7 +259,7 @@ cmake_policy(SET CMP0053 NEW)
 
 message(STATUS \"Configuring @PACKAGE@ for system @SYSTEM_NAME@\")
 
-project(${package}-@SYSTEM_NAME@ NONE)
+project(${package}-@SYSTEM_NAME@ @LANGUAGES@)
 
 set_property(GLOBAL PROPERTY RULE_MESSAGES 0)
 set_property(GLOBAL PROPERTY TARGET_MESSAGES 0)
@@ -259,10 +270,7 @@ set(INSTALL_DIR      \"@INSTALL_DIR@\")
 set(TOOLCHAIN_DIR    \"@TOOLCHAIN_DIR@\")
 set(CMAKE_BUILD_TYPE \"@CMAKE_BUILD_TYPE@\")
 
-if(\"${package}\" STREQUAL \"toolchain-info\")
-    include(\"${PROJECT_BINARY_DIR}/source/toolchain-info.cmake\")
-    print_toolchain_info()
-endif()
+@TOOLCHAIN_INFO@
 
 sb_test_build_condition()
 if(NOT BUILD_CONDITION)
