@@ -429,7 +429,7 @@ set(toolchain_info_var_information  "Variables that provide information"
 list(APPEND toolchain_info_groups toolchain_info_var_behavior)
 set(toolchain_info_var_behavior  "Variables that change behavior"
   BUILD_SHARED_LIBS
-  CMAKE_BUILDTYPE
+  CMAKE_BUILD_TYPE
   CMAKE_SYSROOT
   CMAKE_FIND_ROOT_PATH
   CMAKE_FIND_ROOT_PATH_MODE_INCLUDE
@@ -781,7 +781,7 @@ function(_sb_make_toolchained_project package toolchain)
 	endif()
 	
 	if(DEFINED ${SYSTEM_NAME}_BUILD_TYPE)
-		set(defined_build_type "-DCMAKE_BUILD_TYPE=${SYSTEM_NAME}_BUILD_TYPE")
+		set(defined_build_type "-DCMAKE_BUILD_TYPE=${${SYSTEM_NAME}_BUILD_TYPE}")
 	elseif(DEFINED CMAKE_BUILD_TYPE)
 		set(defined_build_type "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}")
 	else()
