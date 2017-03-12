@@ -267,6 +267,7 @@ project(${package}-@SYSTEM_NAME@ NONE)
 set_property(GLOBAL PROPERTY RULE_MESSAGES 0)
 set_property(GLOBAL PROPERTY TARGET_MESSAGES 0)
 
+set(SYSTEM_NAME      \"@SYSTEM_NAME@\")
 include(\"${dir}/${package}-config.cmake\")
 set(INSTALL_DIR      \"@INSTALL_DIR@\")
 set(TOOLCHAIN_DIR    \"@TOOLCHAIN_DIR@\")
