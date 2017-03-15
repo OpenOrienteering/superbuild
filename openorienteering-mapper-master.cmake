@@ -55,18 +55,16 @@ superbuild_package(
       sed -i -e [[ s/\/usr\//${CMAKE_INSTALL_PREFIX}\// ]] CMakeLists.txt
     COMMAND
       sed -i -e [[ /DESTDIR/d ]] packaging/CMakeLists.txt
-    COMMAND
-      sed -i -e [[ /libqjp2.so/d ]] src/src.pro
   
   BUILD [[
-  $<$<NOT:$<BOOL:${ANDROID}>>:
     CONFIGURE_COMMAND
-      $<$<AND:$<BOOL:${UNIX}>,$<NOT:$<BOOL:${APPLE}>>>:
+    $<$<AND:$<BOOL:${UNIX}>,$<NOT:$<BOOL:${APPLE}>>,$<NOT:$<BOOL:${ANDROID}>>>:
       "${CMAKE_COMMAND}" -E env
         "LDFLAGS=-Wl,--as-needed"
-      > # UNIX AND NOT APPLE
+    > # UNIX AND NOT APPLE AND NOT ANDROID
       "${CMAKE_COMMAND}" "${SOURCE_DIR}"
       "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
+      "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
       "-DBUILD_SHARED_LIBS=0"
       "-DMapper_AUTORUN_SYSTEM_TESTS=0"
       "-DMapper_BUILD_CLIPPER=0"
@@ -76,41 +74,30 @@ superbuild_package(
       "-DMapper_BUILD_DOXYGEN=0"
       "-DMapper_USE_GDAL=1"
       "-DMapper_BUILD_PACKAGE=1"
+    $<$<OR:$<BOOL:${APPLE}>,$<BOOL:${WINDOWS}>>:
         "-DMapper_PACKAGE_ASSISTANT=1"
+    >$<$<NOT:$<OR:$<BOOL:${APPLE}>,$<BOOL:${WINDOWS}>>>:
+        "-DMapper_PACKAGE_ASSISTANT=0"
+    >
         "-DMapper_PACKAGE_GDAL=1"
+        "-DGDAL_DATA_DIR=${INSTALL_DIR}"
         "-DMapper_PACKAGE_PROJ=1"
         "-DMapper_PACKAGE_QT=1"
+        "-DMAPPER_USE_QT_CONF_QRC=0"
+    $<$<BOOL:ANDROID>:
+      "-DKEYSTORE_URL=${KEYSTORE_URL}"
+      "-DKEYSTORE_ALIAS=${KEYSTORE_ALIAS}"
+    >
     INSTALL_COMMAND
       "${CMAKE_COMMAND}" --build . --target install/strip -- "DESTDIR=${INSTALL_DIR}/openorienteering"
-    $<$<NOT:$<BOOL:${CMAKE_CROSSCOMPILING}>>:
-      TEST_BEFORE_INSTALL 1
-    >
-  >
-  $<$<BOOL:${ANDROID}>:
-    CONFIGURE_COMMAND
-      qmake "${SOURCE_DIR}"
-        $<$<CONFIG:Debug>:"CONFIG += debug">
-        $<$<CONFIG:Release>:"CONFIG += release">
-    INSTALL_COMMAND
-      make install INSTALL_ROOT="${BINARY_DIR}/PKG"
+  $<$<NOT:$<BOOL:${CMAKE_CROSSCOMPILING}>>:
+    TEST_BEFORE_INSTALL 1
   >
   ]]
   
+  EXECUTABLES src/Mapper
+  
   PACKAGE [[
-  $<$<NOT:$<BOOL:${ANDROID}>>:
     COMMAND "${CMAKE_COMMAND}" --build . --target package/fast
-  >
-  $<$<BOOL:${ANDROID}>:
-    COMMAND sh -c
-      "tty $<ANGLE-R>/dev/null | echo Cannot build signed package: `tty` $<ANGLE-R>&2 && tty $<ANGLE-R>/dev/null"
-    COMMAND androiddeployqt
-      --output "${BINARY_DIR}/PKG"
-      --input "src/android-libMapper.so-deployment-settings.json"
-      --deployment "bundled"
-      --gradle
-      --verbose
-      $<$<OR:$<CONFIG:Release>,$<CONFIG:RelWithDebInfo>>:--release>
-      $<${EXPRESSION_BOOL_SIGN}:--sign "${KEYSTORE_URL}" "${KEYSTORE_ALIAS}">
-  >
   ]]
 )
