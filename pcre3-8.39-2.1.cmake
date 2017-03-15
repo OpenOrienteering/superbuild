@@ -29,8 +29,8 @@
 
 set(version        8.39)
 set(download_hash  SHA256=b858099f82483031ee02092711689e7245586ada49e534a06e678b8ea9549e8b)
-set(patch_version  ${version}-2)
-set(patch_hash     SHA256=375c8c6c746553dd3c7364d53c4e85f68694c58763e4bc541821060cbb52eef6)
+set(patch_version  ${version}-2.1)
+set(patch_hash     SHA256=9ca3b9c67a2aeee288dd5dec25416ffd297a73f0a00f993e7b30218cc6c14b49)
 
 option(USE_SYSTEM_PCRE3 "Use the system sqlite if possible" ON)
 
