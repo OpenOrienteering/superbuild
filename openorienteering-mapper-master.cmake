@@ -51,18 +51,9 @@ superbuild_package(
   SOURCE
     DOWNLOAD_NAME  openorienteering-mapper_${version}.tar.gz
     URL            https://github.com/OpenOrienteering/mapper/archive/${version}.tar.gz
-    PATCH_COMMAND
-      sed -i -e [[ s/\/usr\//${CMAKE_INSTALL_PREFIX}\// ]] CMakeLists.txt
-    COMMAND
-      sed -i -e [[ /DESTDIR/d ]] packaging/CMakeLists.txt
   
   BUILD [[
-    CONFIGURE_COMMAND
-    $<$<AND:$<BOOL:${UNIX}>,$<NOT:$<BOOL:${APPLE}>>,$<NOT:$<BOOL:${ANDROID}>>>:
-      "${CMAKE_COMMAND}" -E env
-        "LDFLAGS=-Wl,--as-needed"
-    > # UNIX AND NOT APPLE AND NOT ANDROID
-      "${CMAKE_COMMAND}" "${SOURCE_DIR}"
+    CMAKE_ARGS
       "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
       "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
       "-DBUILD_SHARED_LIBS=0"
@@ -80,7 +71,6 @@ superbuild_package(
         "-DMapper_PACKAGE_ASSISTANT=0"
     >
         "-DMapper_PACKAGE_GDAL=1"
-        "-DGDAL_DATA_DIR=${INSTALL_DIR}"
         "-DMapper_PACKAGE_PROJ=1"
         "-DMapper_PACKAGE_QT=1"
         "-DMAPPER_USE_QT_CONF_QRC=0"
