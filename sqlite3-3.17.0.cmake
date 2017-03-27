@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016 Kai Pastor
+# Copyright 2016, 2017 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -30,6 +30,8 @@
 set(download_version  autoconf-3170000)
 set(version           3.17.0-${download_version})
 set(download_hash     SHA1=7bcff1c158ed9e2c0e159c1b4b6c36d4d65dff8c)
+set(patch_version     3.17.0-1)
+set(patch_hash        SHA256=e7772890f3b4ea42adf05f2cdbb3759d53670b6bb9bf60a7dcdb9376e7b44544)
 
 option(USE_SYSTEM_SQLITE3 "Use the system sqlite if possible" ON)
 
@@ -46,14 +48,26 @@ set(test_system_sqlite3 [[
 ]])
 
 superbuild_package(
+  NAME           sqlite3-patches
+  VERSION        ${patch_version}
+  
+  SOURCE
+    URL            http://http.debian.net/debian/pool/main/s/sqlite3/sqlite3_${patch_version}.debian.tar.xz
+    URL_HASH       ${patch_hash}
+)
+  
+superbuild_package(
   NAME           sqlite3
   VERSION        ${version}
+  DEPENDS
+    source:sqlite3-patches-${patch_version}
+    common-licenses
   
   SOURCE
     URL            https://www.sqlite.org/2017/sqlite-${download_version}.tar.gz
     URL_HASH       ${download_hash}
   
-  USING            USE_SYSTEM_SQLITE3
+  USING            USE_SYSTEM_SQLITE3 version patch_version
   BUILD_CONDITION  ${test_system_sqlite3}
   BUILD [[
     CONFIGURE_COMMAND
@@ -67,5 +81,9 @@ superbuild_package(
         --enable-threadsafe
     INSTALL_COMMAND
       "$(MAKE)" install "DESTDIR=${INSTALL_DIR}"
+    COMMAND
+      "${CMAKE_COMMAND}" -E copy
+        "<SOURCE_DIR>/../sqlite3-patches-${patch_version}/copyright"
+        "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/share/doc/copyright/sqlite3-${version}.txt"
   ]]
 )

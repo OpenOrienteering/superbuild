@@ -69,7 +69,7 @@ superbuild_package(
         -Dpackage=expat-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
   
-  USING            USE_SYSTEM_EXPAT
+  USING            USE_SYSTEM_EXPAT patch_version
   BUILD_CONDITION  ${test_system_expat}
   BUILD [[
     CONFIGURE_COMMAND
@@ -82,5 +82,9 @@ superbuild_package(
         --disable-static
     INSTALL_COMMAND
       "$(MAKE)" install "DESTDIR=${INSTALL_DIR}"
+    COMMAND
+      "${CMAKE_COMMAND}" -E copy
+        "<SOURCE_DIR>/../expat-patches-${patch_version}/copyright"
+        "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/share/doc/copyright/expat-${patch_version}.txt"
   ]]
 )

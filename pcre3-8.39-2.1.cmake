@@ -70,7 +70,7 @@ superbuild_package(
         -Dpackage=pcre3-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
   
-  USING            USE_SYSTEM_PCRE3
+  USING            USE_SYSTEM_PCRE3 patch_version
   BUILD_CONDITION  ${test_system_pcre3}
   BUILD [[
     CMAKE_ARGS
@@ -83,5 +83,9 @@ superbuild_package(
       "-DPCRE_SUPPORT_UNICODE_PROPERTIES:BOOL=ON"
     INSTALL_COMMAND
       "${CMAKE_COMMAND}" --build . --target install/strip -- "DESTDIR=${INSTALL_DIR}"
+    COMMAND
+      "${CMAKE_COMMAND}" -E copy
+        "<SOURCE_DIR>/../pcre3-patches-${patch_version}/copyright"
+        "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/share/doc/copyright/pcre3-${patch_version}.txt"
   ]]
 )

@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016 Kai Pastor
+# Copyright 2016, 2017 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -83,7 +83,7 @@ superbuild_package(
         -Dpackage=libjpeg-turbo-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
   
-  USING            USE_SYSTEM_LIBJPEG NASM_EXECUTABLE
+  USING            USE_SYSTEM_LIBJPEG NASM_EXECUTABLE patch_version
   BUILD_CONDITION  ${test_system_jpeg}
   BUILD [[
     CONFIGURE_COMMAND
@@ -107,6 +107,10 @@ superbuild_package(
         > # ANDROID
     INSTALL_COMMAND
       "$(MAKE)" install "DESTDIR=${INSTALL_DIR}"
+    COMMAND
+      "${CMAKE_COMMAND}" -E copy
+        "<SOURCE_DIR>/../libjpeg-turbo-patches-${patch_version}/copyright"
+        "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/share/doc/copyright/libjpeg-turbo-${patch_version}.txt"
   ]]
 )
 

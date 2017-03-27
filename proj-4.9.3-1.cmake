@@ -73,7 +73,7 @@ superbuild_package(
     #COMMAND
     #  unshar -c -d "<SOURCE_DIR>/nad" "<SOURCE_DIR>/../proj-patches-${patch_version}/datumgrids.shar"
   
-  USING            USE_SYSTEM_PROJ
+  USING            USE_SYSTEM_PROJ patch_version
   BUILD_CONDITION  ${test_system_proj}
   BUILD [[
     CMAKE_ARGS
@@ -88,5 +88,9 @@ superbuild_package(
       -DPROJ_INCLUDE_SUBDIR=include
     INSTALL_COMMAND
       "${CMAKE_COMMAND}" --build . --target install/strip -- "DESTDIR=${INSTALL_DIR}"
+    COMMAND
+      "${CMAKE_COMMAND}" -E copy
+        "<SOURCE_DIR>/../proj-patches-${patch_version}/copyright"
+        "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/share/doc/copyright/proj-${patch_version}.txt"
   ]]
 )

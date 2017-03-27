@@ -71,7 +71,7 @@ superbuild_package(
         -Dpackage=curl-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
   
-  USING            USE_SYSTEM_CURL
+  USING            USE_SYSTEM_CURL patch_version
   BUILD_CONDITION  ${test_system_curl}
   BUILD [[
     CONFIGURE_COMMAND
@@ -107,5 +107,9 @@ superbuild_package(
       > # Darwin
     INSTALL_COMMAND
       "$(MAKE)" install "DESTDIR=${INSTALL_DIR}"
+    COMMAND
+      "${CMAKE_COMMAND}" -E copy
+        "<SOURCE_DIR>/../curl-patches-${patch_version}/copyright"
+        "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/share/doc/copyright/curl-${patch_version}.txt"
   ]]
 )

@@ -60,6 +60,7 @@ superbuild_package(
   VERSION        ${patch_version}
   DEPENDS
     source:libpolyclipping-patches-${patch_version}
+    common-licenses
   
   SOURCE
     URL            http://http.debian.net/debian/pool/main/libp/libpolyclipping/libpolyclipping_${version}.orig.tar.xz
@@ -72,7 +73,7 @@ superbuild_package(
     COMMAND
       sed -i -e [[ s/LIBRARY DESTINATION/RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}\/bin" LIBRARY DESTINATION/ ]] cpp/CMakeLists.txt
   
-  USING            USE_SYSTEM_POLYCLIPPING
+  USING            USE_SYSTEM_POLYCLIPPING patch_version
   BUILD_CONDITION  ${test_system_libpolyclipping}
   BUILD [[
     CONFIGURE_COMMAND
@@ -84,5 +85,9 @@ superbuild_package(
     # polyclipping uses CMAKE_INSTALL_PREFIX incorrectly
     INSTALL_COMMAND
       "$(MAKE)" install "DESTDIR=${INSTALL_DIR}"
+    COMMAND
+      "${CMAKE_COMMAND}" -E copy
+        "<SOURCE_DIR>/../libpolyclipping-patches-${patch_version}/copyright"
+        "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/share/doc/copyright/libpolyclipping-${patch_version}.txt"
   ]]
 )

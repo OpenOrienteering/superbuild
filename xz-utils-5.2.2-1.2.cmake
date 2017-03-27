@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016 Kai Pastor
+# Copyright 2016, 2017 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -70,6 +70,7 @@ superbuild_package(
   VERSION        ${patch_version}
   DEPENDS
     source:xz-utils-patches-${patch_version}
+    common-licenses
   
   SOURCE
     URL            http://http.debian.net/debian/pool/main/x/xz-utils/xz-utils_${version}.orig.tar.xz
@@ -79,7 +80,7 @@ superbuild_package(
         -Dpackage=xz-utils-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
   
-  USING            USE_SYSTEM_LZMA
+  USING            USE_SYSTEM_LZMA patch_version
   BUILD_CONDITION  ${test_system_lzma}
   BUILD [[
     CONFIGURE_COMMAND
@@ -93,6 +94,10 @@ superbuild_package(
         --disable-lzma-links
     INSTALL_COMMAND
       "$(MAKE)" install "DESTDIR=${INSTALL_DIR}"
+    COMMAND
+      "${CMAKE_COMMAND}" -E copy
+        "<SOURCE_DIR>/../xz-utils-patches-${patch_version}/copyright"
+        "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/share/doc/copyright/xz-utils-${patch_version}.txt"
   ]]
 )
 

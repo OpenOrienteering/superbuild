@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016 Kai Pastor
+# Copyright 2016, 2017 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -42,10 +42,31 @@ set(qmake          [[$<$<BOOL:${CMAKE_CROSSCOMPILING}>:${TOOLCHAIN_DIR}>$<$<NOT:
 
 
 superbuild_package(
+  NAME           qt-copyright
+  VERSION        ${version}
+  DEPENDS
+    common-licenses
+  
+  SOURCE
+    URL            https://github.com/OpenOrienteering/superbuild/releases/download/2017.03/qt-copyright_${version}.tar.gz
+    URL_HASH       SHA256=9d0ef95724c0f3f9c84441f7f25481299fe982926fc1b585b57884d8d60001ca
+  
+  BUILD [[
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND     ""
+    INSTALL_COMMAND
+      "${CMAKE_COMMAND}"
+        "-DINSTALL_DIR=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/share/doc/copyright"
+        -P "<SOURCE_DIR>/cmake_install.cmake"
+  ]]
+)
+  
+
+superbuild_package(
   NAME           qtbase-patches
   VERSION        ${version}-1
   SOURCE
-    URL            https://github.com/OpenOrienteering/superbuild/releases/download/3rd-party/qtbase_${version}-1.openorienteering.tar.gz
+    URL            https://github.com/OpenOrienteering/superbuild/releases/download/2017.03/qtbase_${version}-1.openorienteering.tar.gz
     URL_HASH       MD5=4d3388fabc1bc0f85a954142afe3cd23
 )
   
@@ -54,6 +75,7 @@ superbuild_package(
   VERSION      ${version}
   DEPENDS
     source:qtbase-patches-${version}-1
+    qt-copyright-${version}
     libjpeg-turbo
     libpng
     pcre3
@@ -61,9 +83,9 @@ superbuild_package(
     zlib
   
   SOURCE
-    DOWNLOAD_NAME  qtbase_${version}.orig.tar.gz
-    URL            ${base_url}/qtbase-opensource-src-${version}.tar.gz
-    URL_HASH       SHA256=d297571b04175d9ef14d998e92cf6964da7f8c05f97121806bf487c2b8994a06
+    DOWNLOAD_NAME  qtbase_${version}+dfsg-1.orig.tar.gz
+    URL            https://github.com/OpenOrienteering/superbuild/releases/download/2017.03/qtbase-opensource-src-${version}+dfsg-1.tar.gz
+    URL_HASH       SHA256=146cc26240358c1c93fb833cd6a688a8d062dc29417f2199d7af00dd907e0ceb
     PATCH_COMMAND
       "${CMAKE_COMMAND}" -E touch <SOURCE_DIR>/.git
     COMMAND

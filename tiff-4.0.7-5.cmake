@@ -73,7 +73,7 @@ superbuild_package(
         -Dpackage=tiff-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
   
-  USING            USE_SYSTEM_LIBTIFF version patch
+  USING            USE_SYSTEM_LIBTIFF patch_version
   BUILD_CONDITION  ${test_system_tiff}
   BUILD [[
     CMAKE_ARGS
@@ -86,5 +86,9 @@ superbuild_package(
       "-DUSE_WIN32_FILEIO:BOOL=OFF"
     INSTALL_COMMAND
       "${CMAKE_COMMAND}" --build . --target install/strip -- "DESTDIR=${INSTALL_DIR}"
+    COMMAND
+      "${CMAKE_COMMAND}" -E copy
+        "<SOURCE_DIR>/../tiff-patches-${patch_version}/copyright"
+        "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/share/doc/copyright/tiff-${patch_version}.txt"
   ]]
 )

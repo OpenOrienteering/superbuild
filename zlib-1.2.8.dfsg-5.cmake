@@ -77,12 +77,16 @@ superbuild_package(
         echo "set_target_properties(zlib zlibstatic PROPERTIES OUTPUT_NAME z)"
           >> "<SOURCE_DIR>/CMakeLists.txt"
   
-  USING            USE_SYSTEM_ZLIB
+  USING            USE_SYSTEM_ZLIB patch_version
   BUILD_CONDITION  ${test_system_zlib}
   BUILD [[
     CMAKE_ARGS
       "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
     INSTALL_COMMAND
       "${CMAKE_COMMAND}" --build . --target install/strip -- "DESTDIR=${INSTALL_DIR}"
+    COMMAND
+      "${CMAKE_COMMAND}" -E copy
+        "<SOURCE_DIR>/../zlib-patches-${patch_version}/copyright"
+        "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/share/doc/copyright/zlib-${patch_version}.txt"
   ]]
 )

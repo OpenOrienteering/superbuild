@@ -61,6 +61,7 @@ superbuild_package(
   VERSION        ${patch_version}
   DEPENDS
     source:libpng1.6-patches-${patch_version}
+    common-licenses
     zlib
   
   SOURCE
@@ -71,7 +72,7 @@ superbuild_package(
         -Dpackage=libpng1.6-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
   
-  USING            USE_SYSTEM_LIBPNG
+  USING            USE_SYSTEM_LIBPNG patch_version
   BUILD_CONDITION  ${test_system_png}
   BUILD [[
     CMAKE_ARGS
@@ -79,6 +80,10 @@ superbuild_package(
       "-DPNG_STATIC=0"
     INSTALL_COMMAND
       "${CMAKE_COMMAND}" --build . --target install/strip -- "DESTDIR=${INSTALL_DIR}"
+    COMMAND
+      "${CMAKE_COMMAND}" -E copy
+        "<SOURCE_DIR>/../libpng1.6-patches-${patch_version}/copyright"
+        "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/share/doc/copyright/libpng1.6-${patch_version}.txt"
   ]]
 )
 
