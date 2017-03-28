@@ -16,10 +16,20 @@
 
 ## Usage
 
-- Create a build directory
-- Run `cmake SOURCE_DIR [ CONFIGURATION_OPTIONS ]` from the build directory
-- Run `make PACKAGE-VERSION[-TOOLCHAIN] [ -jNUM_JOBS ]` from the build directory
+- Create a build directory.
+- Run `cmake SOURCE_DIR [ CONFIGURATION_OPTIONS ]` from the build directory.
+  - Run cmake with `-DENABLE_<toolchain>=1` to enable an extra toolchain.
+  - Run cmake with `-DUSE_SYSTEM_<package>=0` to force the build of a package
+    which is already provided by the system or toolchain.
+  - Run `cmake -L` to see available configuration options.
+- Run `make PACKAGE-VERSION[-<toolchain>] [ -jNUM_JOBS ]` from the build
+  directory to build a package.
+- Run `make PACKAGE-VERSION[-<toolchain>]-package` from the build directory to
+  produce a distributable package (such as ZIP, installer, APK) for a source
+  package.
 - You may overwrite some variables for each toolchain
+  `<toolchain>_BUILD_TYPE`      - The CMAKE_BUILD_TYPE for this toolchain
+                                  (default: CMAKE_BUILD_TYPE).
   `<toolchain>_INSTALL_DIR`     - The root directory where files will be placed
                                   (default: PROJECT_BINARY_DIR/<toolchain>/install).
   `<toolchain>_INSTALL_PREFIX`  - The path where files will be located in the target system.
@@ -63,17 +73,14 @@
                        which shall be mirrored in the global build tree, for
                        convenient use in IDEs (run, debug).
 - In addition to variables named by `USING`, the following variables are always
-  available during configuration for a particular toolchain:
+  available during configuration of package for a particular toolchain:
   - `CMAKE_TOOLCHAIN_FILE`
   - `HOST_DIR`
+  - `TOOLCHAIN_DIR`
   - `SOURCE_DIR`
   - `BINARY_DIR`
   - `INSTALL_DIR`
   - `TMP_DIR`
-- To make the actual build of the package conditional based on some test (e.g.
-  for a existing library in the sysroot), provide (`SOURCE_WRITE`) a script
-  superbuild/system-test.cmake which sets the variable `DONT_BUILD` to true
-  if the package is not to be build.
 - To apply patches from a Debian or Ubuntu modification archive
   (e.g. foo_1.0-1.debian.tar.gz), add a package (e.g. foo-patches 1.0-1) for
   this archive without build steps, make this package a dependency of the
