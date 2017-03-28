@@ -208,6 +208,7 @@ superbuild_package(
       -no-glib
       -no-audio-backend
       -prefix "${CMAKE_INSTALL_PREFIX}"
+      -datadir "${CMAKE_INSTALL_PREFIX}/share"
       -extprefix "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
       $<${crosscompiling}:
         -no-pkg-config
