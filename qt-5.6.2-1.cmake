@@ -83,8 +83,9 @@ superbuild_package(
     zlib
   
   SOURCE
-    DOWNLOAD_NAME  qtbase_${version}+dfsg-1.orig.tar.gz
-    URL            https://github.com/OpenOrienteering/superbuild/releases/download/2017.03/qtbase-opensource-src-${version}+dfsg-1.tar.gz
+    DOWNLOAD_NAME  qtbase-opensource-src_${version}+dfsg.orig.tar.gz
+    # Cannot use "+" in Github releases downloads
+    URL            https://github.com/OpenOrienteering/superbuild/releases/download/2017.03/qtbase-opensource-src_${version}-dfsg.orig.tar.gz
     URL_HASH       SHA256=146cc26240358c1c93fb833cd6a688a8d062dc29417f2199d7af00dd907e0ceb
     PATCH_COMMAND
       "${CMAKE_COMMAND}" -E touch <SOURCE_DIR>/.git
