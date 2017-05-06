@@ -475,7 +475,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON  CACHE BOOL "Enable verbose output from Makefile b
 	if(android_toolchain_dependencies MATCHES "gnustl-4.9")
 		set(install_copyright
 "	    COMMAND
-	      \"\${CMAKE_COMMAND}\" -E copy
+	      \"\${CMAKE_COMMAND}\" -E copy_if_different
 	        \"<SOURCE_DIR>/../android-gnustl-4.9-${ndk_version}/copyright\"
 	        \"${install_dir}${${system_name}_INSTALL_PREFIX}/share/doc/copyright/gnustl-4.9.txt\"
 "
