@@ -58,28 +58,19 @@ superbuild_package(
       "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
       "-DBUILD_SHARED_LIBS=0"
       "-DMapper_AUTORUN_SYSTEM_TESTS=0"
-      "-DMapper_BUILD_CLIPPER=0"
-      "-DMapper_BUILD_GDAL=0"
-      "-DMapper_BUILD_PROJ=0"
-      "-DMapper_BUILD_QT=0"
-      "-DMapper_BUILD_DOXYGEN=0"
-      "-DMapper_USE_GDAL=1"
       "-DMapper_BUILD_PACKAGE=1"
-    $<$<OR:$<BOOL:${APPLE}>,$<BOOL:${WINDOWS}>>:
-        "-DMapper_PACKAGE_ASSISTANT=1"
-    >$<$<NOT:$<OR:$<BOOL:${APPLE}>,$<BOOL:${WINDOWS}>>>:
-        "-DMapper_PACKAGE_ASSISTANT=0"
-    >
-        "-DMapper_PACKAGE_GDAL=1"
-        "-DMapper_PACKAGE_PROJ=1"
-        "-DMapper_PACKAGE_QT=1"
-        "-DMAPPER_USE_QT_CONF_QRC=0"
     $<$<BOOL:ANDROID>:
       "-DKEYSTORE_URL=${KEYSTORE_URL}"
       "-DKEYSTORE_ALIAS=${KEYSTORE_ALIAS}"
     >
     INSTALL_COMMAND
-      "${CMAKE_COMMAND}" --build . --target install/strip -- "DESTDIR=${INSTALL_DIR}/openorienteering"
+      "${CMAKE_COMMAND}" --build . --target install -- VERBOSE=1
+      $<$<BOOL:${WIN32}>:
+        # Mapper Windows installation layout is weird
+        "DESTDIR=${INSTALL_DIR}/OpenOrienteering"
+      >$<$<NOT:$<BOOL:${WIN32}>>:
+        "DESTDIR=${INSTALL_DIR}"
+      >
   $<$<NOT:$<BOOL:${CMAKE_CROSSCOMPILING}>>:
     TEST_BEFORE_INSTALL 1
   >
