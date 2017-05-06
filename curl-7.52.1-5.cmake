@@ -29,8 +29,8 @@
 
 set(version        7.52.1)
 set(download_hash  SHA256=a8984e8b20880b621f61a62d95ff3c0763a3152093a9f9ce4287cfd614add6ae)
-set(patch_version  ${version}-3)
-set(patch_hash     SHA256=e5a04a18e7728f3898da50845537123d3a500da7f959119eb36f1f73daee8cf7)
+set(patch_version  ${version}-5)
+set(patch_hash     SHA256=67e9388c5562edbdd63fa31a892d446bd7dee18207a62ec367bc925f6ce50fcf)
 
 option(USE_SYSTEM_CURL "Use the system curl if possible" ON)
 
