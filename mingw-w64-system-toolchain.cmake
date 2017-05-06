@@ -37,6 +37,10 @@ option(ENABLE_${system_name_64} "Enable the ${system_name_64} toolchain" 0)
 set(i686-w64-mingw32_SYSTEM_PROCESSOR   x86)
 set(x86_64-w64-mingw32_SYSTEM_PROCESSOR AMD64)
 
+# Debian/Ubuntu package providing gnustl copyright files
+set(i686-w64-mingw32_g++_deb   "g++-mingw-w64-i686")
+set(x86_64-w64-mingw32_g++_deb "g++-mingw-w64-x86-64")
+
 foreach(system_name ${system_name_32} ${system_name_64})
 	if(NOT ENABLE_${system_name})
 		continue()
@@ -49,6 +53,23 @@ foreach(system_name ${system_name_32} ${system_name_64})
 		endif()
 		mark_as_advanced(${system_name}-${tool}_EXECUTABLE)
 	endforeach()
+	
+	get_filename_component(compiler_dir "${${system_name}-g++_EXECUTABLE}" DIRECTORY)
+	find_file(${system_name}-gnustl-copyright-file
+	  NAMES copyright
+	  HINTS "${compiler_dir}/.."
+	  PATHS "/usr"
+	  PATH_SUFFIXES "/share/doc/${${system_name}_g++_deb}"
+	  NO_DEFAULT_PATH
+	  DOC "The copyright file for ${system_name} gcc libstdc++ etc."
+	)
+	if(${system_name}-gnustl-copyright-file)
+		set(${system_name}-gnustl-copyright [["gnustl.txt" "]] "${${system_name}-gnustl-copyright-file}" [[" "3rd-party"]])
+	else()
+		set(${system_name}-gnustl-copyright OFF)
+		message(WARNING "Unable to find a copyright file for ${system_name} gcc libstdc++ etc.")
+		message(WARNING "Please set '${system_name}-gnustl-copyright-file' to the absolute path of such a text file.")
+	endif()
 	
 	sb_toolchain_dir(toolchain_dir ${system_name})
 	sb_install_dir(install_dir ${system_name})
@@ -71,6 +92,7 @@ set(SUPERBUILD_TOOLCHAIN_TRIPLET "]] ${system_name} [[")
 set(CMAKE_C_COMPILER       "]] "${${system_name}-gcc_EXECUTABLE}" [[")
 set(CMAKE_CXX_COMPILER     "]] "${${system_name}-g++_EXECUTABLE}" [[")
 set(CMAKE_RC_COMPILER      "]] "${${system_name}-windres_EXECUTABLE}" [[")
+set(explicit_copyright_gnustl ]] "${${system_name}-gnustl-copyright}" [[)
 
 set(TOOLCHAIN_DIR          "]] "${toolchain_dir}" [[")
 set(INSTALL_DIR            "]] "${install_dir}" [[")
