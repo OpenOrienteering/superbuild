@@ -106,4 +106,15 @@ superbuild_package(
   VERSION        ${patch_version}
   DEPENDS
     xz-utils-${patch_version}
+    
+  USING            USE_SYSTEM_LZMA patch_version
+  BUILD_CONDITION  ${test_system_lzma}
+  BUILD [[
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND     ""
+    INSTALL_COMMAND
+      "${CMAKE_COMMAND}" -E copy
+        "<SOURCE_DIR>/../xz-utils-patches-${patch_version}/copyright"
+        "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/share/doc/copyright/liblzma-${patch_version}.txt"
+  ]]
 )
