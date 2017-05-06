@@ -27,8 +27,8 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version  9.8)
-set(download_hash  SHA256=43c7fb8725aa24b7e564139030c1f8c0d4066b4bc896124b30fca5d82fc1ec3f)
+set(version  9.9)
+set(download_hash  SHA256=c941e091eea9d2949b6ed3b8d37ea1d086b50b10d564103d52fafcd129ac1931)
 
 set(cmakelists_txt [[
 cmake_minimum_required(VERSION 3.0)
