@@ -59,7 +59,7 @@ superbuild_package(
       "-DBUILD_SHARED_LIBS=0"
       "-DMapper_AUTORUN_SYSTEM_TESTS=0"
       "-DMapper_BUILD_PACKAGE=1"
-    $<$<BOOL:ANDROID>:
+    $<$<BOOL:${ANDROID}>:
       "-DKEYSTORE_URL=${KEYSTORE_URL}"
       "-DKEYSTORE_ALIAS=${KEYSTORE_ALIAS}"
     >
