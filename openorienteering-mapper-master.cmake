@@ -60,8 +60,13 @@ superbuild_package(
       "-DMapper_AUTORUN_SYSTEM_TESTS=0"
       "-DMapper_BUILD_PACKAGE=1"
     $<$<BOOL:${ANDROID}>:
+      "-DCMAKE_DISABLE_FIND_PACKAGE_Qt5PrintSupport=TRUE"
       "-DKEYSTORE_URL=${KEYSTORE_URL}"
       "-DKEYSTORE_ALIAS=${KEYSTORE_ALIAS}"
+    >
+    $<$<NOT:$<BOOL:${ANDROID}>>:
+      "-DCMAKE_DISABLE_FIND_PACKAGE_Qt5Positioning=TRUE"
+      "-DCMAKE_DISABLE_FIND_PACKAGE_Qt5Sensors=TRUE"
     >
     INSTALL_COMMAND
       "${CMAKE_COMMAND}" --build . --target install -- VERBOSE=1
