@@ -181,6 +181,7 @@ superbuild_package(
       -confirm-license
       $<$<CONFIG:Debug>:-debug>$<$<NOT:$<CONFIG:Debug>>:-release -no-qml-debug $<$<CONFIG:RelWithDebInfo>:-force-debug-info>>
       -shared
+      -no-pch
       -gui
       -widgets
       -system-libjpeg
@@ -220,6 +221,7 @@ superbuild_package(
         >
         $<${android}:
           -xplatform     android-g++-${SYSTEM_NAME}
+          -android-arch  "${CMAKE_ANDROID_ARCH_ABI}"
           -android-ndk   "${ANDROID_NDK_ROOT}"
           -android-sdk   "${ANDROID_SDK_ROOT}"
         >
