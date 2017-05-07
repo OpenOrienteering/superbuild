@@ -33,7 +33,7 @@ set(supported_abis
 )
 
 set(system_name_armeabi-v7a arm-linux-androideabi)
-set(system_name_x86         x86-linux-android)
+set(system_name_x86         i686-linux-android)
 
 set(enabled_abis )
 foreach(abi ${supported_abis})
@@ -484,6 +484,8 @@ set(CMAKE_VERBOSE_MAKEFILE ON  CACHE BOOL "Enable verbose output from Makefile b
 		set(install_copyright )
 	endif()
 	
+	string(REPLACE "i686-linux-android" "x86" toolchain_name "${system_name}")
+	
 	superbuild_package(
 	  NAME         ${system_name}-toolchain
 	  VERSION      ${version}
@@ -496,7 +498,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON  CACHE BOOL "Enable verbose output from Makefile b
 	  
 	  USING
 	    md5
-	    system_name
+	    toolchain_name
 	    install_copyright
 	    ANDROID_SDK_ROOT
 	    ANDROID_NDK_ROOT
@@ -518,7 +520,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON  CACHE BOOL "Enable verbose output from Makefile b
 	    >
 	    BUILD_COMMAND
 	      bash "${ANDROID_NDK_ROOT}/build/tools/make-standalone-toolchain.sh"
-	        "--toolchain=${system_name}-4.9"
+	        "--toolchain=${toolchain_name}-4.9"
 	        "--platform=android-${ANDROID_API}"
 	        "--install-dir=${INSTALL_DIR}"
 	    INSTALL_COMMAND
