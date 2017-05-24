@@ -27,10 +27,12 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+# https://tracker.debian.org/pkg/tiff
+
 set(version        4.0.7)
 set(download_hash  SHA256=9f43a2cfb9589e5cecaa66e16bf87f814c945f22df7ba600d63aac4632c4f019)
-set(patch_version  ${version}-5)
-set(patch_hash     SHA256=f4183c48ed74b6c3c3a74ff1f10f0cf972d3dba0f840cf28b5a3f3846ceb2be6)
+set(patch_version  ${version}-7)
+set(patch_hash     SHA256=bc332bc152941e188c11982baf697d969fb0f6d25739dbbabe97cc5d536d7d92)
 
 option(USE_SYSTEM_LIBTIFF "Use the system libtiff if possible" ON)
 
