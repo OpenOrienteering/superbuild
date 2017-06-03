@@ -29,10 +29,10 @@
 
 # https://tracker.debian.org/pkg/tiff
 
-set(version        4.0.7)
-set(download_hash  SHA256=9f43a2cfb9589e5cecaa66e16bf87f814c945f22df7ba600d63aac4632c4f019)
-set(patch_version  ${version}-7)
-set(patch_hash     SHA256=bc332bc152941e188c11982baf697d969fb0f6d25739dbbabe97cc5d536d7d92)
+set(version        4.0.8)
+set(download_hash  SHA256=59d7a5a8ccd92059913f246877db95a2918e6c04fb9d43fd74e5c3390dac2910)
+set(patch_version  ${version}-2)
+set(patch_hash     SHA256=cfa2a2afd36a139993daf1b321dd614052f412ba239251b91474e764b78152eb)
 
 option(USE_SYSTEM_LIBTIFF "Use the system libtiff if possible" ON)
 
