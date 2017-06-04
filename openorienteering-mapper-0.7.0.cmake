@@ -27,7 +27,8 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        0.7.0-RC4)
+set(version        0.7.0)
+set(download_hash  SHA256=bc12453bff1863186e5ee7d7d47f43d4ce65a74bd9bb57fada709e0dc68c1065)
 set(qt_version     5.6.2)
 
 superbuild_package(
@@ -51,6 +52,7 @@ superbuild_package(
   SOURCE
     DOWNLOAD_NAME  openorienteering-mapper_${version}.tar.gz
     URL            https://github.com/OpenOrienteering/mapper/archive/v${version}.tar.gz
+    URL_HASH       ${download_hash}
   
   BUILD_CONDITION [[
     if(NOT CMAKE_BUILD_TYPE MATCHES "Rel")
