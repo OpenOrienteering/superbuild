@@ -82,6 +82,12 @@ superbuild_package(
       "${CMAKE_COMMAND}"
         -Dpackage=libjpeg-turbo-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
+    # Fix build with missing SIZE_MAX before android-20
+    COMMAND
+      sed -i -e "/limits.h/d" "<SOURCE_DIR>/jmemmgr.c"
+    COMMAND
+      sed -i -e "/stdint.h/i #include <limits.h>" "<SOURCE_DIR>/jmemmgr.c"
+      
   
   USING            USE_SYSTEM_LIBJPEG NASM_EXECUTABLE patch_version
   BUILD_CONDITION  ${test_system_jpeg}
@@ -92,8 +98,14 @@ superbuild_package(
         $<$<BOOL:${CMAKE_CROSSCOMPILING}>:
           --host=${SUPERBUILD_TOOLCHAIN_TRIPLET}
         >
+        $<$<NOT:$<BOOL:${ANDROID}>>:
         --disable-static
         --enable-shared
+        >$<$<BOOL:${ANDROID}>:
+        # Static only. There may be an interfering libjeg.so on the device.
+        --enable-static
+        --disable-shared
+        >
         --disable-silent-rules
         --without-12bit
         $<$<NOT:$<STREQUAL:${NASM_EXECUTABLE},NASM_EXECUTABLE-NOTFOUND>>:
@@ -101,10 +113,7 @@ superbuild_package(
         >$<$<STREQUAL:${NASM_EXECUTABLE},NASM_EXECUTABLE-NOTFOUND>:
         --without-simd
         >
-        $<$<BOOL:${ANDROID}>:
-        # No SIZE_MAX before android-20
-        CPPFLAGS=-DSIZE_MAX=UINT32_MAX
-        > # ANDROID
+        "CFLAGS=$${}{CMAKE_C_FLAGS} $${}{CMAKE_C_FLAGS_$<UPPER_CASE:$<CONFIG>>}"
     INSTALL_COMMAND
       "$(MAKE)" install "DESTDIR=${INSTALL_DIR}"
     COMMAND
