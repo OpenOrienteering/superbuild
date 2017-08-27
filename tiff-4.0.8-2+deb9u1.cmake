@@ -31,8 +31,8 @@
 
 set(version        4.0.8)
 set(download_hash  SHA256=59d7a5a8ccd92059913f246877db95a2918e6c04fb9d43fd74e5c3390dac2910)
-set(patch_version  ${version}-2)
-set(patch_hash     SHA256=cfa2a2afd36a139993daf1b321dd614052f412ba239251b91474e764b78152eb)
+set(patch_version  ${version}-2+deb9u1)
+set(patch_hash     SHA256=a0ed755351bbc4e8a05413316d782c071bccfb1b915767cc9bc09d56f31d34b5)
 
 option(USE_SYSTEM_LIBTIFF "Use the system libtiff if possible" ON)
 
