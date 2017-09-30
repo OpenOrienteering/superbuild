@@ -29,8 +29,8 @@
 
 set(version        2.2.0)
 set(download_hash  SHA256=d9e50ff2d19b3538bd2127902a89987474e1a4db8e43a66a4d1a712ab9a504ff)
-set(patch_version  ${version}-2)
-set(patch_hash     SHA256=3e99516590c6719bcba54281b16900be19651b7d3b29ba8e4e9632306235f29b)
+set(patch_version  ${version}-2+deb9u1)
+set(patch_hash     SHA256=d3e171fc4d2e6173945daab7d7df46d640fa23134c9474080f6d1b65d494b0a5)
 
 option(USE_SYSTEM_EXPAT "Use the system Expat if possible" ON)
 
