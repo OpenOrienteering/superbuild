@@ -150,7 +150,7 @@ then
 	git clone --no-checkout https://android.googlesource.com/toolchain/gcc.git
 else
 	echo "Updating local git repository..."
-	( cd gcc; git fetch )
+	( cd gcc\; git fetch )
 fi
 
 REVISION=$(sed -e '/gcc.git/!d\\;s/^[^ ]* *\|([^ ]* *\| .*//g' "$ANDROID_NDK_ROOT/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/SOURCES")
