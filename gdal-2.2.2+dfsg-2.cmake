@@ -29,10 +29,10 @@
 
 # https://tracker.debian.org/pkg/gdal
 
-set(version        2.1.2+dfsg)
-set(download_hash  SHA256=8c0961400ad64d54cb387d7ebf54411ad91ba4b3955121e56baaaa61785f9b1c)
-set(patch_version  ${version}-5)
-set(patch_hash     SHA256=f540e17d907e4e4260986ae1a355603623ba92183195a6e91f5e152613952112)
+set(version        2.2.2+dfsg)
+set(download_hash  SHA256=1a63e1ece046f3abf5490cdbe441a4889a7d2028709459d0154e04d60c7f1109)
+set(patch_version  ${version}-2)
+set(patch_hash     SHA256=d221d2bbdd3abb3f84dccb979be1420b97295a5bf1b372022226d584556bb714)
 
 if(APPLE)
 	set(copy_dir cp -aR)
@@ -104,7 +104,7 @@ superbuild_package(
   VERSION        ${patch_version}
   
   SOURCE
-    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_06}/pool/main/g/gdal/gdal_${patch_version}.debian.tar.xz
+    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_11}/pool/main/g/gdal/gdal_${patch_version}.debian.tar.xz
     URL_HASH       ${patch_hash}
 )
   
@@ -126,7 +126,7 @@ superbuild_package(
     zlib
   
   SOURCE
-    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_06}/pool/main/g/gdal/gdal_${version}.orig.tar.gz
+    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_11}/pool/main/g/gdal/gdal_${version}.orig.tar.xz
     URL_HASH       ${download_hash}
     PATCH_COMMAND
       "${CMAKE_COMMAND}"
@@ -150,6 +150,10 @@ superbuild_package(
     COMMAND
       # Fix .so versioning
       sed -i -e "/ -avoid-version/! s,^LD.*=.*LIBTOOL_LINK.*,& -avoid-version," "${BINARY_DIR}/GDALmake.opt.in"
+    COMMAND
+      # Android NDK STL quirk
+      sed -i -e "/__sun__/ s,#if .*,#if 1," "${BINARY_DIR}/ogr/ogrsf_frmts/cad/libopencad/dwg/r2000.cpp"
+                                            "${BINARY_DIR}/ogr/ogrsf_frmts/cad/libopencad/cadheader.cpp"
     >
     $<$<NOT:$<CONFIG:Debug>>:
     COMMAND
