@@ -52,7 +52,7 @@ superbuild_package(
   VERSION        ${patch_version}
   
   SOURCE
-    URL            http://http.debian.net/debian/pool/main/s/sqlite3/sqlite3_${patch_version}.debian.tar.xz
+    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_03}/pool/main/s/sqlite3/sqlite3_${patch_version}.debian.tar.xz
     URL_HASH       ${patch_hash}
 )
   

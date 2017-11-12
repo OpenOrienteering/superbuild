@@ -64,7 +64,7 @@ superbuild_package(
   VERSION        ${patch_version}
   
   SOURCE
-    URL            http://http.debian.net/debian/pool/main/libj/libjpeg-turbo/libjpeg-turbo_${patch_version}.debian.tar.xz
+    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_06}/pool/main/libj/libjpeg-turbo/libjpeg-turbo_${patch_version}.debian.tar.xz
     URL_HASH       ${patch_hash}
 )
   
@@ -76,7 +76,7 @@ superbuild_package(
   
   SOURCE
     DOWNLOAD_NAME  libjpeg-turbo_${version}.orig.tar.gz
-    URL            http://http.debian.net/debian/pool/main/libj/libjpeg-turbo/libjpeg-turbo_${version}.orig.tar.gz
+    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_06}/pool/main/libj/libjpeg-turbo/libjpeg-turbo_${version}.orig.tar.gz
     URL_HASH       ${download_hash}
     PATCH_COMMAND
       "${CMAKE_COMMAND}"

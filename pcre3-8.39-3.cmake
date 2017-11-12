@@ -52,7 +52,7 @@ superbuild_package(
   VERSION        ${patch_version}
   
   SOURCE
-    URL            http://http.debian.net/debian/pool/main/p/pcre3/pcre3_${patch_version}.debian.tar.gz
+    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_06}/pool/main/p/pcre3/pcre3_${patch_version}.debian.tar.gz
     URL_HASH       ${patch_hash}
 )
   
@@ -63,7 +63,7 @@ superbuild_package(
     source:pcre3-patches-${patch_version}
   
   SOURCE
-    URL            http://http.debian.net/debian/pool/main/p/pcre3/pcre3_${version}.orig.tar.bz2
+    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_06}/pool/main/p/pcre3/pcre3_${version}.orig.tar.bz2
     URL_HASH       ${download_hash}
     PATCH_COMMAND
       "${CMAKE_COMMAND}"

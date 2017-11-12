@@ -52,7 +52,7 @@ superbuild_package(
   VERSION        ${patch_version}
   
   SOURCE
-    URL            http://http.debian.net/debian/pool/main/libp/libpng1.6/libpng1.6_${patch_version}.debian.tar.xz
+    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_06}/pool/main/libp/libpng1.6/libpng1.6_${patch_version}.debian.tar.xz
     URL_HASH       ${patch_hash}
 )
 
@@ -65,7 +65,7 @@ superbuild_package(
     zlib
   
   SOURCE
-    URL            http://http.debian.net/debian/pool/main/libp/libpng1.6/libpng1.6_${version}.orig.tar.xz
+    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_06}/pool/main/libp/libpng1.6/libpng1.6_${version}.orig.tar.xz
     URL_HASH       ${download_hash}
     PATCH_COMMAND
       "${CMAKE_COMMAND}"

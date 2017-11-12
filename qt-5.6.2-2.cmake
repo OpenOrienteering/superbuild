@@ -30,7 +30,6 @@
 set(version        5.6.2)
 set(patch_version  ${version}-2)
 set(base_url       https://download.qt.io/archive/qt/5.6/${version}/submodules/)
-set(superbuild_url https://github.com/OpenOrienteering/superbuild/releases/download/2017.06)
 
 # qtbase
 
@@ -50,7 +49,7 @@ superbuild_package(
     common-licenses
   
   SOURCE
-    URL            ${superbuild_url}/qt-copyright_${version}.tar.gz
+    URL            ${SUPERBUILD_RELEASE_BASE_URL_2017_06}/qt-copyright_${version}.tar.gz
     URL_HASH       SHA256=9d0ef95724c0f3f9c84441f7f25481299fe982926fc1b585b57884d8d60001ca
   
   BUILD [[
@@ -68,7 +67,7 @@ superbuild_package(
   NAME           qtbase-patches
   VERSION        ${version}-2
   SOURCE
-    URL            ${superbuild_url}/qtbase_${patch_version}.openorienteering.tar.gz
+    URL            ${SUPERBUILD_RELEASE_BASE_URL_2017_06}/qtbase_${patch_version}.openorienteering.tar.gz
     URL_HASH       SHA256=80e6821ed4f1a7da3cb15064f366ce08ccede149be9aec9550b1972d4115cefa
 )
   
@@ -87,7 +86,7 @@ superbuild_package(
   SOURCE
     DOWNLOAD_NAME  qtbase-opensource-src_${version}+dfsg.orig.tar.gz
     # Cannot use "+" in Github releases downloads
-    URL            ${superbuild_url}/qtbase-opensource-src_${version}-dfsg.orig.tar.gz
+    URL            ${SUPERBUILD_RELEASE_BASE_URL_2017_06}/qtbase-opensource-src_${version}-dfsg.orig.tar.gz
     URL_HASH       SHA256=146cc26240358c1c93fb833cd6a688a8d062dc29417f2199d7af00dd907e0ceb
     PATCH_COMMAND
       "${CMAKE_COMMAND}" -E touch <SOURCE_DIR>/.git
