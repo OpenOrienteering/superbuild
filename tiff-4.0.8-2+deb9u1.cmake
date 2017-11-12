@@ -74,6 +74,10 @@ superbuild_package(
       "${CMAKE_COMMAND}"
         -Dpackage=tiff-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
+    COMMAND
+      echo "\tTIFFReadRGBAStripExt" >> libtiff/libtiff.def
+    COMMAND
+      echo "\tTIFFReadRGBATileExt" >> libtiff/libtiff.def
   
   USING            USE_SYSTEM_LIBTIFF patch_version
   BUILD_CONDITION  ${test_system_tiff}
