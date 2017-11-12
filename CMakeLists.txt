@@ -62,6 +62,7 @@ set(SUPERBUILD_RELEASE_BASE_URL_2017_11 "https://github.com/OpenOrienteering/sup
 set(SUPERBUILD_DEBIAN_BASE_URL_2017_03 "http://snapshot.debian.org/archive/debian/20170325T152634Z")
 set(SUPERBUILD_DEBIAN_BASE_URL_2017_06 "http://snapshot.debian.org/archive/debian/20170604T033458Z")
 set(SUPERBUILD_DEBIAN_BASE_URL_2017_11 "http://snapshot.debian.org/archive/debian/20171110T094433Z")
+set(SUPERBUILD_DEBIAN_SECURITY_URL_2017_11 "http://snapshot.debian.org/archive/debian-security/20171027T200949Z")
 
 include(CMakeParseArguments)
 include(ExternalProject)

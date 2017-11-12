@@ -29,8 +29,8 @@
 
 set(version        7.52.1)
 set(download_hash  SHA256=a8984e8b20880b621f61a62d95ff3c0763a3152093a9f9ce4287cfd614add6ae)
-set(patch_version  ${version}-5)
-set(patch_hash     SHA256=67e9388c5562edbdd63fa31a892d446bd7dee18207a62ec367bc925f6ce50fcf)
+set(patch_version  ${version}-5+deb9u2)
+set(patch_hash     SHA256=42d3e01db23a7d5e763f17e4d3aa32f97acfaf3154f246e3be0cbb38a1707450)
 
 option(USE_SYSTEM_CURL "Use the system curl if possible" ON)
 
@@ -52,7 +52,7 @@ superbuild_package(
   VERSION        ${patch_version}
   
   SOURCE
-    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_06}/pool/main/c/curl/curl_${patch_version}.debian.tar.xz
+    URL            ${SUPERBUILD_DEBIAN_SECURITY_URL_2017_11}/pool/updates/main/c/curl/curl_${patch_version}.debian.tar.xz
     URL_HASH       ${patch_hash}
 )
   
