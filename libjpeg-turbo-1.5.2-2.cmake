@@ -27,10 +27,10 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        1.5.1)
-set(download_hash  SHA256=41429d3d253017433f66e3d472b8c7d998491d2f41caa7306b8d9a6f2a2c666c)
+set(version        1.5.2)
+set(download_hash  SHA256=9098943b270388727ae61de82adec73cf9f0dbb240b3bc8b172595ebf405b528)
 set(patch_version  ${version}-2)
-set(patch_hash     SHA256=0077c9e2b7ec2abe25c7a591e65a08750045a28dcd00207a928079a3d31b3cc4)
+set(patch_hash     SHA256=964a2d747f8e74cbd558f343afd11b7dfe37212a611eeca863f1908eba66f728)
 
 option(USE_SYSTEM_LIBJPEG "Use the system libjpeg if possible" ON)
 
@@ -64,7 +64,7 @@ superbuild_package(
   VERSION        ${patch_version}
   
   SOURCE
-    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_06}/pool/main/libj/libjpeg-turbo/libjpeg-turbo_${patch_version}.debian.tar.xz
+    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_11}/pool/main/libj/libjpeg-turbo/libjpeg-turbo_${patch_version}.debian.tar.xz
     URL_HASH       ${patch_hash}
 )
   
@@ -76,18 +76,13 @@ superbuild_package(
   
   SOURCE
     DOWNLOAD_NAME  libjpeg-turbo_${version}.orig.tar.gz
-    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_06}/pool/main/libj/libjpeg-turbo/libjpeg-turbo_${version}.orig.tar.gz
+    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_11}/pool/main/libj/libjpeg-turbo/libjpeg-turbo_${version}.orig.tar.gz
     URL_HASH       ${download_hash}
     PATCH_COMMAND
       "${CMAKE_COMMAND}"
         -Dpackage=libjpeg-turbo-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
-    # Fix build with missing SIZE_MAX before android-20
-    COMMAND
-      sed -i -e "/limits.h/d" "<SOURCE_DIR>/jmemmgr.c"
-    COMMAND
-      sed -i -e "/stdint.h/i #include <limits.h>" "<SOURCE_DIR>/jmemmgr.c"
-      
+  
   
   USING            USE_SYSTEM_LIBJPEG NASM_EXECUTABLE patch_version
   BUILD_CONDITION  ${test_system_jpeg}
