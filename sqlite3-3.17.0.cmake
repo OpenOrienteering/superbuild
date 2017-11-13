@@ -27,11 +27,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(download_version  autoconf-3170000)
-set(version           3.17.0-${download_version})
-set(download_hash     SHA1=7bcff1c158ed9e2c0e159c1b4b6c36d4d65dff8c)
-set(patch_version     3.17.0-1)
-set(patch_hash        SHA256=e7772890f3b4ea42adf05f2cdbb3759d53670b6bb9bf60a7dcdb9376e7b44544)
+set(download_version  autoconf-3200100)
+set(version           3.20.1-${download_version})
+set(download_hash     SHA1=48593dcd19473f25fe6fcd08048e13ddbff4c983)
+set(patch_version     3.20.1-1)
+set(patch_hash        SHA256=8c205983e0f7baf75419123093a42aac97c94e8454c0adf540838264604e04b3)
 
 option(USE_SYSTEM_SQLITE3 "Use the system sqlite if possible" ON)
 
