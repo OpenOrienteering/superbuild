@@ -27,10 +27,10 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        6.1.3a)
-set(download_hash  SHA256=d18d889ee44ef7516e9524aa4bbd5abd6f50f5dc2e10fefb27228fd3c8e65610)
-set(patch_version  ${version}-2)
-set(patch_hash     SHA256=6ea5bf1bb9ca7fb429257ec33418b2ce4efca8dc7059a98476e06ba4f14b1652)
+set(version        6.4.2)
+set(download_hash  SHA256=69a2fadc3c0b6c06c3f77e92067b65e28e398a75d1260e9114c283a04e76c463)
+set(patch_version  ${version}-3)
+set(patch_hash     SHA256=96b0a1bd0187f069cd3865e209b8f257da210ca541f9cb4f654173ae90fb3bec)
 
 option(USE_SYSTEM_POLYCLIPPING "Use the system libpolyclipping if possible" ON)
 
@@ -51,7 +51,7 @@ superbuild_package(
   VERSION        ${patch_version}
   
   SOURCE
-    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_06}/pool/main/libp/libpolyclipping/libpolyclipping_${patch_version}.debian.tar.xz
+    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_11}/pool/main/libp/libpolyclipping/libpolyclipping_${patch_version}.debian.tar.xz
     URL_HASH       ${patch_hash}
 )
   
@@ -63,7 +63,7 @@ superbuild_package(
     common-licenses
   
   SOURCE
-    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_06}/pool/main/libp/libpolyclipping/libpolyclipping_${version}.orig.tar.xz
+    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_11}/pool/main/libp/libpolyclipping/libpolyclipping_${version}.orig.tar.bz2
     URL_HASH       ${download_hash}
     PATCH_COMMAND
       "${CMAKE_COMMAND}"
