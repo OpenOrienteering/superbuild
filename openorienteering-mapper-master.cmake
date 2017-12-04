@@ -30,6 +30,10 @@
 set(version        master)
 set(qt_version     5.6.2)
 
+set(Mapper_VERSION_DISPLAY 0 CACHE STRING "Mapper: Custom version display string")
+option(Mapper_ENABLE_POSITIONING "Mapper: Enable positioning" OFF)
+option(Mapper_MANUAL_PDF "Mapper: Provide the manual as PDF file (needs pdflatex)" OFF)
+
 superbuild_package(
   NAME           openorienteering-mapper
   VERSION        ${version}
@@ -52,6 +56,9 @@ superbuild_package(
     DOWNLOAD_NAME  openorienteering-mapper_${version}.tar.gz
     URL            https://github.com/OpenOrienteering/mapper/archive/${version}.tar.gz
   
+  USING            Mapper_VERSION_DISPLAY
+                   Mapper_ENABLE_POSITIONING
+                   Mapper_MANUAL_PDF
   BUILD [[
     CMAKE_ARGS
       "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
@@ -59,23 +66,23 @@ superbuild_package(
       "-DBUILD_SHARED_LIBS=0"
       "-DMapper_AUTORUN_SYSTEM_TESTS=0"
       "-DMapper_BUILD_PACKAGE=1"
+      "-DMapper_VERSION_DISPLAY=${Mapper_VERSION_DISPLAY}"
+      "-DMapper_MANUAL_PDF=$<BOOL:${Mapper_MANUAL_PDF}>"
     $<$<BOOL:${ANDROID}>:
       "-DCMAKE_DISABLE_FIND_PACKAGE_Qt5PrintSupport=TRUE"
       "-DKEYSTORE_URL=${KEYSTORE_URL}"
       "-DKEYSTORE_ALIAS=${KEYSTORE_ALIAS}"
     >
-    $<$<NOT:$<BOOL:${ANDROID}>>:
-      "-DCMAKE_DISABLE_FIND_PACKAGE_Qt5Positioning=TRUE"
-      "-DCMAKE_DISABLE_FIND_PACKAGE_Qt5Sensors=TRUE"
+    $<$<NOT:$<OR:$<BOOL:${ANDROID}>,$<BOOL:${Mapper_ENABLE_POSITIONING}>>>:
+      "-DCMAKE_DISABLE_FIND_PACKAGE_Qt5Positioning:BOOL=TRUE"
+      "-UQt5Positioning_DIR"
+      "-DCMAKE_DISABLE_FIND_PACKAGE_Qt5Sensors:BOOL=TRUE"
+      "-UQt5Sensors_DIR"
     >
     INSTALL_COMMAND
       "${CMAKE_COMMAND}" --build . --target install -- VERBOSE=1
-      $<$<BOOL:${WIN32}>:
         # Mapper Windows installation layout is weird
-        "DESTDIR=${INSTALL_DIR}/OpenOrienteering"
-      >$<$<NOT:$<BOOL:${WIN32}>>:
-        "DESTDIR=${INSTALL_DIR}"
-      >
+        "DESTDIR=${INSTALL_DIR}$<$<BOOL:${WIN32}>:/OpenOrienteering>"
   $<$<NOT:$<BOOL:${CMAKE_CROSSCOMPILING}>>:
     TEST_BEFORE_INSTALL 1
   >
