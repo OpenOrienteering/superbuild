@@ -512,8 +512,12 @@ endfunction()
 # Provide default toolchain settings, if not existing
 function(_sb_create_default_toolchain)
 	if(NOT DEFINED default_INSTALL_DIR)
-		set(default_INSTALL_DIR "" )
+		set(default_INSTALL_DIR "")
 		set(default_INSTALL_DIR "${default_INSTALL_DIR}" PARENT_SCOPE)
+	endif()
+	if(NOT DEFINED default_PREFIX_PATH)
+		set(default_PREFIX_PATH "${CMAKE_PREFIX_PATH}")
+		set(default_PREFIX_PATH "${default_PREFIX_PATH}" PARENT_SCOPE)
 	endif()
 	if(NOT DEFINED default_INSTALL_PREFIX)
 		sb_install_dir(default_INSTALL_PREFIX "default")
@@ -536,6 +540,8 @@ set(TOOLCHAIN_DIR          "]] "${default_TOOLCHAIN_DIR}" [["
 # so it must be cached for the default toolchain
 set(INSTALL_DIR            "]] "${default_INSTALL_DIR}" [["
     CACHE PATH             "The install root for the output of this toolchain")
+set(CMAKE_PREFIX_PATH      "]] "${default_PREFIX_PATH}" [["
+    CACHE PATH             "Path used for searching by FIND_XXX()")
 set(CMAKE_INSTALL_PREFIX   "]] "${default_INSTALL_PREFIX}" [["
     CACHE PATH             "Install path prefix, prepended onto install directories")
 if(APPLE AND NOT CMAKE_INSTALL_NAME_DIR)
