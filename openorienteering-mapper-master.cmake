@@ -31,6 +31,7 @@ set(version        master)
 set(qt_version     5.6.2)
 
 set(Mapper_VERSION_DISPLAY 0 CACHE STRING "Mapper: Custom version display string")
+set(Mapper_LICENSING_PROVIDER "superbuild" CACHE STRING "Mapper: Provider for 3rd-party licensing information")
 option(Mapper_ENABLE_POSITIONING "Mapper: Enable positioning" OFF)
 option(Mapper_MANUAL_PDF "Mapper: Provide the manual as PDF file (needs pdflatex)" OFF)
 
@@ -57,6 +58,7 @@ superbuild_package(
     URL            https://github.com/OpenOrienteering/mapper/archive/${version}.tar.gz
   
   USING            Mapper_VERSION_DISPLAY
+                   Mapper_LICENSING_PROVIDER
                    Mapper_ENABLE_POSITIONING
                    Mapper_MANUAL_PDF
   BUILD [[
@@ -65,6 +67,7 @@ superbuild_package(
       "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
       "-DBUILD_SHARED_LIBS=0"
       "-DMapper_AUTORUN_SYSTEM_TESTS=0"
+      "-DLICENSING_PROVIDER=${Mapper_LICENSING_PROVIDER}"
       "-DMapper_BUILD_PACKAGE=1"
       "-DMapper_VERSION_DISPLAY=${Mapper_VERSION_DISPLAY}"
       "-DMapper_MANUAL_PDF=$<BOOL:${Mapper_MANUAL_PDF}>"
