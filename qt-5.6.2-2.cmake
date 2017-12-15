@@ -31,6 +31,58 @@ set(version        5.6.2)
 set(patch_version  ${version}-2)
 set(base_url       https://download.qt.io/archive/qt/5.6/${version}/submodules/)
 
+option(USE_SYSTEM_QT "Use the system Qt if possible" ON)
+
+string(CONFIGURE [[
+	if("${module}" MATCHES "Android" AND NOT ANDROID)
+		set(BUILD_CONDITION 0)
+	elseif(USE_SYSTEM_QT)
+		find_package(Qt5Core @version@ CONFIG QUIET)
+		if(Qt5Core_VERSION)
+			find_package(${module} ${Qt5Core_VERSION} CONFIG EXACT REQUIRED)
+			if(${module}_VERSION
+			   AND (NOT ${module}_INCLUDE_DIRS
+			        OR NOT "${module}_INCLUDE_DIRS" MATCHES "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"))
+				message(STATUS "Found ${SYSTEM_NAME} ${module}: ${${module}_VERSION}")
+				set(BUILD_CONDITION 0)
+			else()
+				message(STATUS "Found ${SYSTEM_NAME} Qt5Core ${Qt5Core_VERSION}, but no matching ${module}")
+			endif()
+		endif()
+	endif()
+
+	if(BUILD_CONDITION AND "${PROJECT_NAME}" MATCHES "qtbase")
+		# Preparation for cross compiling
+		# Cf. qtbase configure "SYSTEM_VARIABLES"
+		set(pattern "^load(qt_config)")
+		set(qmake "QMAKE")
+		if(ANDROID)
+			set(pattern "^include(.*\\/android-base-tail.conf)")
+			set(qmake "QMAKE_ANDROID_PLATFORM")
+		endif()
+		set(qmake_conf_changes )
+		if(DEFINED ENV_CFLAGS)
+			list(APPEND qmake_conf_changes "/${pattern}/ i QMAKE_CFLAGS   *= ${ENV_CFLAGS}\n")
+		endif()
+		if(DEFINED ENV_CXXFLAGS)
+			list(APPEND qmake_conf_changes "/${pattern}/ i QMAKE_CXXFLAGS *= ${ENV_CXXFLAGS}\n")
+		endif()
+		if(DEFINED ENV_LDFLAGS)
+			list(APPEND qmake_conf_changes "/${pattern}/ i QMAKE_LFLAGS   *= ${ENV_LDFLAGS}\n")
+		endif()
+		string(REGEX REPLACE "-f[^ ]*exceptions|-O[^ ]*|-g|-W[a-z][a-z][^ ]*|[^ ]*_FORTIFY_SOURCE[^ ]*" "" qmake_conf_changes "${qmake_conf_changes}")
+		file(WRITE "${BINARY_DIR}/qmake_conf_changes.sed"
+		  "/${pattern}/ i\n"
+		  "/${pattern}/ i # Begin of changes from superbuild\n"
+		  ${qmake_conf_changes}
+		  "/${pattern}/ i ${qmake}_INCDIR *= \"${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/include\"\n"
+		  "/${pattern}/ i ${qmake}_LIBDIR *= \"${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/lib\"\n"
+		  "/${pattern}/ i # End of changes from superbuild\n"
+		  "/${pattern}/ i\n"
+		)
+	endif()
+]] use_system_qt @ONLY)
+
 # qtbase
 
 set(default        [[$<STREQUAL:${SYSTEM_NAME},default>]])
@@ -42,6 +94,7 @@ set(use_sysroot    [[$<NOT:$<AND:$<BOOL:${CMAKE_CROSSCOMPILING}>,$<BOOL:${ANDROI
 set(qmake          [[$<$<BOOL:${CMAKE_CROSSCOMPILING}>:${TOOLCHAIN_DIR}>$<$<NOT:$<BOOL:${CMAKE_CROSSCOMPILING}>>:${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}>/bin/qmake]])
 
 
+set(module Qt5Core)
 superbuild_package(
   NAME           qt-copyright
   VERSION        ${version}
@@ -52,6 +105,8 @@ superbuild_package(
     URL            ${SUPERBUILD_RELEASE_BASE_URL_2017_06}/qt-copyright_${version}.tar.gz
     URL_HASH       SHA256=9d0ef95724c0f3f9c84441f7f25481299fe982926fc1b585b57884d8d60001ca
   
+  USING            USE_SYSTEM_QT module
+  BUILD_CONDITION  ${use_system_qt}
   BUILD [[
     CONFIGURE_COMMAND ""
     BUILD_COMMAND     ""
@@ -71,6 +126,7 @@ superbuild_package(
     URL_HASH       SHA256=80e6821ed4f1a7da3cb15064f366ce08ccede149be9aec9550b1972d4115cefa
 )
   
+set(module Qt5Core)
 superbuild_package(
   NAME         qtbase
   VERSION      ${version}
@@ -116,37 +172,8 @@ superbuild_package(
     COMMAND
       "${CMAKE_COMMAND}" -E remove -f src/3rdparty/zlib/*.c
   
-  USING default crosscompiling windows android macos
-  BUILD_CONDITION [[
-    # Not a build condition, but preparation for cross compiling
-    # Cf. qtbase configure "SYSTEM_VARIABLES"
-    set(pattern "^load(qt_config)")
-    set(qmake "QMAKE")
-    if(ANDROID)
-        set(pattern "^include(.*\\/android-base-tail.conf)")
-        set(qmake "QMAKE_ANDROID_PLATFORM")
-    endif()
-    set(qmake_conf_changes )
-    if(DEFINED ENV_CFLAGS)
-        list(APPEND qmake_conf_changes "/${pattern}/ i QMAKE_CFLAGS   *= ${ENV_CFLAGS}\n")
-    endif()
-    if(DEFINED ENV_CXXFLAGS)
-        list(APPEND qmake_conf_changes "/${pattern}/ i QMAKE_CXXFLAGS *= ${ENV_CXXFLAGS}\n")
-    endif()
-    if(DEFINED ENV_LDFLAGS)
-        list(APPEND qmake_conf_changes "/${pattern}/ i QMAKE_LFLAGS   *= ${ENV_LDFLAGS}\n")
-    endif()
-    string(REGEX REPLACE "-f[^ ]*exceptions|-O[^ ]*|-g|-W[a-z][a-z][^ ]*|[^ ]*_FORTIFY_SOURCE[^ ]*" "" qmake_conf_changes "${qmake_conf_changes}")
-    file(WRITE "${BINARY_DIR}/qmake_conf_changes.sed" 
-      "/${pattern}/ i\n"
-      "/${pattern}/ i # Begin of changes from superbuild\n"
-      ${qmake_conf_changes}
-      "/${pattern}/ i ${qmake}_INCDIR *= \"${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/include\"\n"
-      "/${pattern}/ i ${qmake}_LIBDIR *= \"${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/lib\"\n"
-      "/${pattern}/ i # End of changes from superbuild\n"
-      "/${pattern}/ i\n"
-    )
-  ]]
+  USING default crosscompiling windows android macos USE_SYSTEM_QT module
+  BUILD_CONDITION  ${use_system_qt}
   BUILD [[
     CONFIGURE_COMMAND 
     $<${crosscompiling}:
@@ -235,6 +262,7 @@ superbuild_package(
 
 # qtandroidextras
 
+set(module Qt5AndroidExtras)
 superbuild_package(
   NAME           qtandroidextras
   VERSION        ${version}
@@ -246,7 +274,8 @@ superbuild_package(
     URL_HASH       SHA256=44d6b30dde1d1e99ccd735d9a28cf8eba5ca61923cb54712e0c0ef6422cfdccd
     PATCH_COMMAND  "${CMAKE_COMMAND}" -E touch "<SOURCE_DIR>/.git"
   
-  USING qmake
+  USING qmake USE_SYSTEM_QT module
+  BUILD_CONDITION  ${use_system_qt}
   BUILD [[
     CONFIGURE_COMMAND
       "${qmake}" "${SOURCE_DIR}"
@@ -255,6 +284,7 @@ superbuild_package(
 
 # qtimageformats
 
+set(module Qt5Gui) # qtimageformats adds plugins to Qt5Gui
 superbuild_package(
   NAME           qtimageformats
   VERSION        ${version}
@@ -277,7 +307,8 @@ superbuild_package(
     COMMAND
       "${CMAKE_COMMAND}" -E remove_directory src/3rdparty/libtiff
   
-  USING qmake
+  USING qmake USE_SYSTEM_QT module
+  BUILD_CONDITION  ${use_system_qt}
   BUILD [[
     CONFIGURE_COMMAND
       "${qmake}" "${SOURCE_DIR}"
@@ -286,6 +317,7 @@ superbuild_package(
 
 # qtlocation
 
+set(module Qt5Location)
 superbuild_package(
   NAME           qtlocation
   VERSION        ${version}
@@ -298,7 +330,8 @@ superbuild_package(
     URL_HASH       SHA256=b153a4ab39f85d801699fe8adfa9e36496ecb392d2ded3c28e68a74b1c50e8d8
     PATCH_COMMAND  "${CMAKE_COMMAND}" -E touch "<SOURCE_DIR>/.git"
   
-  USING qmake
+  USING qmake USE_SYSTEM_QT module
+  BUILD_CONDITION  ${use_system_qt}
   BUILD [[
     CONFIGURE_COMMAND
       "${qmake}" "${SOURCE_DIR}"
@@ -307,6 +340,7 @@ superbuild_package(
 
 # qtsensors
 
+set(module Qt5Sensors)
 superbuild_package(
   NAME           qtsensors
   VERSION        ${version}
@@ -318,7 +352,8 @@ superbuild_package(
     URL_HASH       SHA256=463e2b3545cb7502bc02401b325557eae6cbf5556a31aba378dfdabd41695917
     PATCH_COMMAND  "${CMAKE_COMMAND}" -E touch "<SOURCE_DIR>/.git"
   
-  USING qmake
+  USING qmake USE_SYSTEM_QT module
+  BUILD_CONDITION  ${use_system_qt}
   BUILD [[
     CONFIGURE_COMMAND
       "${qmake}" "${SOURCE_DIR}"
@@ -327,6 +362,7 @@ superbuild_package(
 
 # qtserialport
 
+set(module Qt5SerialPort)
 superbuild_package(
   NAME           qtserialport
   VERSION        ${version}
@@ -338,7 +374,8 @@ superbuild_package(
     URL_HASH       SHA256=dfd98aad2e87939394e624c797ec162012f5b0dcd30323fa4d5e28841a90d17b
     PATCH_COMMAND  "${CMAKE_COMMAND}" -E touch "<SOURCE_DIR>/.git"
   
-  USING qmake
+  USING qmake USE_SYSTEM_QT module
+  BUILD_CONDITION  ${use_system_qt}
   BUILD [[
     CONFIGURE_COMMAND
       "${qmake}" "${SOURCE_DIR}"
@@ -362,6 +399,7 @@ set(qttools_install_android
     "$(MAKE)" -C src/qdoc install
 )
 
+set(module Qt5LinguistTools)
 superbuild_package(
   NAME           qttools
   VERSION        ${version}
@@ -373,7 +411,8 @@ superbuild_package(
 	URL_HASH       SHA256=5f57ce5e612b2f7e1c3064ff0f8b12f1cfa4b615220d63c08c8e45234e8685b0
     PATCH_COMMAND  "${CMAKE_COMMAND}" -E touch "<SOURCE_DIR>/.git"
   
-  USING qmake qttools_install_android
+  USING qmake qttools_install_android USE_SYSTEM_QT module
+  BUILD_CONDITION  ${use_system_qt}
   BUILD [[
     CONFIGURE_COMMAND
       "${qmake}" "${SOURCE_DIR}"
@@ -383,6 +422,7 @@ superbuild_package(
 
 # qttranslations
 
+set(module Qt5Core) # Can't find qttranslations via CMake.
 superbuild_package(
   NAME           qttranslations
   VERSION        ${version}
@@ -394,7 +434,8 @@ superbuild_package(
     URL_HASH       SHA256=0394ecf6e9ad97860d049cb475d948459fea0c7dd6bf001ddd67f4a7e0857db0
     PATCH_COMMAND  "${CMAKE_COMMAND}" -E touch "<SOURCE_DIR>/.git"
   
-  USING qmake
+  USING qmake USE_SYSTEM_QT module
+  BUILD_CONDITION  ${use_system_qt}
   BUILD [[
     CONFIGURE_COMMAND
       "${qmake}" "${SOURCE_DIR}"
