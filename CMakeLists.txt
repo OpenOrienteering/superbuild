@@ -953,11 +953,17 @@ function(superbuild_package)
 			endif()
 			continue()
 		endif()
+
+		set(project_file "${PROJECT_BINARY_DIR}/source/${package}/CMakeLists.txt")
+		if(NOT EXISTS "${project_file}")
+			set(project_file )
+		endif()
 		get_filename_component(executable "${executable_path}" NAME)
 		add_executable(${executable}-${SB_PACKAGE_VERSION}
 		  ${keyword}
 		  EXCLUDE_FROM_ALL
 		  "${PROJECT_BINARY_DIR}/source/main.c"
+		  "${project_file}"
 		)
 		if("${keyword}" STREQUAL "MACOSX_BUNDLE")
 			# Copy the whole bundle, to avoid trouble with rebuilds
