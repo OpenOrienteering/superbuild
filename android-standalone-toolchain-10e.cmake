@@ -103,6 +103,7 @@ if(UNIX AND NOT APPLE
 	      <SOURCE_DIR>/tools/android update sdk --no-ui --all
 	        --filter ${sdk_components}
 	        < "<TMP_DIR>/y"
+	    UPDATE_DISCONNECTED OFF
 	)
 	if(NOT ANDROID_SDK_ROOT)
 		set(ANDROID_SDK_ROOT "${PROJECT_BINARY_DIR}/source/android-sdk-${sdk_version}")
@@ -388,6 +389,7 @@ requirements of the license of GCC.
 	        "--exclude=${archive_name}/gcc/.git"
 	        "--exclude=*~"
 	        "${archive_name}"
+	    UPDATE_DISCONNECTED OFF
 	  USING ANDROID_NDK_ROOT android_ndk_abis
 	  BUILD [[
 	    CONFIGURE_COMMAND ""
