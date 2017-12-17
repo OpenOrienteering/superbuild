@@ -72,6 +72,9 @@
   - `EXECUTABLES`    - Declares executables in the default toolchain's build tree
                        which shall be mirrored in the global build tree, for
                        convenient use in IDEs (run, debug).
+                       Similar to CMake's `add_executable`, you need to add the
+                       keyword `MACOSX_BUNDLE` after executables which are
+                       application bundles on macOS.
 - In addition to variables named by `USING`, the following variables are always
   available during configuration of package for a particular toolchain:
   - `CMAKE_TOOLCHAIN_FILE`

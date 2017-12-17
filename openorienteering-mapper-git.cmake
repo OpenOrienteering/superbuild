@@ -84,7 +84,7 @@ foreach(git_tag ${Mapper_GIT_TAGS})
 	  >
 	  ]]
 
-	  EXECUTABLES src/Mapper
+	  EXECUTABLES src/Mapper MACOSX_BUNDLE
 
 	  PACKAGE [[
 	    COMMAND "${CMAKE_COMMAND}" --build . --target package/fast

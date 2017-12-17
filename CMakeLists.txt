@@ -941,16 +941,54 @@ function(superbuild_package)
 	_sb_make_toolchained_project(${package} default-toolchain)
 	
 	# Export executables from default toolchain
+	if (SB_PACKAGE_EXECUTABLES)
+		# Bring keywords in front of executables
+		list(REVERSE SB_PACKAGE_EXECUTABLES)
+	endif()
+	set(keyword "")
 	foreach(executable_path ${SB_PACKAGE_EXECUTABLES})
+		if("${executable_path}" STREQUAL "MACOSX_BUNDLE")
+			if(APPLE)
+				set(keyword "${executable_path}")
+			endif()
+			continue()
+		endif()
 		get_filename_component(executable "${executable_path}" NAME)
-		add_executable(${executable}-${SB_PACKAGE_VERSION} 
+		add_executable(${executable}-${SB_PACKAGE_VERSION}
+		  ${keyword}
 		  EXCLUDE_FROM_ALL
 		  "${PROJECT_BINARY_DIR}/source/main.c"
 		)
-		add_custom_command(TARGET ${executable}-${SB_PACKAGE_VERSION} POST_BUILD
-		  COMMAND "${CMAKE_COMMAND}" -E create_symlink "${PROJECT_BINARY_DIR}/default/${package}/${executable_path}" ${executable}-${SB_PACKAGE_VERSION}
-		)
+		if("${keyword}" STREQUAL "MACOSX_BUNDLE")
+			# Copy the whole bundle, to avoid trouble with rebuilds
+			add_custom_command(TARGET ${executable}-${SB_PACKAGE_VERSION}
+			  POST_BUILD
+			  COMMAND "${CMAKE_COMMAND}" -E
+			    remove_directory
+			      "${executable}-${SB_PACKAGE_VERSION}.app"
+			  COMMAND "${CMAKE_COMMAND}" -E
+			    copy_directory
+			      "default/${package}/${executable_path}.app"
+			      "${executable}-${SB_PACKAGE_VERSION}.app"
+			  COMMAND "${CMAKE_COMMAND}" -E
+			    create_symlink
+			      "${executable}"
+			      "${executable}-${SB_PACKAGE_VERSION}.app/Contents/MacOS/${executable}-${SB_PACKAGE_VERSION}"
+			  VERBATIM
+			)
+		else()
+			# Create a symlink to the actual executable
+			add_custom_command(TARGET ${executable}-${SB_PACKAGE_VERSION}
+			  POST_BUILD
+			  COMMAND "${CMAKE_COMMAND}" -E
+			    create_symlink
+			      "${PROJECT_BINARY_DIR}/default/${package}/${executable_path}"
+			      "${executable}-${SB_PACKAGE_VERSION}"
+			  VERBATIM
+			)
+		endif()
 		add_dependencies(${executable}-${SB_PACKAGE_VERSION} ${package})
+		set(keyword "")
 	endforeach()
 	
 	# Publish package properties
