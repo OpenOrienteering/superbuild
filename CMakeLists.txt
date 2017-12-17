@@ -177,40 +177,6 @@ endfunction()
 
 
 
-function(_sb_write_executable_helper_script)
-	set (EXECUTABLE_HELPER_SCRIPT "${PROJECT_BINARY_DIR}/source/executable-helper.cmake")
-	_sb_write_if_different("${EXECUTABLE_HELPER_SCRIPT}" [[
-# Created by ]] ${CMAKE_CURRENT_LIST_FILE} [[
-#
-# Synopsis:
-#  "${CMAKE_COMMAND}" -Dalias=exe -Dexecutable=package-1.2/src/exe -P "${EXECUTABLE_SCRIPT}"
-
-if(NOT alias)
-	message(FATAL_ERROR "Variable 'alias' must specify a path to a superbuild executable.")
-endif()
-
-if(NOT executable)
-	message(FATAL_ERROR "Variable 'executable' must specify a path to a project executable.")
-endif()
-
-get_filename_component(basename "${executable}" NAME)
-set(bundled_executable "${executable}.app/Contents/MacOS/${basename}")
-if(APPLE AND EXISTS "${bundled_executable}")
-	set(executable "${bundled_executable}")
-endif()
-if(EXISTS "${executable}")
-	execute_process(COMMAND "]] ${CMAKE_COMMAND} [[" -E create_symlink "${executable}" ${alias})
-else()
-	message(FATAL_ERROR "No such executable: ${executable}.")
-endif()
-
-
-]]	)
-	set (EXECUTABLE_HELPER_SCRIPT "${EXECUTABLE_HELPER_SCRIPT}" PARENT_SCOPE)
-endfunction()
-
-
-
 function(_sb_write_config dir)
 	set(output [[
 # Created by ]] ${CMAKE_CURRENT_LIST_FILE} [[
@@ -977,16 +943,12 @@ function(superbuild_package)
 	# Export executables from default toolchain
 	foreach(executable_path ${SB_PACKAGE_EXECUTABLES})
 		get_filename_component(executable "${executable_path}" NAME)
-		add_executable(${executable}-${SB_PACKAGE_VERSION}
+		add_executable(${executable}-${SB_PACKAGE_VERSION} 
 		  EXCLUDE_FROM_ALL
 		  "${PROJECT_BINARY_DIR}/source/main.c"
 		)
 		add_custom_command(TARGET ${executable}-${SB_PACKAGE_VERSION} POST_BUILD
-		  COMMAND "${CMAKE_COMMAND}"
-		          "-Dexecutable=${PROJECT_BINARY_DIR}/default/${package}/${executable_path}"
-		          "-Dalias=${executable}-${SB_PACKAGE_VERSION}"
-		          -P "${EXECUTABLE_HELPER_SCRIPT}"
-		  VERBATIM
+		  COMMAND "${CMAKE_COMMAND}" -E create_symlink "${PROJECT_BINARY_DIR}/default/${package}/${executable_path}" ${executable}-${SB_PACKAGE_VERSION}
 		)
 		add_dependencies(${executable}-${SB_PACKAGE_VERSION} ${package})
 	endforeach()
@@ -1021,7 +983,6 @@ _sb_create_default_toolchain()
 _sb_create_host_toolchain()
 _sb_write_generator()
 _sb_write_debian_patch_script()
-_sb_write_executable_helper_script()
 _sb_create_toolchain_info()
 _sb_read_packages()
 _sb_resolve_dependencies()
