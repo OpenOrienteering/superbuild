@@ -1022,8 +1022,11 @@ foreach(file ${documentation})
 endforeach()
 add_custom_target(doc SOURCES ${documentation})
 
-option(SUPERBUILD_UPDATE_DISCONNECTED "Skip package update steps" ON)
-set_directory_properties(PROPERTIES EP_UPDATE_DISCONNECTED "${SUPERBUILD_UPDATE_DISCONNECTED}")
+# ExternalPackage < 3.8.0 has bug with UPDATE_DISCONNECTED
+if(NOT CMAKE_VERSION VERSION_LESS 3.8.0)
+	option(SUPERBUILD_UPDATE_DISCONNECTED "Skip package update steps" ON)
+	set_directory_properties(PROPERTIES EP_UPDATE_DISCONNECTED "${SUPERBUILD_UPDATE_DISCONNECTED}")
+endif()
 
 _sb_create_main_c()
 _sb_create_default_toolchain()
