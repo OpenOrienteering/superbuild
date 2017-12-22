@@ -27,6 +27,12 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+find_package(Git QUIET)
+if(NOT GIT_EXECUTABLE)
+	message(STATUS "Disabling android-standalone-toolchain due to missing git")
+	return()
+endif()
+
 set(supported_abis
   armeabi-v7a  
   x86
