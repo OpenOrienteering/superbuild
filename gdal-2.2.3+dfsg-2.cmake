@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016, 2017 Kai Pastor
+# Copyright 2016-2018 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -29,10 +29,11 @@
 
 # https://tracker.debian.org/pkg/gdal
 
-set(version        2.2.2+dfsg)
-set(download_hash  SHA256=1a63e1ece046f3abf5490cdbe441a4889a7d2028709459d0154e04d60c7f1109)
+set(version        2.2.3+dfsg)
+set(download_hash  SHA256=3f99d84541ec6f174da137166c1002b50ed138dde51d05180ad5c8dd49721057)
 set(patch_version  ${version}-2)
-set(patch_hash     SHA256=d221d2bbdd3abb3f84dccb979be1420b97295a5bf1b372022226d584556bb714)
+set(patch_hash     SHA256=a545f89efa6815eb5d529f2114e9a04a4ba61df233752541369cee92009fc9c0)
+set(patch_base_url ${SUPERBUILD_DEBIAN_BASE_URL_2018_02})
 
 if(APPLE)
 	set(copy_dir cp -aR)
@@ -104,7 +105,7 @@ superbuild_package(
   VERSION        ${patch_version}
   
   SOURCE
-    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_11}/pool/main/g/gdal/gdal_${patch_version}.debian.tar.xz
+    URL            ${patch_base_url}/pool/main/g/gdal/gdal_${patch_version}.debian.tar.xz
     URL_HASH       ${patch_hash}
 )
   
@@ -126,7 +127,7 @@ superbuild_package(
     zlib
   
   SOURCE
-    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_11}/pool/main/g/gdal/gdal_${version}.orig.tar.xz
+    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2018_02}/pool/main/g/gdal/gdal_${version}.orig.tar.xz
     URL_HASH       ${download_hash}
     PATCH_COMMAND
       "${CMAKE_COMMAND}"
