@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016, 2017 Kai Pastor
+# Copyright 2016-2018 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -31,8 +31,9 @@
 
 set(version        4.0.8)
 set(download_hash  SHA256=59d7a5a8ccd92059913f246877db95a2918e6c04fb9d43fd74e5c3390dac2910)
-set(patch_version  ${version}-2+deb9u1)
-set(patch_hash     SHA256=a0ed755351bbc4e8a05413316d782c071bccfb1b915767cc9bc09d56f31d34b5)
+set(patch_version  ${version}-2+deb9u2)
+set(patch_hash     SHA256=25fc9acaa503e454e40050a4fb6bca69bdce0f3d5eec5a08d8abe29b4f9584d9)
+set(patch_base_url ${SUPERBUILD_DEBIAN_SECURITY_URL_2018_02})
 
 option(USE_SYSTEM_LIBTIFF "Use the system libtiff if possible" ON)
 
@@ -54,7 +55,7 @@ superbuild_package(
   VERSION        ${patch_version}
   
   SOURCE
-    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_11}/pool/main/t/tiff/tiff_${patch_version}.debian.tar.xz
+    URL            ${patch_base_url}/pool/updates/main/t/tiff/tiff_${patch_version}.debian.tar.xz
     URL_HASH       ${patch_hash}
 )
   
