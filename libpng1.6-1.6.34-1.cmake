@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016, 2017 Kai Pastor
+# Copyright 2016-2018 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -27,10 +27,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        1.6.28)
-set(download_hash  SHA256=d8d3ec9de6b5db740fefac702c37ffcf96ae46cb17c18c1544635a3852f78f7a)
+set(version        1.6.34)
+set(download_hash  SHA256=2f1e960d92ce3b3abd03d06dfec9637dfbd22febf107a536b44f7a47c60659f6)
 set(patch_version  ${version}-1)
-set(patch_hash     SHA256=512c40a43a3a6fe7e2bc044574920d30f6669f1187ad0039fca4cae3d2b7c161)
+set(patch_hash     SHA256=8ca33d2930b340412f04d76cac3159f6b3b823cff33b35b72426a75f3f02a8a0)
+set(patch_base_url ${SUPERBUILD_DEBIAN_BASE_URL_2018_02})
 
 option(USE_SYSTEM_LIBPNG "Use the system libpng if possible" ON)
 
@@ -52,7 +53,7 @@ superbuild_package(
   VERSION        ${patch_version}
   
   SOURCE
-    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_06}/pool/main/libp/libpng1.6/libpng1.6_${patch_version}.debian.tar.xz
+    URL            ${patch_base_url}/pool/main/libp/libpng1.6/libpng1.6_${patch_version}.debian.tar.xz
     URL_HASH       ${patch_hash}
 )
 
@@ -65,12 +66,19 @@ superbuild_package(
     zlib
   
   SOURCE
-    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_06}/pool/main/libp/libpng1.6/libpng1.6_${version}.orig.tar.xz
+    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2018_02}/pool/main/libp/libpng1.6/libpng1.6_${version}.orig.tar.xz
     URL_HASH       ${download_hash}
     PATCH_COMMAND
       "${CMAKE_COMMAND}"
         -Dpackage=libpng1.6-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
+    COMMAND
+      # Enable determining CMAKE_ASM_COMPILER from CMAKE_C_COMPILER.
+      # Fixed in libpng > 1.6.34.
+      sed -i -e "s,project(libpng ASM C),project(libpng C ASM)," CMakeLists.txt
+    COMMAND
+      # AWK is not used for ANDROID builds.
+      sed -i -e "s,if(UNIX AND AWK),if(UNIX AND AWK AND NOT ANDROID)," CMakeLists.txt
   
   USING            USE_SYSTEM_LIBPNG patch_version
   BUILD_CONDITION  ${test_system_png}
