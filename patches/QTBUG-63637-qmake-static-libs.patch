@@ -1,0 +1,33 @@
+From 8cef809b16aac9d4c4163ff2e2e831adf70133c2 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Martin=20Storsj=C3=B6?= <martin@martin.st>
+Date: Tue, 2 Jan 2018 22:49:08 +0200
+Subject: qmake: Handle QMAKE_LINK_OBJECT_MAX being unset for static libraries
+
+This was missed in 8bebded9.
+
+Task-number: QTBUG-63637
+Change-Id: I6be472430a9aa8f533def4fd6c14c8dbfe8b6f70
+Reviewed-by: Oswald Buddenhagen <oswald.buddenhagen@qt.io>
+---
+ qmake/generators/win32/mingw_make.cpp | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+(limited to 'qmake/generators/win32/mingw_make.cpp')
+
+diff --git a/qmake/generators/win32/mingw_make.cpp b/qmake/generators/win32/mingw_make.cpp
+index 792ffb1997..d6d6b04148 100644
+--- a/qmake/generators/win32/mingw_make.cpp
++++ b/qmake/generators/win32/mingw_make.cpp
+@@ -324,7 +324,8 @@ void MingwMakefileGenerator::writeBuildRulesPart(QTextStream &t)
+         t << "\n\t" <<var("QMAKE_PRE_LINK");
+     if(project->isActiveConfig("staticlib") && project->first("TEMPLATE") == "lib") {
+         t << "\n\t-$(DEL_FILE) $(DESTDIR_TARGET) 2>" << var("QMAKE_SHELL_NULL_DEVICE");
+-        if (project->values("OBJECTS").count() < var("QMAKE_LINK_OBJECT_MAX").toInt()) {
++        const ProString &objmax = project->first("QMAKE_LINK_OBJECT_MAX");
++        if (objmax.isEmpty() || project->values("OBJECTS").count() < objmax.toInt()) {
+             t << "\n\t$(LIB) $(DESTDIR_TARGET) " << objectsLinkLine << " " ;
+         } else {
+             t << "\n\t" << objectsLinkLine << " " ;
+-- 
+cgit v1.1-6-g87c4
+
