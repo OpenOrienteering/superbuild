@@ -1,0 +1,33 @@
+From b97f3e0a984eabf0fa1a991b636ea967f6a9a2c4 Mon Sep 17 00:00:00 2001
+From: Vyacheslav Koscheev <vok1980@gmail.com>
+Date: Mon, 23 Oct 2017 19:50:46 +0700
+Subject: Android: check positioning listener not null
+
+Change-Id: I8b491dc1a3b9056c9a15d6814b72e52e37132dda
+Reviewed-by: Sergey A. Galin <s.galin@2gis.ru>
+Reviewed-by: Alex Blasche <alexander.blasche@qt.io>
+---
+ .../src/org/qtproject/qt5/android/positioning/QtPositioning.java   | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/src/plugins/position/android/jar/src/org/qtproject/qt5/android/positioning/QtPositioning.java b/src/plugins/position/android/jar/src/org/qtproject/qt5/android/positioning/QtPositioning.java
+index edc39bd70..1ea0c071b 100644
+--- a/src/plugins/position/android/jar/src/org/qtproject/qt5/android/positioning/QtPositioning.java
++++ b/src/plugins/position/android/jar/src/org/qtproject/qt5/android/positioning/QtPositioning.java
+@@ -229,8 +229,11 @@ public class QtPositioning implements LocationListener
+     static private void removeActiveListener(int androidClassKey)
+     {
+         QtPositioning listener = runningListeners.remove(androidClassKey);
+-        locationManager.removeUpdates(listener);
+-        listener.setActiveLooper(false);
++
++        if (listener != null) {
++            locationManager.removeUpdates(listener);
++            listener.setActiveLooper(false);
++        }
+     }
+ 
+ 
+-- 
+cgit v1.1-6-g87c4
+

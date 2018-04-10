@@ -1,0 +1,47 @@
+From 8e4964b9d268128972798ad9ae2ccbc8bbb5428f Mon Sep 17 00:00:00 2001
+From: Denis Shienkov <denis.shienkov@gmail.com>
+Date: Sun, 4 Mar 2018 18:11:08 +0300
+Subject: Don't poll for POLLIN event if device is open in WriteOnly on Linux
+
+Following code snippet:
+
+ QSerialPort serial("/dev/ttyUSB0");
+ serial.open(QIODevice::WriteOnly);
+ serial.write("ABCDEF");
+ serial.waitForBytesWritten(-1);
+
+causes an application crash if some of data will be received by the
+serial port.
+
+Reason is that qt_poll_msecs() triggered with POLLIN event, even if the
+device is opened with O_WRONLY flag. In this case the readNotification()
+handler is called, which trying to reserve some space from the
+uninitialized read QRingBuffer, that causes an assertion.
+
+Solution is to don't use the POLLIN event if device is open with
+O_WRONLY flag.
+
+Change-Id: I0eb0a0c7072ce164a6c0fe518521b87383b84505
+(cherry picked from commit ea1a95d3567f1264126bf34218a5532ffb5afc51)
+Reviewed-by: Thiago Macieira <thiago.macieira@intel.com>
+---
+ src/serialport/qserialport_unix.cpp | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/serialport/qserialport_unix.cpp b/src/serialport/qserialport_unix.cpp
+index 4df1fcba..342783c1 100644
+--- a/src/serialport/qserialport_unix.cpp
++++ b/src/serialport/qserialport_unix.cpp
+@@ -533,7 +533,8 @@ bool QSerialPortPrivate::waitForBytesWritten(int msecs)
+     for (;;) {
+         bool readyToRead = false;
+         bool readyToWrite = false;
+-        if (!waitForReadOrWrite(&readyToRead, &readyToWrite, true, !writeBuffer.isEmpty(),
++        const bool checkRead = q_func()->isReadable();
++        if (!waitForReadOrWrite(&readyToRead, &readyToWrite, checkRead, !writeBuffer.isEmpty(),
+                                 qt_subtract_from_timeout(msecs, stopWatch.elapsed()))) {
+             return false;
+         }
+-- 
+cgit v1.1-6-g87c4
+
