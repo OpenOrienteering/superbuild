@@ -1,7 +1,7 @@
 From 40e87491886957696486b87dc2dedec2adaf6e1a Mon Sep 17 00:00:00 2001
 From: Alexander Shevchenko <sav_ix@ukr.net>
 Date: Wed, 10 Jan 2018 17:51:54 +0200
-Subject: unify windows mkspecs: update definitions
+Subject: [PATCH] unify windows mkspecs: update definitions
 
 mingw-w64 toolchain:
 - add missing compiler definitions, similar to
@@ -41,14 +41,14 @@ Reviewed-by: Joerg Bornemann <joerg.bornemann@qt.io>
 Reviewed-by: Kai Koehne <kai.koehne@qt.io>
 Reviewed-by: Oswald Buddenhagen <oswald.buddenhagen@qt.io>
 ---
- mkspecs/common/msvc-desktop.conf | 6 ++++--
- mkspecs/common/msvc-version.conf | 5 +++++
- 2 files changed, 9 insertions(+), 2 deletions(-)
-
-(limited to 'mkspecs/common')
+ mkspecs/common/msvc-desktop.conf |  6 ++++--
+ mkspecs/common/msvc-version.conf |  5 +++++
+ mkspecs/win32-g++/qmake.conf     |  9 +++++++--
+ mkspecs/win32-icc/qmake.conf     | 15 +++++++++------
+ 4 files changed, 25 insertions(+), 10 deletions(-)
 
 diff --git a/mkspecs/common/msvc-desktop.conf b/mkspecs/common/msvc-desktop.conf
-index 496ca1179d..546b9cf3cb 100644
+index 496ca1179dd..546b9cf3cb8 100644
 --- a/mkspecs/common/msvc-desktop.conf
 +++ b/mkspecs/common/msvc-desktop.conf
 @@ -15,7 +15,7 @@
@@ -79,7 +79,7 @@ index 496ca1179d..546b9cf3cb 100644
  QMAKE_LIBS_OPENGL       = glu32.lib opengl32.lib gdi32.lib user32.lib
  QMAKE_LIBS_OPENGL_ES2   = gdi32.lib user32.lib
 diff --git a/mkspecs/common/msvc-version.conf b/mkspecs/common/msvc-version.conf
-index ba74c49f9c..cfafb06305 100644
+index ba74c49f9c7..cfafb06305e 100644
 --- a/mkspecs/common/msvc-version.conf
 +++ b/mkspecs/common/msvc-version.conf
 @@ -85,6 +85,11 @@ greaterThan(QMAKE_MSC_VER, 1909) {
@@ -94,6 +94,74 @@ index ba74c49f9c..cfafb06305 100644
  }
  
  greaterThan(QMAKE_MSC_VER, 1910) {
+diff --git a/mkspecs/win32-g++/qmake.conf b/mkspecs/win32-g++/qmake.conf
+index a4955e99f30..96c94e7021e 100644
+--- a/mkspecs/win32-g++/qmake.conf
++++ b/mkspecs/win32-g++/qmake.conf
+@@ -16,8 +16,11 @@ include(../common/g++-base.conf)
+ MAKEFILE_GENERATOR      = MINGW
+ QMAKE_PLATFORM          = win32 mingw
+ CONFIG                 += debug_and_release debug_and_release_target precompile_header
+-DEFINES                += UNICODE _UNICODE
+-QMAKE_COMPILER_DEFINES += __GNUC__ WIN32
++DEFINES                += UNICODE _UNICODE WIN32
++QMAKE_COMPILER_DEFINES += __GNUC__ _WIN32
++# can't add 'DEFINES += WIN64' and 'QMAKE_COMPILER_DEFINES += _WIN64' defines for
++# x86_64 platform similar to 'msvc-desktop.conf' toolchain, because, unlike for MSVC,
++# 'QMAKE_TARGET.arch' is inherently unavailable.
+ 
+ QMAKE_CC                = $${CROSS_COMPILE}gcc
+ QMAKE_LEX               = flex
+@@ -30,6 +33,8 @@ QMAKE_CFLAGS_WARN_ON   += -Wextra
+ QMAKE_CFLAGS_SSE2      += -mstackrealign
+ 
+ QMAKE_CXX               = $${CROSS_COMPILE}g++
++QMAKE_CXXFLAGS          = $$QMAKE_CFLAGS
++QMAKE_CXXFLAGS_WARN_ON  = $$QMAKE_CFLAGS_WARN_ON
+ QMAKE_CXXFLAGS_RTTI_ON  = -frtti
+ QMAKE_CXXFLAGS_RTTI_OFF = -fno-rtti
+ QMAKE_CXXFLAGS_EXCEPTIONS_ON = -fexceptions -mthreads
+diff --git a/mkspecs/win32-icc/qmake.conf b/mkspecs/win32-icc/qmake.conf
+index 4d18b1cc55e..c66d73383a2 100644
+--- a/mkspecs/win32-icc/qmake.conf
++++ b/mkspecs/win32-icc/qmake.conf
+@@ -4,7 +4,7 @@
+ # Written for Intel C++ Compiler on Windows / icl 16.0 or higher
+ #
+ 
+-# Use the Microsoft (R) C/C++ Optimizing Compiler configuration,
++# Use the Microsoft C/C++ Optimizing Compiler configuration,
+ # since ICC on Windows pretends to be MSVC
+ 
+ include(../common/msvc-desktop.conf)
+@@ -13,11 +13,14 @@ include(../common/msvc-desktop.conf)
+ 
+ QMAKE_COMPILER         += intel_icl
+ 
++QMAKE_CFLAGS_OPTIMIZE_FULL = -O3
++
+ QMAKE_CC                = icl
+-QMAKE_CFLAGS            = -nologo -Zm200 /Qprec /Qwd1744,1738,809,3373
+-QMAKE_CFLAGS_WARN_ON    = -W3 /Qwd673
+-QMAKE_CFLAGS_WARN_OFF   = -W0 /Qwd673
+-QMAKE_CFLAGS_DEBUG      = -Od -Zi -MDd
++QMAKE_CFLAGS            = -nologo -Zc:wchar_t -Qprec -Zm200 -Qdiag-disable:1744,1738,809,3373
++QMAKE_CFLAGS_WARN_ON    = -W3 -Qdiag-disable:673
++QMAKE_CFLAGS_WARN_OFF   = -W0 -Qdiag-disable:673
++QMAKE_CFLAGS_DEBUG      = $$QMAKE_CFLAGS_OPTIMIZE_DEBUG -Zi -MDd
++QMAKE_CFLAGS_UTF8_SOURCE = -Qoption,cpp,--unicode_source_kind,UTF-8
+ QMAKE_CFLAGS_LTCG       = -Qipo
+ QMAKE_CFLAGS_DISABLE_LTCG = -Qno-ipo
+ 
+@@ -44,7 +47,7 @@ QMAKE_CXXFLAGS_WARN_OFF = $$QMAKE_CFLAGS_WARN_OFF
+ QMAKE_CXXFLAGS_CXX11    = -Qstd=c++11
+ # ICC supports the following but Qt won't compile
+ #QMAKE_CXXFLAGS_CXX14    = -Qstd=c++14
+-#QMAKE_CXXFLAGS_CXX1Z    = -Qstd=c++1z
++#QMAKE_CXXFLAGS_CXX1Z    = -Qstd=c++17
+ QMAKE_CXXFLAGS_LTCG     = $$QMAKE_CFLAGS_LTCG
+ QMAKE_CXXFLAGS_DISABLE_LTCG = $$QMAKE_CFLAGS_DISABLE_LTCG
+ 
 -- 
-cgit v1.1-6-g87c4
+2.16.3
 
