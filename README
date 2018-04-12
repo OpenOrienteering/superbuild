@@ -1,0 +1,15 @@
+qtandroidextras/copyright created and edited 2017-2018 by Kai Pastor.
+ 
+The other copyright files were taken from the Debian packages source for
+Qt 5.9.2.
+
+Qt module versions:
+
+qtandroidextras: 5.9.2
+qtbase: 5.9.2 + patches
+qtimageformats: 5.9.2
+qtlocation: 5.9.2 + patches
+qtsensors: 5.9.2
+qtserialport: 5.9.2 + patches
+qttools: 5.9.2
+qttranslations: 5.9.2
