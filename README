@@ -8,7 +8,7 @@ Qt modules as needed and for additional Qt source code modifications.
 
 Qt module versions:
 
-qtandroidextras: 5.9.2
+qtandroidextras: 5.9.5
 qtbase: 5.9.5 + patches
 qtimageformats: 5.9.2
 qtlocation: 5.9.2 + patches
