@@ -53,7 +53,7 @@ set(copyright_files
   qtsensors-5.9.2.txt
   qtserialport-5.9.2.txt
   qttools-5.9.2.txt
-  qttranslations-5.9.2.txt
+  qttranslations-5.9.5.txt
 )
 
 foreach(file ${copyright_files})

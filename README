@@ -15,4 +15,4 @@ qtlocation: 5.9.2 + patches
 qtsensors: 5.9.2
 qtserialport: 5.9.2 + patches
 qttools: 5.9.2
-qttranslations: 5.9.2
+qttranslations: 5.9.5
