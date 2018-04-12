@@ -1,3 +1,5 @@
+mingw-w64-headers derived from Debian's mingw-w64 5.0.3-1.
+
 qtandroidextras/copyright created and edited 2017-2018 by Kai Pastor.
  
 The other copyright files were taken from the Debian packages source for

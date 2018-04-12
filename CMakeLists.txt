@@ -30,7 +30,20 @@
 
 cmake_minimum_required(VERSION 3.2)
 
-project(qt-copyright VERSION 5.9 LANGUAGES NONE)
+project(qt-support VERSION 5.9 LANGUAGES C)
+
+if(MINGW)
+    find_file(UIVIEWSETTINGSINTEROP_H
+      NAMES uiviewsettingsinterop.h
+    )
+    if(NOT UIVIEWSETTINGSINTEROP_H)
+        install(
+          FILES "mingw-w64-headers/include/uiviewsettingsinterop.h"
+          DESTINATION "include"
+        )
+    endif()
+endif()
+
 
 set(copyright_files
   qtandroidextras-5.9.2.txt
