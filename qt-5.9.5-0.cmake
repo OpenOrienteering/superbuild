@@ -34,6 +34,7 @@ set(short_version  5.9)
 set(version        5.9.5)
 set(patch_version  ${version}-0)
 set(debian_version 5.9.2)
+set(debian_patch_version ${debian_version}-0)
 
 option(USE_SYSTEM_QT "Use the system Qt if possible" ON)
 
@@ -78,7 +79,7 @@ superbuild_package(
   
   SOURCE
     URL            https://github.com/OpenOrienteering/superbuild/archive/qt-superbuild_${patch_version}.tar.gz
-    #URL_HASH       SHA256=9d0ef95724c0f3f9c84441f7f25481299fe982926fc1b585b57884d8d60001ca
+    URL_HASH       SHA256=a3194f88c7a75b30d8467b7ff899b16b52a62dc99583f91e4628e5936a50a910
   
   BUILD [[
     CMAKE_ARGS
@@ -115,8 +116,8 @@ superbuild_package(
     zlib
   
   SOURCE
-    URL            https://download.qt.io/archive/qt/${short_version}/${version}/submodules/qtbase-opensource-src-${version}.tar.xz
-    URL_HASH       MD5=4679267d10a5489545e165e641ea4da5
+    URL            https://download.opensuse.org/repositories/home:/dg0yt/Windows/qtbase-opensource-src_${version}+dfsg.orig.tar.xz
+    URL_HASH       SHA256=911467c13c7d69ecff00a46b02ca92992e6fb9938c9e2f2f258a2ca451d76670
     PATCH_COMMAND
       "${CMAKE_COMMAND}" -E touch <SOURCE_DIR>/.git
     COMMAND
@@ -255,13 +256,13 @@ superbuild_package(
 superbuild_package(
   NAME           qtimageformats
   VERSION        ${short_version}
-  DEPENDS        qtimageformats-opensource-src-${debian_version}
+  DEPENDS        qtimageformats-opensource-src-${debian_patch_version}
 )
 
 set(module Qt5Gui) # qtimageformats adds plugins to Qt5Gui
 superbuild_package(
   NAME           qtimageformats-opensource-src
-  VERSION        ${debian_version}
+  VERSION        ${debian_patch_version}
   DEPENDS        qtbase-${short_version}
                  tiff
   
@@ -295,13 +296,13 @@ superbuild_package(
 superbuild_package(
   NAME           qtlocation
   VERSION        ${short_version}
-  DEPENDS        qtlocation-opensource-src-${debian_version}
+  DEPENDS        qtlocation-opensource-src-${debian_patch_version}
 )
 
 set(module Qt5Location)
 superbuild_package(
   NAME           qtlocation-opensource-src
-  VERSION        ${debian_version}
+  VERSION        ${debian_patch_version}
   DEPENDS        qtbase-${short_version}
                  qtserialport-${short_version}
                  source:qt-superbuild-${patch_version}
@@ -331,13 +332,13 @@ superbuild_package(
 superbuild_package(
   NAME           qtsensors
   VERSION        ${short_version}
-  DEPENDS        qtsensors-opensource-src-${debian_version}
+  DEPENDS        qtsensors-opensource-src-${debian_patch_version}
 )
 
 set(module Qt5Sensors)
 superbuild_package(
   NAME           qtsensors-opensource-src
-  VERSION        ${debian_version}
+  VERSION        ${debian_patch_version}
   DEPENDS        qtbase-${short_version}
   
   SOURCE
@@ -358,13 +359,13 @@ superbuild_package(
 superbuild_package(
   NAME           qtserialport
   VERSION        ${short_version}
-  DEPENDS        qtserialport-opensource-src-${debian_version}
+  DEPENDS        qtserialport-opensource-src-${debian_patch_version}
 )
 
 set(module Qt5SerialPort)
 superbuild_package(
   NAME           qtserialport-opensource-src
-  VERSION        ${debian_version}
+  VERSION        ${debian_patch_version}
   DEPENDS        qtbase-${short_version}
                  source:qt-superbuild-${patch_version}
   
@@ -393,7 +394,7 @@ superbuild_package(
 superbuild_package(
   NAME           qttools
   VERSION        ${short_version}
-  DEPENDS        qttools-opensource-src-${debian_version}
+  DEPENDS        qttools-opensource-src-${debian_patch_version}
 )
 
 set(qttools_install_android
@@ -414,7 +415,7 @@ set(qttools_install_android
 set(module Qt5LinguistTools)
 superbuild_package(
   NAME           qttools-opensource-src
-  VERSION        ${debian_version}
+  VERSION        ${debian_patch_version}
   DEPENDS        qtbase-${short_version}
   
   SOURCE
