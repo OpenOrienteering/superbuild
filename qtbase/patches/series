@@ -1,3 +1,2 @@
 QTBUG-57299-QSaveFile-Windows-Dropbox.patch
-QTBUG-63637-qmake-static-libs.patch
 QTBUG-67545-qfontengine-coretext.patch
