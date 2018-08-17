@@ -116,8 +116,10 @@ superbuild_package(
     zlib
   
   SOURCE
-    URL            https://download.opensuse.org/repositories/home:/dg0yt/Windows/qtbase-opensource-src_${version}+dfsg.orig.tar.xz
-    URL_HASH       SHA256=911467c13c7d69ecff00a46b02ca92992e6fb9938c9e2f2f258a2ca451d76670
+    #URL            https://download.opensuse.org/repositories/home:/dg0yt/Windows/qtbase-opensource-src_${version}+dfsg.orig.tar.xz
+    #URL_HASH       SHA256=911467c13c7d69ecff00a46b02ca92992e6fb9938c9e2f2f258a2ca451d76670
+    URL            https://download.qt.io/archive/qt/${short_version}/${version}/submodules/qtbase-opensource-src-${version}.tar.xz
+    URL_HASH       MD5=4679267d10a5489545e165e641ea4da5
     PATCH_COMMAND
       "${CMAKE_COMMAND}" -E touch <SOURCE_DIR>/.git
     COMMAND
