@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016, 2017 Kai Pastor
+# Copyright 2016-2018 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -35,11 +35,13 @@ endif()
 
 set(Mapper_GIT_TAGS "master;dev" CACHE STRING "Mapper (git): The git branch names, commit IDs and tags")
 set(Mapper_GIT_LICENSING_PROVIDER "superbuild" CACHE STRING "Mapper (git): Provider for 3rd-party licensing information")
+set(Mapper_GIT_QT_VERSION 5.9 CACHE STRING "Mapper (git): Qt version")
+option(Mapper_GIT_ENABLE_POSITIONING "Mapper: Enable positioning" OFF)
 option(Mapper_GIT_MANUAL_PDF "Mapper (git): Provide the manual as PDF file (needs pdflatex)" OFF)
 
 foreach(git_tag ${Mapper_GIT_TAGS})
-	string(MAKE_C_IDENTIFIER "${git_tag}" safe_git_tag)
-	set(version git-${safe_git_tag})
+	string(MAKE_C_IDENTIFIER "git-${git_tag}" version)
+	string(REGEX REPLACE "^git_" "git-" version "${version}")
 
 	superbuild_package(
 	  NAME           openorienteering-mapper
@@ -48,16 +50,16 @@ foreach(git_tag ${Mapper_GIT_TAGS})
 	    gdal
 	    libpolyclipping
 	    proj
-	    qtandroidextras
-	    qtbase
-	    qtimageformats
-	    qtlocation
-	    qtsensors
-	    qttools
-	    qttranslations
+	    qtandroidextras-${Mapper_GIT_QT_VERSION}
+	    qtbase-${Mapper_GIT_QT_VERSION}
+	    qtimageformats-${Mapper_GIT_QT_VERSION}
+	    qtlocation-${Mapper_GIT_QT_VERSION}
+	    qtsensors-${Mapper_GIT_QT_VERSION}
+	    qttools-${Mapper_GIT_QT_VERSION}
+	    qttranslations-${Mapper_GIT_QT_VERSION}
 	    zlib
 	    host:doxygen
-	    host:qttools
+	    host:qttools-${Mapper_GIT_QT_VERSION}
 
 	  SOURCE
 	    GIT_REPOSITORY https://github.com/OpenOrienteering/mapper.git
@@ -65,6 +67,7 @@ foreach(git_tag ${Mapper_GIT_TAGS})
 
 	  USING            version
 	                   Mapper_GIT_LICENSING_PROVIDER
+	                   Mapper_GIT_ENABLE_POSITIONING
 	                   Mapper_GIT_MANUAL_PDF
 	  BUILD [[
 	    CMAKE_ARGS
@@ -80,6 +83,12 @@ foreach(git_tag ${Mapper_GIT_TAGS})
 	      "-DCMAKE_DISABLE_FIND_PACKAGE_Qt5PrintSupport=TRUE"
 	      "-DKEYSTORE_URL=${KEYSTORE_URL}"
 	      "-DKEYSTORE_ALIAS=${KEYSTORE_ALIAS}"
+	    >
+	    $<$<NOT:$<OR:$<BOOL:${ANDROID}>,$<BOOL:${Mapper_GIT_ENABLE_POSITIONING}>>>:
+	      "-DCMAKE_DISABLE_FIND_PACKAGE_Qt5Positioning:BOOL=TRUE"
+	      "-UQt5Positioning_DIR"
+	      "-DCMAKE_DISABLE_FIND_PACKAGE_Qt5Sensors:BOOL=TRUE"
+	      "-UQt5Sensors_DIR"
 	    >
 	    INSTALL_COMMAND
 	      "${CMAKE_COMMAND}" --build . --target install -- VERBOSE=1
