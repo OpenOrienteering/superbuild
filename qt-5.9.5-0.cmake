@@ -171,6 +171,7 @@ superbuild_package(
       -confirm-license
       $<$<CONFIG:Debug>:-debug>$<$<NOT:$<CONFIG:Debug>>:-release -no-qml-debug $<$<CONFIG:RelWithDebInfo>:-force-debug-info>>
       -shared
+      $<${macos}:-no-framework>
       -gui
       -widgets
       -system-libjpeg
