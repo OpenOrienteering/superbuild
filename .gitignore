@@ -1,5 +1,6 @@
 *~
 *.autosave
+*.diff.gz
 *.local.cmake
 *.tar.bz2
 *.tar.gz
