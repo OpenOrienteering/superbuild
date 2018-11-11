@@ -79,6 +79,9 @@ superbuild_package(
         --disable-static
         --enable-shared
         --enable-threadsafe
+        $<$<STREQUAL:${ANDROID_PLATFORM},android-18>:
+        LDFLAGS=-lcompiler_rt-extras
+        >
     INSTALL_COMMAND
       "$(MAKE)" install "DESTDIR=${INSTALL_DIR}"
     COMMAND
