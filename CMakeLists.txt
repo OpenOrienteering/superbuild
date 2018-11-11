@@ -235,6 +235,7 @@ if(PACKAGE STREQUAL \"toolchain-info\")
 	set(TOOLCHAIN_INFO \"
 include(\\\"${PROJECT_BINARY_DIR}/source/toolchain-info.cmake\\\")
 print_toolchain_info()
+write_toolchain_info(\\\"\\\${BINARY_DIR}/info.txt\\\")
 \")
 else()
 	set(LANGUAGES      NONE)
@@ -500,6 +501,17 @@ function(print_toolchain_info)
 		string(REPLACE "toolchain-info" "<PACKAGE_NAME>-<VERSION>" info "${info}")
 		message(STATUS "${info}");
 	endforeach()
+endfunction()
+
+function(write_toolchain_info file)
+	set(out "")
+	foreach(group ${toolchain_info_groups})
+		toolchain_info_helper(info ${${group}})
+		string(REPLACE "toolchain-info" "<PACKAGE_NAME>-<VERSION>" info "${info}")
+		string(REPLACE "\;" "\\\;" info "${info}")
+		list(APPEND out "${info}\n");
+	endforeach()
+	file(WRITE "${file}" ${out})
 endfunction()
 
 ]])
