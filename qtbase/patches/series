@@ -1,2 +1,3 @@
 QTBUG-57299-QSaveFile-Windows-Dropbox.patch
 QTBUG-67545-qfontengine-coretext.patch
+QTBUG-70631-Android-NDK-r18.patch
