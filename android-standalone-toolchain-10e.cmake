@@ -27,6 +27,13 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+set(ANDROID_TOOLCHAIN_VERSION "ndk-r10e" CACHE STRING
+  "Version of the Android toolchain to be used"
+)
+if(NOT ANDROID_TOOLCHAIN_VERSION STREQUAL "ndk-r10e")
+	return()
+endif()
+
 find_package(Git QUIET)
 if(NOT GIT_EXECUTABLE)
 	message(STATUS "Disabling android-standalone-toolchain due to missing git")
