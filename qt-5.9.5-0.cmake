@@ -42,9 +42,22 @@ string(CONFIGURE [[
 	if("${module}" MATCHES "Android" AND NOT ANDROID)
 		set(BUILD_CONDITION 0)
 	elseif(USE_SYSTEM_QT)
-		find_package(Qt5Core @version@ CONFIG QUIET)
+		find_package(Qt5Core @version@ CONFIG QUIET
+		  NO_CMAKE_FIND_ROOT_PATH
+		  NO_CMAKE_SYSTEM_PATH
+		  NO_SYSTEM_ENVIRONMENT_PATH
+		)
 		if(Qt5Core_VERSION)
-			find_package(${module} ${Qt5Core_VERSION} CONFIG EXACT REQUIRED)
+			find_package(${module} ${Qt5Core_VERSION} CONFIG EXACT
+			  NO_CMAKE_FIND_ROOT_PATH
+			  NO_CMAKE_SYSTEM_PATH
+			  NO_SYSTEM_ENVIRONMENT_PATH
+			)
+			find_package(${module} ${Qt5Core_VERSION_MAJOR}.${Qt5Core_VERSION_MINOR} CONFIG REQUIRED
+			  NO_CMAKE_FIND_ROOT_PATH
+			  NO_CMAKE_SYSTEM_PATH
+			  NO_SYSTEM_ENVIRONMENT_PATH
+			)
 			if(${module}_VERSION
 			   AND (NOT ${module}_INCLUDE_DIRS
 			        OR NOT "${module}_INCLUDE_DIRS" MATCHES "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"))
