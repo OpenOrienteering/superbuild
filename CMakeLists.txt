@@ -715,7 +715,7 @@ function(_sb_make_source package)
 		add_custom_target(${package}-source)
 		add_dependencies(${package}-source "${SB_PACKAGE_SOURCE}-source")
 	else()
-		# SB_PACKAGE_SOURCE contains options for ExternalPackage source steps.
+		# SB_PACKAGE_SOURCE contains options for ExternalProject source steps.
 		ExternalProject_Add(${package}-source
 		  DOWNLOAD_DIR "${PROJECT_SOURCE_DIR}"
 		  SOURCE_DIR   "${SOURCE_DIR}"
