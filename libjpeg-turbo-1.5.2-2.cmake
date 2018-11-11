@@ -101,6 +101,7 @@ superbuild_package(
         # Static only. There may be an interfering libjeg.so on the device.
         --enable-static
         --disable-shared
+        --with-pic
         >
         --disable-silent-rules
         --without-12bit
