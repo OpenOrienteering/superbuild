@@ -179,7 +179,9 @@ superbuild_package(
         "--with-expat=$${}{EXPAT_DIR}"
         "--with-jpeg=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
         "--with-libtiff=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
-        "--with-libz=$${}{LIBZ_DIR}"
+        $<$<NOT:$<BOOL:${ANDROID}>>:
+          "--with-libz=$${}{LIBZ_DIR}"
+        >
         "--with-png=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
         "--with-sqlite3=$${}{SQLITE3_DIR}"
         --without-geos
@@ -198,7 +200,7 @@ superbuild_package(
         --without-xml2
         "CPPFLAGS=-I${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/include"
         "LDFLAGS=-L${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/lib"
-        $<$<BOOL:${ANDROID}>:
+        $<$<STREQUAL:${CMAKE_ANDROID_STL_TYPE},gnustl_shared>:
           "LIBS=-lgnustl_shared"
         >
         "PKG_CONFIG="
