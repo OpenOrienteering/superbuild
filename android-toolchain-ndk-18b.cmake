@@ -347,7 +347,7 @@ set(KEYSTORE_ALIAS         "]] "${KEYSTORE_ALIAS}" [[")
 set(EXPRESSION_BOOL_SIGN   "$<AND:$<OR:$<CONFIG:Release>,$<CONFIG:RelWithDebInfo>>,$<BOOL:${KEYSTORE_URL}>,$<BOOL:${KEYSTORE_ALIAS}>>")
 
 set(USE_SYSTEM_ZLIB        ON)
-set(ZLIB_ROOT              "${CMAKE_SYSROOT}")
+set(ZLIB_ROOT              "${ANDROID_SYSTEM_LIBRARY_PATH}/usr" NO_CMAKE_FIND_ROOT_PATH)
 
 set(CMAKE_RULE_MESSAGES    OFF CACHE BOOL "Whether to report a message for each make rule")
 set(CMAKE_TARGET_MESSAGES  OFF CACHE BOOL "Whether to report a message for each target")
