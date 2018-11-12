@@ -32,7 +32,7 @@
 # changes are added to these sources via patches.
 set(short_version  5.9)
 set(version        5.9.5)
-set(patch_version  ${version}-0)
+set(patch_version  ${version}-1)
 set(debian_version 5.9.2)
 set(debian_patch_version ${debian_version}-0)
 
@@ -40,6 +40,8 @@ option(USE_SYSTEM_QT "Use the system Qt if possible" ON)
 
 string(CONFIGURE [[
 	if("${module}" MATCHES "Android" AND NOT ANDROID)
+		set(BUILD_CONDITION 0)
+	elseif(ANDROID AND "${module}" STREQUAL "Qt5SerialPort")
 		set(BUILD_CONDITION 0)
 	elseif(USE_SYSTEM_QT)
 		find_package(Qt5Core @version@ CONFIG QUIET
@@ -92,7 +94,7 @@ superbuild_package(
   
   SOURCE
     URL            https://github.com/OpenOrienteering/superbuild/archive/qt-superbuild_${patch_version}.tar.gz
-    URL_HASH       SHA256=a3194f88c7a75b30d8467b7ff899b16b52a62dc99583f91e4628e5936a50a910
+    URL_HASH       SHA256=cc9f62b010ed3a96c432e0c248c1e0495c53c4027b93763109cdf7752cd9e614
   
   BUILD [[
     CMAKE_ARGS
@@ -219,16 +221,22 @@ superbuild_package(
       $<${crosscompiling}:
         -no-pkg-config
         -hostprefix "${TOOLCHAIN_DIR}"
-        -device-option CROSS_COMPILE=${SUPERBUILD_TOOLCHAIN_TRIPLET}-
         $<${windows}:
+          -device-option CROSS_COMPILE=${SUPERBUILD_TOOLCHAIN_TRIPLET}-
           -xplatform     win32-g++
           -opengl desktop
         >
         $<${android}:
-          -xplatform     android-g++
-          -android-arch  "${CMAKE_ANDROID_ARCH_ABI}"
+          $<$<STREQUAL:${CMAKE_CXX_COMPILER_ID},GNU>:
+            -xplatform     android-g++
+          >$<$<STREQUAL:${CMAKE_CXX_COMPILER_ID},Clang>:
+            -xplatform     android-clang
+            -disable-rpath
+          >
           -android-ndk   "${ANDROID_NDK_ROOT}"
           -android-sdk   "${ANDROID_SDK_ROOT}"
+          -android-arch  "${ANDROID_ABI}"
+          -android-ndk-platform "${ANDROID_PLATFORM}"
         >
       >
       -I "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/include"
