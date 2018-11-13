@@ -93,13 +93,10 @@ endfunction()
 
 function(_sb_write_if_different filepath)
 	string(CONCAT output ${ARGN})
-	if(EXISTS "${filepath}")
-		file(READ "${filepath}" content)
-		if(content STREQUAL output)
-			return()
-		endif()
-	endif()
-	file(WRITE "${filepath}" "${output}")
+	file(WRITE "${filepath}.raw" "${output}")
+	# Create a proper build rule for Ninja et al.
+	configure_file("${filepath}.raw" "${filepath}" COPYONLY)
+	file(REMOVE "${filepath}.raw")
 endfunction()
 
 
