@@ -66,16 +66,16 @@ if(NOT enabled_abis)
 	return() # *** Early exit ***
 endif()
 
-set(KEYSTORE_URL "KEYSTORE_URL-NOTFOUND" CACHE STRING
+set(ANDROID_KEYSTORE_URL "ANDROID_KEYSTORE_URL-NOTFOUND" CACHE STRING
   "URL of the keystore to be used when signing APK packages."
 )
-set(KEYSTORE_ALIAS "KEYSTORE_ALIAS-NOTFOUND" CACHE STRING
+set(ANDROID_KEYSTORE_ALIAS "ANDROID_KEYSTORE_ALIAS-NOTFOUND" CACHE STRING
   "Alias in the keystore to be used when signing APK packages."
 )
 if(CMAKE_BUILD_TYPE MATCHES Rel)
-	if(NOT KEYSTORE_URL OR NOT KEYSTORE_ALIAS)
+	if(NOT ANDROID_KEYSTORE_URL OR NOT ANDROID_KEYSTORE_ALIAS)
 		# Warn here, fail on build - don't block other toolchains
-		message(WARNING "You must configure KEYSTORE_URL and KEYSTORE_ALIAS for signing Android release packages.")
+		message(WARNING "You must configure ANDROID_KEYSTORE_URL and ANDROID_KEYSTORE_ALIAS for signing Android release packages.")
 	endif()
 endif()
 
@@ -342,9 +342,9 @@ include(]] "${ANDROID_NDK_ROOT}" [[/build/cmake/android.toolchain.cmake)
 set(STANDALONE_C_COMPILER   "]] "${toolchain_dir}" [[/bin/${SYSTEM_NAME}-clang")
 set(STANDALONE_CXX_COMPILER "]] "${toolchain_dir}" [[/bin/${SYSTEM_NAME}-clang++")
 
-set(KEYSTORE_URL           "]] "${KEYSTORE_URL}" [[")
-set(KEYSTORE_ALIAS         "]] "${KEYSTORE_ALIAS}" [[")
-set(EXPRESSION_BOOL_SIGN   "$<AND:$<OR:$<CONFIG:Release>,$<CONFIG:RelWithDebInfo>>,$<BOOL:${KEYSTORE_URL}>,$<BOOL:${KEYSTORE_ALIAS}>>")
+set(ANDROID_KEYSTORE_URL    "]] "${ANDROID_KEYSTORE_URL}" [[")
+set(ANDROID_KEYSTORE_ALIAS  "]] "${ANDROID_KEYSTORE_ALIAS}" [[")
+set(EXPRESSION_BOOL_SIGN   "$<AND:$<OR:$<CONFIG:Release>,$<CONFIG:RelWithDebInfo>>,$<BOOL:${ANDROID_KEYSTORE_URL}>,$<BOOL:${ANDROID_KEYSTORE_ALIAS}>>")
 
 set(USE_SYSTEM_ZLIB        ON)
 set(ZLIB_ROOT              "${ANDROID_SYSTEM_LIBRARY_PATH}/usr" NO_CMAKE_FIND_ROOT_PATH)
@@ -395,16 +395,16 @@ mv "${INSTALL_DIR}.tmp/"* "${INSTALL_DIR}/"
 	    ${system_name}_INSTALL_PREFIX
 	    ANDROID_NDK_ROOT
 	    ANDROID_NDK_VERSION
-	    KEYSTORE_URL
-	    KEYSTORE_ALIAS
+	    ANDROID_KEYSTORE_URL
+	    ANDROID_KEYSTORE_ALIAS
 	  
 	  BUILD [[
 	    CONFIGURE_COMMAND
 	      "${CMAKE_COMMAND}" -E echo "Toolchain config checksum: ${md5}"
-	    $<$<NOT:$<AND:$<BOOL:${KEYSTORE_URL}>,$<BOOL:${KEYSTORE_ALIAS}>>>:
+	    $<$<NOT:$<AND:$<BOOL:${ANDROID_KEYSTORE_URL}>,$<BOOL:${ANDROID_KEYSTORE_ALIAS}>>>:
 	      $<$<OR:$<CONFIG:Release>,$<CONFIG:RelWithDebInfo>>:
 	        COMMAND "${CMAKE_COMMAND}" -E echo
-	          "You must configure KEYSTORE_URL and KEYSTORE_ALIAS for signing Android release packages."
+	          "You must configure ANDROID_KEYSTORE_URL and ANDROID_KEYSTORE_ALIAS for signing Android release packages."
 	      >
 	      $<$<CONFIG:Release>:
 	        COMMAND false
