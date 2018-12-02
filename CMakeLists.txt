@@ -439,12 +439,29 @@ set(toolchain_info_var_system  "Variables that describe the system"
   CMAKE_SYSTEM_VERSION
   CMAKE_SYSTEM_PROCESSOR
   CMAKE_LIBRARY_ARCHITECTURE
+  ANDROID
   APPLE
   MINGW
   UNIX
   WIN32
-  XCODE_VERSION
 )
+if(ANDROID)
+    list(APPEND toolchain_info_var_system
+      ANDROID_SDK_ROOT
+      ANDROID_NDK_ROOT
+      ANDROID_ABI
+      ANDROID_NATIVE_API_LEVEL
+      ANDROID_STL
+      ANDROID_TOOLCHAIN
+      ANDROID_TOOLCHAIN_NAME
+      ANDROID_KEYSTORE_URL
+      ANDROID_KEYSTORE_ALIAS
+    )
+elseif(APPLE)
+    list(APPEND toolchain_info_var_system
+      XCODE_VERSION
+    )
+endif()
 
 list(APPEND toolchain_info_groups toolchain_info_var_build)
 set(toolchain_info_var_build  "Variables that control the build"
