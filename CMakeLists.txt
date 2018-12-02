@@ -70,6 +70,12 @@ include(CMakeParseArguments)
 include(ExternalProject)
 
 
+# Silence warnings about unused variables (Qt Creator)
+set(no_warn_unused
+  ${CMAKE_CXX_COMPILER}
+)
+
+
 # Global utilities
 function(sb_install_dir var system_name)
 	if(DEFINED ${SYSTEM_NAME}_INSTALL_DIR)
@@ -244,6 +250,13 @@ string(CONFIGURE \"\${config}\" config)
 file(GENERATE OUTPUT \"\${TMP_DIR}/CMakeLists.txt\"
   CONTENT \"\${config}\"
 )
+
+# Silence warnings in case these variables are not used.
+set(no_warn_unused
+  ${SYSTEM_NAME}_INSTALL_DIR
+  ${SYSTEM_NAME}_TOOLCHAIN_DIR
+)
+
 ")
 	_sb_write_if_different("${PROJECT_BINARY_DIR}/config/CMakeLists.txt" ${output})
 endfunction()
