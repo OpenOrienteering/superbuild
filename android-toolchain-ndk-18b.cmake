@@ -130,9 +130,9 @@ yes    | ./tools/bin/sdkmanager --licenses
 	    URL_HASH      SHA256=92ffee5a1d98d856634e8b71132e8a95d96c83a63fde1099be3d86df3106def9
 	    DOWNLOAD_NO_EXTRACT 1 # We extract manually from within the source directory.
 	    PATCH_COMMAND
-	      "${CMAKE_COMMAND}" -E tar xvzf "<DOWNLOADED_FILE>"
+	      "${CMAKE_COMMAND}" -E tar xzf "<DOWNLOADED_FILE>"
 	    COMMAND
-	      sh ./sdk_setup.sh # Download missing components.
+	      sh -e ./sdk_setup.sh # Download missing components.
 	)
 	set(ANDROID_SDK_ROOT "${PROJECT_BINARY_DIR}/source/android-sdk-${sdk_tools_version}")
 	list(APPEND android_toolchain_dependencies source:android-sdk-${sdk_tools_version})
@@ -253,7 +253,7 @@ if(NOT ANDROID_NDK_ROOT)
 			  BUILD [[
 			    CONFIGURE_COMMAND ""
 			    BUILD_COMMAND "${CMAKE_COMMAND}" -E chdir "<SOURCE_DIR>/external/libcxx"
-			      bash -- "<SOURCE_DIR>/../android-${ANDROID_NDK_VERSION}/ndk-build"
+			      bash -e -- "<SOURCE_DIR>/../android-${ANDROID_NDK_VERSION}/ndk-build"
 			        "V=1"
 			        "APP_ABI=${abi}"
 			        "APP_PLATFORM=android-16"
@@ -338,6 +338,7 @@ set(ANDROID_STL            "c++_shared")
 set(ANDROID_TOOLCHAIN      "clang")
 set(CMAKE_FIND_ROOT_PATH   "]] "${${system_name}_FIND_ROOT_PATH}" [[")
 include(]] "${ANDROID_NDK_ROOT}" [[/build/cmake/android.toolchain.cmake)
+list(APPEND CMAKE_FIND_ROOT_PATH "${ANDROID_SYSTEM_LIBRARY_PATH}")
 
 set(STANDALONE_C_COMPILER   "]] "${toolchain_dir}" [[/bin/${SYSTEM_NAME}-clang")
 set(STANDALONE_CXX_COMPILER "]] "${toolchain_dir}" [[/bin/${SYSTEM_NAME}-clang++")
@@ -347,7 +348,7 @@ set(ANDROID_KEYSTORE_ALIAS  "]] "${ANDROID_KEYSTORE_ALIAS}" [[")
 set(EXPRESSION_BOOL_SIGN   "$<AND:$<OR:$<CONFIG:Release>,$<CONFIG:RelWithDebInfo>>,$<BOOL:${ANDROID_KEYSTORE_URL}>,$<BOOL:${ANDROID_KEYSTORE_ALIAS}>>")
 
 set(USE_SYSTEM_ZLIB        ON)
-set(ZLIB_ROOT              "${ANDROID_SYSTEM_LIBRARY_PATH}/usr" NO_CMAKE_FIND_ROOT_PATH)
+set(ZLIB_LIBRARY           "${ANDROID_SYSTEM_LIBRARY_PATH}/usr/lib/libz.so")
 
 set(CMAKE_RULE_MESSAGES    OFF CACHE BOOL "Whether to report a message for each make rule")
 set(CMAKE_TARGET_MESSAGES  OFF CACHE BOOL "Whether to report a message for each target")
@@ -361,8 +362,8 @@ set(CMAKE_VERBOSE_MAKEFILE ON  CACHE BOOL "Enable verbose output from Makefile b
 INSTALL_DIR=$1
 rm -Rf "${INSTALL_DIR}.tmp"
 mkdir "${INSTALL_DIR}.tmp"
-mv "${INSTALL_DIR}/build" "${INSTALL_DIR}.tmp/"
-mv "${INSTALL_DIR}/build.tmp" "${INSTALL_DIR}.tmp/"
+test -d "${INSTALL_DIR}/build" && mv "${INSTALL_DIR}/build" "${INSTALL_DIR}.tmp/"
+test -d "${INSTALL_DIR}/build.tmp" && mv "${INSTALL_DIR}/build.tmp" "${INSTALL_DIR}.tmp/"
 bash "]] ${ANDROID_NDK_ROOT} [[/build/tools/make-standalone-toolchain.sh" \
   "--toolchain=]] ${toolchain_name} [[-4.9" \
   "--stl=libcxx" \
