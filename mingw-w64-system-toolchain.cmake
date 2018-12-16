@@ -33,6 +33,7 @@ set(version     1)
 
 option(ENABLE_${system_name_32} "Enable the ${system_name_32} toolchain" 0)
 option(ENABLE_${system_name_64} "Enable the ${system_name_64} toolchain" 0)
+option(mingw-w64_FIX_HEADERS    "Install missing mingw-w64 headers"      0)
 
 set(i686-w64-mingw32_SYSTEM_PROCESSOR   x86)
 set(x86_64-w64-mingw32_SYSTEM_PROCESSOR AMD64)
@@ -113,17 +114,37 @@ set(CMAKE_VERBOSE_MAKEFILE ON  CACHE BOOL "Enable verbose output from Makefile b
 )
     #string(MD5 md5 "${toolchain}")
     
+    set(missing_headers_source)
+    set(configure_command [[CONFIGURE_COMMAND ""]])
+    set(build_command     [[BUILD_COMMAND     ""]])
+    if(mingw-w64_FIX_HEADERS)
+        set(missing_headers_source
+          SOURCE
+            URL            https://github.com/OpenOrienteering/superbuild/archive/mingw-missing-headers_2018.12.tar.gz
+            URL_HASH       SHA256=60228b01060ac8b0ba8e4d264968a50b895fb8ef10e65b62ced8d6b1eeb7cc1c
+        )
+        set(configure_command [[CMAKE_ARGS
+          "-DCMAKE_TOOLCHAIN_FILE=${SOURCE_DIR}/toolchain.cmake"]])
+        set(build_command     [[BUILD_COMMAND
+          "${CMAKE_COMMAND}" -E env "DESTDIR=${INSTALL_DIR}"
+            "${CMAKE_COMMAND}" -P cmake_install.cmake]])
+    endif()
     superbuild_package(
       NAME         ${system_name}-toolchain
       VERSION      ${version}
       SYSTEM_NAME  ${system_name}
       
+      ${missing_headers_source}
+  
       SOURCE_WRITE
         toolchain.cmake toolchain
       
+      USING
+        configure_command
+        build_command
       BUILD [[
-        CONFIGURE_COMMAND ""
-        BUILD_COMMAND     ""
+        ${configure_command}
+        ${build_command}
         INSTALL_COMMAND   "${CMAKE_COMMAND}" -E copy_if_different
           "${SOURCE_DIR}/toolchain.cmake" "${INSTALL_DIR}/toolchain.cmake"
       ]]
