@@ -1,0 +1,9 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: mingw-w64
+Source: http://mingw-w64.sourceforge.net/
+
+Files: include/*
+Copyright: public-domain
+License: public-domain
+ This file has no copyright assigned and is placed in the Public
+ Domain.
