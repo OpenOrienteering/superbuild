@@ -36,14 +36,6 @@ import sys
 
 verbose = 'VERBOSE' in os.environ
 
-default_copyright = 'The Qt Company Ltd.'
-default_licenses = (
-    'BSD-3-clause',
-    'LGPL-3 or GPL-2',
-    'GPL-3 with Qt-1.0 exception',
-    'GFDL-NIV-1.3',
-)
-
 author_map = {
     re.compile('^BlackBerry|^Research [Ii]n Motion'): 'BlackBerry Limited (formerly Research In Motion)',
     re.compile('^BogDan Vatra'): 'BogDan Vatra',
@@ -84,23 +76,23 @@ start_header = '## BEGIN AUTO GENERATED BLOCK'
 end_header = '## END AUTO GENERATED BLOCK'
 
 
+# A representation of a 'Files' field together with their 'Copyright'
 class CopyrightInfo():
     def __init__(self):
         self.min_years = {}
         self.max_years = {}
+        self.authors = []
         self.files = []
 
-    def add_file(self, authors, file):
+    def add_authors(self, authors):
         for min_year, max_year, author in authors:
-            if author in self.min_years:
+            if author in self.authors:
                 self.min_years[author] = min(self.min_years[author], min_year)
-            else:
-                self.min_years[author] = min_year
-            if author in self.max_years:
                 self.max_years[author] = max(self.max_years[author], max_year)
             else:
+                self.authors.append(author)
+                self.min_years[author] = min_year
                 self.max_years[author] = max_year
-        self.files.append(file)
 
     def get_strings(self, authors):
         for author in authors:
@@ -191,24 +183,18 @@ def write_output(root_directory, output_file):
         if license is None:
             continue
         if license not in data:
-            data[license] = {}
-        license_dict = data[license]
-        authors_tuple = tuple(sorted(author[2] for author in authors))
-        if authors_tuple not in license_dict:
-            license_dict[authors_tuple] = CopyrightInfo()
-        license_dict[authors_tuple].add_file(authors, filename)
+            data[license] = CopyrightInfo()
+        copyright_info = data[license]
+        copyright_info.files.append(filename)
+        copyright_info.add_authors(authors)
 
     for license in sorted(data.keys()):
         output_file.write('\n## ' + license + '\n')
-        license_dict = data[license]
-        for authors in sorted(license_dict.keys()):
-            if authors == (default_copyright,) and license in default_licenses:
-                continue
-            copyright_info = license_dict[authors]
-            output_file.write('\n')
-            output_file.write(format_list('Files: ', sorted(copyright_info.files)) + '\n')
-            output_file.write(format_list('Copyright: ', copyright_info.get_strings(authors)) + '\n')
-            output_file.write('License: ' + license + '\n')
+        copyright_info = data[license]
+        output_file.write('\n')
+        output_file.write(format_list('Files: ', sorted(copyright_info.files)) + '\n')
+        output_file.write(format_list('Copyright: ', copyright_info.get_strings(sorted(copyright_info.authors))) + '\n')
+        output_file.write('License: ' + license + '\n')
 
 
 if __name__ == '__main__':
