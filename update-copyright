@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 # Copyright: 2016-2017 Dmitry Shachnev <mitya57@debian.org>
+#            2018 Kai Pastor
 # License: LGPL-3 or GPL-2+
 #
 # License: LGPL-3
@@ -35,6 +36,8 @@ import re
 import sys
 
 verbose = 'VERBOSE' in os.environ
+
+default_authors = ( (2018, 2018, 'The Qt Company Ltd.'), )
 
 author_map = {
     re.compile('^BlackBerry|^Research [Ii]n Motion'): 'BlackBerry Limited (formerly Research In Motion)',
@@ -73,7 +76,20 @@ exclude_prefixes = (
 )
 
 start_header = '## BEGIN AUTO GENERATED BLOCK'
+start_patterns = '# Filepath patterns'
+start_overrides = '# Per-file overrides'
 end_header = '## END AUTO GENERATED BLOCK'
+
+
+# A representation of a single entry in the 'Files' field of a files paragraph.
+class PatternInfo():
+    def __init__(self, path):
+        self.path = path
+        self.regex = re.compile('^' + re.escape(path).replace('\\*', '.*') + '$')
+        self.count = 0
+
+    def match(self, filepath):
+        return self.regex.match(filepath)
 
 
 # A representation of a 'Files' field together with their 'Copyright'
@@ -83,6 +99,7 @@ class CopyrightInfo():
         self.max_years = {}
         self.authors = []
         self.files = []
+        self.debian_copyright = None
 
     def add_authors(self, authors):
         for min_year, max_year, author in authors:
@@ -171,37 +188,112 @@ def main(root_directory):
         end_pos = current_copyright.find(end_header) - 1
         end_data = current_copyright[end_pos:]
 
-    data = read_input(root_directory)
+    known_patterns = read_patterns(current_copyright[start_pos:end_pos])
+    data = read_input(root_directory, known_patterns)
 
     with open('debian/copyright', 'w') as output_file:
         output_file.write(start_data)
-        write_output(data, output_file)
+        write_output(known_patterns, data, output_file)
         output_file.write(end_data)
 
 
-def read_input(root_directory):
+# Read patterns from Debian copyright "Files paragraphs"
+def read_patterns(paragraphs):
+    known_patterns = []
+    files = ''
+    copyright = []
+    for line in paragraphs.splitlines():
+        if line == '':
+            continue
+        elif line.startswith(start_overrides):
+            break
+        elif line.startswith('Copyright: '):
+            copyright.append(line[11:])
+        elif line.startswith('           '):
+            copyright.append(line[11:])
+        elif line.startswith('Files: '):
+            files = line[7:]
+        elif line.startswith('       '):
+            files += line[6:]
+        elif line.startswith('License: '):
+            files = files.strip()
+            patterns = list(filter(lambda x: '*' in x, files.split()))
+            if patterns:
+                info = CopyrightInfo()
+                info.license = line[9:].strip()
+                info.patterns = list(map(PatternInfo, patterns))
+                if files == '*':
+                    info.add_authors(default_authors)
+                elif files == 'debian/*':
+                    info.debian_copyright = copyright
+                known_patterns.append(info)
+            files = ''
+            copyright = []
+    return known_patterns
+
+
+# Find the known "Files paragraphs" for a filename
+def find_pattern(known_patterns, filename, license):
+    matching_info = None
+    matching_pattern = None
+    for info in known_patterns:
+        pattern = next(filter(lambda p: p.regex.fullmatch(filename), info.patterns), None)
+        if pattern:
+            if info.license == license:
+                matching_info = info
+                matching_pattern = pattern
+            else:
+                matching_info = None
+                matching_pattern = None
+    if matching_info:
+        return (matching_info, matching_pattern)
+    return (None, None)
+
+
+def read_input(root_directory, known_patterns):
     data = {}
 
     for filename in get_source_files(root_directory):
         license, authors = parse_file(filename)
         if license is None:
             continue
-        if license not in data:
-            data[license] = CopyrightInfo()
-        copyright_info = data[license]
-        copyright_info.files.append(filename)
-        copyright_info.add_authors(authors)
+        (matching_info, matching_pattern) = find_pattern(known_patterns, filename, license)
+        if matching_info:
+            matching_info.add_authors(authors)
+            matching_pattern.count += 1
+        else:
+            if license not in data:
+               data[license] = CopyrightInfo()
+            copyright_info = data[license]
+            copyright_info.files.append(filename)
+            copyright_info.add_authors(authors)
     return data
 
 
-def write_output(data, output_file):
-    for license in sorted(data.keys()):
-        output_file.write('\n## ' + license + '\n')
-        copyright_info = data[license]
-        output_file.write('\n')
-        output_file.write(format_list('Files: ', sorted(copyright_info.files)) + '\n')
-        output_file.write(format_list('Copyright: ', copyright_info.get_strings(sorted(copyright_info.authors))) + '\n')
-        output_file.write('License: ' + license + '\n')
+def write_output(known_patterns, data, output_file):
+    if known_patterns:
+        output_file.write('\n' + start_patterns + '\n')
+        for copyright_info in known_patterns:
+            for pattern in filter(lambda p: p.count > 0 or copyright_info.debian_copyright, copyright_info.patterns):
+                copyright_info.files.append(pattern.path)
+            if not copyright_info.files:
+                continue
+            output_file.write('\n')
+            output_file.write(format_list('Files: ', sorted(copyright_info.files)) + '\n')
+            if copyright_info.files == ['debian/*']:
+                 output_file.write(format_list('Copyright: ', copyright_info.debian_copyright) + '\n')
+            else:
+                 output_file.write(format_list('Copyright: ', copyright_info.get_strings(sorted(copyright_info.authors))) + '\n')
+            output_file.write('License: ' + copyright_info.license + '\n')
+
+    if data:
+        output_file.write('\n' + start_overrides + '\n')
+        for license in sorted(data.keys()):
+            copyright_info = data[license]
+            output_file.write('\n')
+            output_file.write(format_list('Files: ', sorted(copyright_info.files)) + '\n')
+            output_file.write(format_list('Copyright: ', copyright_info.get_strings(sorted(copyright_info.authors))) + '\n')
+            output_file.write('License: ' + license + '\n')
 
 
 if __name__ == '__main__':
