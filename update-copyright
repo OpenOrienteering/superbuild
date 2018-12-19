@@ -31,6 +31,7 @@
 
 
 import os
+import re
 import sys
 
 verbose = 'VERBOSE' in os.environ
@@ -42,6 +43,28 @@ default_licenses = (
     'GPL-3 with Qt-1.0 exception',
     'GFDL-NIV-1.3',
 )
+
+author_map = {
+    re.compile('^BlackBerry|^Research [Ii]n Motion'): 'BlackBerry Limited (formerly Research In Motion)',
+    re.compile('^BogDan Vatra'): 'BogDan Vatra',
+    re.compile('^Canonical'): 'Canonical, Ltd.',
+    re.compile('^David Faure'): 'David Faure',
+    re.compile('^Giuseppe D\'Angelo'): 'Giuseppe D\'Angelo <dangelog@gmail.com>',
+    re.compile('^Governikus GmbH & Co. KG'): 'Governikus GmbH & Co. KG',
+    re.compile('^Green Hills Software'): 'Green Hills Software',
+    re.compile('^Intel Corporation'): 'Intel Corporation',
+    re.compile('^Ivan Komissarov'): 'Ivan Komissarov <ABBAPOH@gmail.com>',
+    re.compile('KDAB'): 'Klarälvdalens Datakonsult AB, a KDAB Group company',
+    re.compile('^Konstantin Ritt'): 'Konstantin Ritt',
+    re.compile('^Lorn Potter'): 'Lorn Potter',
+    re.compile('Martsum .*tmartsum\[at\]gmail.com'): 'Thorbjørn Lund Martsum <tmartsum@gmail.com>',
+    re.compile('^Olivier Goffart'): 'Olivier Goffart <ogoffart@woboq.com>',
+    re.compile('^Richard J. Moore'): 'Richard J. Moore <rich@kde.org>',
+    re.compile('^Robin Burchell'): 'Robin Burchell <robin.burchell@viroteck.net>',
+    re.compile('^Samuel Gaist'): 'Samuel Gaist <samuel.gaist@edeltech.ch>',
+    re.compile('^Stephen Kelly'): 'Stephen Kelly <steveire@gmail.com>',
+    re.compile('^The Qt Company'): 'The Qt Company Ltd.',
+}
 
 licenses_map = {
     'BSD': 'BSD-3-clause',
@@ -90,24 +113,9 @@ class CopyrightInfo():
 
 
 def canonicalize_author_name(author):
-    if 'The Qt Company.' in author:
-        return 'The Qt Company Ltd.'
-    if 'KDAB' in author:
-        return 'Klarälvdalens Datakonsult AB, a KDAB Group company'
-    if 'BlackBerry' in author:
-        return 'BlackBerry Limited (formerly Research In Motion)'
-    if 'Research In Motion' in author or 'Research in Motion' in author:
-        return 'BlackBerry Limited (formerly Research In Motion)'
-    if 'Green Hills Software' in author:
-        return 'Green Hills Software'
-    if 'Ivan Komissarov' in author:
-        return 'Ivan Komissarov <ABBAPOH@gmail.com>'
-    if 'Martsum - tmartsum[at]gmail.com' in author:
-        return 'Thorbjørn Lund Martsum <tmartsum@gmail.com>'
-    if 'Olivier Goffart' in author:
-        return 'Olivier Goffart <ogoffart@woboq.com>'
-    if 'Robin Burchell' in author:
-        return 'Robin Burchell <robin.burchell@viroteck.net>'
+    for regex, replacement in author_map.items():
+        if regex.search(author):
+            return replacement
     return author
 
 
