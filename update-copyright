@@ -67,6 +67,7 @@ licenses_map = {
     'GPL': 'GPL-3',
     'GPL-EXCEPT': 'GPL-3 with Qt-1.0 exception',
     'LGPL': 'LGPL-3 or GPL-2',
+    'LGPL3': 'LGPL-3',
     'MIT': 'MIT',
 }
 
@@ -139,6 +140,8 @@ def parse_file(filename):
             authors = None
     for line in data:
         if line.startswith(' ** '): # qtandroidextras quirk
+            line = line[1:]
+        if line.startswith('.\\" '): # qttools manual pages
             line = line[1:]
         if line[3:16] == 'Copyright (C)' and line[0] != ' ':
             copyright = line[17:-1]
