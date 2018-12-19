@@ -153,7 +153,9 @@ def parse_file(filename):
             authors.append((min_year, max_year, author))
         if line[3:21] == '$QT_BEGIN_LICENSE:':
             license = licenses_map[line[21:-2]]
-    if license and not authors:
+        elif license is None and '$QT_BEGIN_LICENSE:' in line:
+            license = 'QT_BEGIN_LICENSE' # Error, handled validate_license
+    if license and not authors and not license == 'QT_BEGIN_LICENSE':
         print(filename + ' : ' + license + ' : No authors!', file=sys.stderr)
     elif verbose:
         if authors is None:
@@ -190,6 +192,7 @@ def main(root_directory):
 
     known_patterns = read_patterns(current_copyright[start_pos:end_pos])
     data = read_input(root_directory, known_patterns)
+    end_data = validate_licenses(known_patterns, data, end_data)
 
     with open('debian/copyright', 'w') as output_file:
         output_file.write(start_data)
@@ -268,6 +271,66 @@ def read_input(root_directory, known_patterns):
             copyright_info.files.append(filename)
             copyright_info.add_authors(authors)
     return data
+
+
+def validate_licenses(known_patterns, data, end_data):
+    errors = 0
+    used_licenses = []
+
+    for copyright_info in filter(lambda c: not c.debian_copyright, known_patterns):
+        for pattern in copyright_info.patterns:
+            if pattern.count == 0:
+                print('update-copyright: warning: no matching files for ' + pattern.path, file=sys.stderr)
+
+    for copyright_info in known_patterns:
+        if next(filter(lambda p: p.count > 0 or p.path == '*', copyright_info.patterns), None):
+            for l1 in copyright_info.license.split(' or '):
+                for l2 in l1.split(' and '):
+                    license_line = "License: " + l2
+                    if not license_line in end_data:
+                        print('update-copyright: error: Undefined license ' + l2 + format_list(' in  ', map(lambda p: p.path, copyright_info.patterns)), file=sys.stderr)
+                        errors += 1
+                    elif not license_line in used_licenses:
+                        used_licenses.append(license_line)
+
+    for license in data.keys():
+        if license == 'QT_BEGIN_LICENSE':
+            print('update-copyright: error: unhandled QT_BEGIN_LICENSE' + format_list(' in ',data[license].files), file=sys.stderr)
+            errors += 1
+            continue
+        for l1 in license.split(' or '):
+            for l2 in l1.split(' and '):
+                license_line = "License: " + l2
+                if not license_line in end_data:
+                    print('update-copyright: error: Undefined license ' + l2 + format_list(' in  ', data[license].files), file=sys.stderr)
+                    errors += 1
+                elif not license_line in used_licenses:
+                    used_licenses.append(license_line)
+
+    remainder = []
+    license_line = None
+    skip_body = False
+    for line in end_data.splitlines():
+        if line == '':
+            skip_body = False
+            if remainder and remainder[-1] == '':
+                continue
+        elif line.startswith('License: '):
+            license_line = line
+            continue
+        elif license_line:
+            if not license_line in used_licenses:
+               print('update-copyright: warning: removing unused license ' + license_line[9:], file=sys.stderr)
+               skip_body = True
+            else:
+               remainder.append(license_line)
+            license_line = None
+        if not skip_body:
+            remainder.append(line)
+
+    if errors:
+        sys.exit(1)
+    return '\n'.join(remainder) + '\n'
 
 
 def write_output(known_patterns, data, output_file):
