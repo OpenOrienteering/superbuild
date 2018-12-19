@@ -138,6 +138,8 @@ def parse_file(filename):
             data = []
             authors = None
     for line in data:
+        if line.startswith(' ** '): # qtandroidextras quirk
+            line = line[1:]
         if line[3:16] == 'Copyright (C)' and line[0] != ' ':
             copyright = line[17:-1]
             max_year = min_year = int(copyright[:4])
