@@ -31,6 +31,7 @@
 # License version 2 can be found in /usr/share/common-licenses/GPL-2.
 
 
+import json
 import os
 import re
 import sys
@@ -79,6 +80,7 @@ exclude_prefixes = (
 start_header = '## BEGIN AUTO GENERATED BLOCK'
 start_patterns = '# Filepath patterns'
 start_overrides = '# Per-file overrides'
+start_attribution = '# Qt 3rd-party attribution'
 end_header = '## END AUTO GENERATED BLOCK'
 
 
@@ -197,11 +199,12 @@ def main(root_directory):
 
     known_patterns = read_patterns(current_copyright[start_pos:end_pos])
     data = read_input(root_directory, known_patterns)
+    attribution = read_attribution(root_directory)
     end_data = validate_licenses(known_patterns, data, end_data)
 
     with open('debian/copyright', 'w') as output_file:
         output_file.write(start_data)
-        write_output(known_patterns, data, output_file)
+        write_output(known_patterns, data, attribution, output_file)
         output_file.write(end_data)
 
 
@@ -214,6 +217,8 @@ def read_patterns(paragraphs):
         if line == '':
             continue
         elif line.startswith(start_overrides):
+            break
+        elif line.startswith(start_attribution):
             break
         elif line.startswith('Copyright: '):
             copyright.append(line[11:])
@@ -278,6 +283,62 @@ def read_input(root_directory, known_patterns):
     return data
 
 
+def read_attribution(root_directory):
+    data = []
+    canonical_root = os.path.realpath(root_directory)
+    with open('debian/attribution.json') as attribution_file:
+        attribution = json.load(attribution_file)
+        for item in attribution:
+            copyright_info = CopyrightInfo()
+            license = item['LicenseId'].replace('Clause', 'clause').replace(' WITH ', ' with ')
+            if item['LicenseId'] in ('', 'NONE'):
+                license = item['Id']
+            if item['LicenseId'] in ('', 'NONE', 'Public Domain'):
+                license = 'public-domain'
+            else:
+                licenses = []
+                for l1 in license.split(' OR '):
+                    licenses2 = []
+                    for l2 in l1.split(' AND '):
+                        if l2.lower() != item['Id']:
+                            l2 = '{0} ({1})'.format(l2, item['Id'])
+                        licenses2.append(l2)
+                    licenses.append(' and '.join(licenses2))
+                license = ' or '.join(licenses)
+            if item['LicenseFile']:
+                with open(item['LicenseFile']) as license_file:
+                    for line in license_file.read().rstrip().splitlines():
+                        line = line.rstrip()
+                        if line == '':
+                            license += '\n .'
+                        else:
+                            license += '\n ' + line
+            copyright_info.license = license
+
+            path = os.path.relpath(item['Path'], canonical_root)
+            files = item['Files']
+            if os.path.isfile(path):
+                copyright_info.files.append(path)
+            elif files:
+                for file in files.split(' '):
+                    copyright_info.files.append(path + '/' + file)
+            else:
+                copyright_info.files.append(path + '/*')
+            
+            for author in item['Copyright'].splitlines():
+                author = author.replace('Copyright ','')
+                author = author.replace('(C)','')
+                author = author.replace('(c)','')
+                author = author.replace('©','')
+                author = author.strip()
+                if not author == '':
+                    copyright_info.authors.append(author)
+
+            data.append(copyright_info)
+
+    return data
+
+
 def validate_licenses(known_patterns, data, end_data):
     errors = 0
     used_licenses = []
@@ -338,7 +399,7 @@ def validate_licenses(known_patterns, data, end_data):
     return '\n'.join(remainder) + '\n'
 
 
-def write_output(known_patterns, data, output_file):
+def write_output(known_patterns, data, attribution, output_file):
     if known_patterns:
         output_file.write('\n' + start_patterns + '\n')
         for copyright_info in known_patterns:
@@ -362,6 +423,14 @@ def write_output(known_patterns, data, output_file):
             output_file.write(format_list('Files: ', sorted(copyright_info.files)) + '\n')
             output_file.write(format_list('Copyright: ', copyright_info.get_strings(sorted(copyright_info.authors))) + '\n')
             output_file.write('License: ' + license + '\n')
+
+    if attribution:
+        output_file.write('\n' + start_attribution + '\n')
+        for copyright_info in attribution:
+            output_file.write('\n')
+            output_file.write(format_list('Files: ', sorted(copyright_info.files)) + '\n')
+            output_file.write(format_list('Copyright: ', copyright_info.authors) + '\n')
+            output_file.write('License: ' + copyright_info.license + '\n')
 
 
 if __name__ == '__main__':
