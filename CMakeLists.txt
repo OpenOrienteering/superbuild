@@ -34,6 +34,8 @@ project(qt-5.12-openorienteering VERSION 5.12.0 LANGUAGES NONE)
 
 set(VERSION ${PROJECT_VERSION} CACHE STRING "The Qt version")
 
+configure_file(init-copyright.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/init-copyright.cmake" @ONLY)
+
 set(qt_modules
   qtandroidextras
   qtbase
@@ -45,10 +47,44 @@ set(qt_modules
   qttranslations
 )
 
+add_custom_target(update-copyright)
+
 foreach(module ${qt_modules})
+    set(module_source_dir "${CMAKE_CURRENT_LIST_DIR}/../${module}-opensource-src-${VERSION}")
+    if(NOT EXISTS "${module_source_dir}")
+       continue()
+    endif()
+    
+    set(copyright_file "${CMAKE_CURRENT_LIST_DIR}/${module}/copyright")
+    configure_file(copyright.in "${CMAKE_CURRENT_BINARY_DIR}/copyright.${module}" @ONLY)
+    add_custom_target(update-copyright-${module}
+      COMMAND
+        "${CMAKE_COMMAND}" "-Dmodule=${module}" -P "${CMAKE_CURRENT_BINARY_DIR}/init-copyright.cmake"
+      COMMAND
+        "${CMAKE_COMMAND}" -E make_directory "${module_source_dir}/debian"
+      COMMAND
+        "${CMAKE_COMMAND}" -E copy "${copyright_file}" "${module_source_dir}/debian/copyright"
+      COMMAND
+        "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/bin/qtattributionsscanner"
+          --output-format json
+          --output "${module_source_dir}/debian/attribution.json"
+          --basedir "${module_source_dir}"
+          "${module_source_dir}"
+      COMMAND
+        "${CMAKE_COMMAND}" -E chdir "${module_source_dir}"
+          "${PYTHON_EXECUTABLE}" "${CMAKE_CURRENT_LIST_DIR}/update-copyright"
+      COMMAND
+        "${CMAKE_COMMAND}" -E copy_if_different "${module_source_dir}/debian/copyright" "${copyright_file}"
+      VERBATIM
+      COMMENT
+        "Updating copyright for '${module}'"
+    )
+    add_dependencies(update-copyright update-copyright-${module})
+    
     install(
-      FILES "${module}/copyright"
+      FILES "${copyright_file}"
       RENAME "${module}-${VERSION}.txt"
       DESTINATION "share/doc/copyright"
     )
 endforeach()
+
