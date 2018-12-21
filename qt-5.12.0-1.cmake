@@ -30,7 +30,7 @@
 # No Debian package yet.
 set(short_version  5.12)
 set(version        5.12.0)
-set(patch_version  ${version}-0)
+set(patch_version  ${version}-1)
 
 option(USE_SYSTEM_QT "Use the system Qt if possible" ON)
 
@@ -83,18 +83,20 @@ set(qmake          [[$<$<BOOL:${CMAKE_CROSSCOMPILING}>:${TOOLCHAIN_DIR}>$<$<NOT:
 
 set(module Qt5Core)
 superbuild_package(
-  NAME           qt-superbuild
+  NAME           qt-${short_version}-openorienteering
   VERSION        ${patch_version}
   DEPENDS
     common-licenses
   
   SOURCE
-    URL            https://github.com/OpenOrienteering/superbuild/archive/qt-superbuild_${patch_version}.tar.gz
-    URL_HASH       SHA256=cc9f62b010ed3a96c432e0c248c1e0495c53c4027b93763109cdf7752cd9e614
+    URL            https://github.com/OpenOrienteering/superbuild/archive/qt-${short_version}-openorienteering_${patch_version}.tar.gz
+    URL_HASH       SHA256=8b57b96a7ca336853a46b01b2303a979255be73347e9ead355c4b215dde75d45
   
+  USING version
   BUILD [[
     CMAKE_ARGS
       "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
+      "-DVERSION=${version}"
     BUILD_COMMAND ""
     INSTALL_COMMAND
       "${CMAKE_COMMAND}" -E env "DESTDIR=${INSTALL_DIR}"
@@ -110,14 +112,15 @@ superbuild_package(
   NAME           qtbase
   VERSION        ${short_version}
   DEPENDS
-    qtbase-opensource-src-${version}
+    qtbase-everywhere-src-${version}
 )
 
 set(module Qt5Core)
 superbuild_package(
-  NAME         qtbase-opensource-src
+  NAME         qtbase-everywhere-src
   VERSION      ${version}
   DEPENDS
+    qt-${short_version}-openorienteering-${patch_version} # patches and installed copyright
     libjpeg-turbo
     libpng
     pcre2
@@ -130,25 +133,27 @@ superbuild_package(
     
     # Don't accidently used bundled copies
     PATCH_COMMAND
-      "${CMAKE_COMMAND}" -E copy_directory src/3rdparty/libjpeg src/3rdparty/libjpeg.unused
+      "${CMAKE_COMMAND}" -E remove_directory src/3rdparty/angle # excluded by -opengl desktop
     COMMAND
-      "${CMAKE_COMMAND}" -E remove_directory src/3rdparty/libjpeg
+      "${CMAKE_COMMAND}" -E remove_directory src/3rdparty/dbus-ifaces # excluded by -no-dbus
     COMMAND
-      "${CMAKE_COMMAND}" -E copy_directory src/3rdparty/libpng src/3rdparty/libpng.unused
+      "${CMAKE_COMMAND}" -E remove_directory src/3rdparty/libjpeg # excluded by -system-libjpeg
     COMMAND
-      "${CMAKE_COMMAND}" -E remove_directory src/3rdparty/libpng
+      "${CMAKE_COMMAND}" -E remove_directory src/3rdparty/libpng # excluded by -system-libpng
     COMMAND
-      "${CMAKE_COMMAND}" -E copy_directory src/3rdparty/pcre src/3rdparty/pcre.unused
+      "${CMAKE_COMMAND}" -E remove_directory src/3rdparty/pcre # excluded by -system-pcre
     COMMAND
-      "${CMAKE_COMMAND}" -E remove_directory src/3rdparty/pcre
+      "${CMAKE_COMMAND}" -E remove_directory src/3rdparty/sqlite # excluded by -system-sqlite, -no-sql-sqlite
     COMMAND
-      "${CMAKE_COMMAND}" -E copy_directory src/3rdparty/sqlite src/3rdparty/sqlite.unused
+      "${CMAKE_COMMAND}" -E remove_directory src/3rdparty/wasm # for WebAssembly platform
     COMMAND
-      "${CMAKE_COMMAND}" -E remove_directory src/3rdparty/sqlite
+      "${CMAKE_COMMAND}" -E remove_directory src/3rdparty/xcb # requires -qt-xcb
     COMMAND
-      "${CMAKE_COMMAND}" -E copy_directory src/3rdparty/zlib src/3rdparty/zlib.unused
+      "${CMAKE_COMMAND}" -E remove_directory src/3rdparty/zlib # excluded by -system-zlib
     COMMAND
-      "${CMAKE_COMMAND}" -E remove -f src/3rdparty/zlib/*.c
+      "${CMAKE_COMMAND}"
+        -Dpackage=qt-${short_version}-openorienteering-${patch_version}/qtbase
+        -P "${APPLY_PATCHES_SERIES}"
   
   USING default crosscompiling windows android macos USE_SYSTEM_QT module
   BUILD_CONDITION  ${use_system_qt}
@@ -181,6 +186,7 @@ superbuild_package(
       -system-libjpeg
       -system-libpng
       -system-pcre
+      -system-sqlite
       -system-zlib
       -no-sql-db2
       -no-sql-ibase
@@ -188,7 +194,7 @@ superbuild_package(
       -no-sql-oci
       -no-sql-odbc
       -no-sql-psql
-      -no-sql-sqlite
+      -sql-sqlite
       -no-sql-sqlite2
       -no-sql-tds
       -no-openssl
@@ -238,12 +244,12 @@ superbuild_package(
 superbuild_package(
   NAME           qtandroidextras
   VERSION        ${short_version}
-  DEPENDS        qtandroidextras-opensource-src-${version}
+  DEPENDS        qtandroidextras-everywhere-src-${version}
 )
 
 set(module Qt5AndroidExtras)
 superbuild_package(
-  NAME           qtandroidextras-opensource-src
+  NAME           qtandroidextras-everywhere-src
   VERSION        ${version}
   DEPENDS        qtbase-${short_version}
   
@@ -266,12 +272,12 @@ superbuild_package(
 superbuild_package(
   NAME           qtimageformats
   VERSION        ${short_version}
-  DEPENDS        qtimageformats-opensource-src-${version}
+  DEPENDS        qtimageformats-everywhere-src-${version}
 )
 
 set(module Qt5Gui) # qtimageformats adds plugins to Qt5Gui
 superbuild_package(
-  NAME           qtimageformats-opensource-src
+  NAME           qtimageformats-everywhere-src
   VERSION        ${version}
   DEPENDS        qtbase-${short_version}
                  tiff
@@ -282,12 +288,6 @@ superbuild_package(
     
     # Don't accidently used bundled copies
     PATCH_COMMAND
-      "${CMAKE_COMMAND}" -E copy_directory src/3rdparty/jasper src/3rdparty/jasper.unused
-    COMMAND
-      "${CMAKE_COMMAND}" -E remove_directory src/3rdparty/jasper
-    COMMAND
-      "${CMAKE_COMMAND}" -E copy_directory src/3rdparty/libtiff src/3rdparty/libtiff.unused
-    COMMAND
       "${CMAKE_COMMAND}" -E remove_directory src/3rdparty/libtiff
   
   USING qmake USE_SYSTEM_QT module
@@ -305,19 +305,24 @@ superbuild_package(
 superbuild_package(
   NAME           qtlocation
   VERSION        ${short_version}
-  DEPENDS        qtlocation-opensource-src-${version}
+  DEPENDS        qtlocation-everywhere-src-${version}
 )
 
 set(module Qt5Location)
 superbuild_package(
-  NAME           qtlocation-opensource-src
+  NAME           qtlocation-everywhere-src
   VERSION        ${version}
   DEPENDS        qtbase-${short_version}
                  qtserialport-${short_version}
+                 source:qt-${short_version}-openorienteering-${patch_version} # patches
   
   SOURCE
     URL             https://download.qt.io/archive/qt/${short_version}/${version}/submodules/qtlocation-everywhere-src-${version}.tar.xz
     URL_HASH        SHA256=b0a3134df3a00f6045405d3c12e0ea3ae7e640feaf38e238873df85424674449
+    PATCH_COMMAND
+      "${CMAKE_COMMAND}"
+        -Dpackage=qt-${short_version}-openorienteering-${patch_version}/qtlocation
+        -P "${APPLY_PATCHES_SERIES}"
     
   USING qmake USE_SYSTEM_QT module
   BUILD_CONDITION  ${use_system_qt}
@@ -334,12 +339,12 @@ superbuild_package(
 superbuild_package(
   NAME           qtsensors
   VERSION        ${short_version}
-  DEPENDS        qtsensors-opensource-src-${version}
+  DEPENDS        qtsensors-everywhere-src-${version}
 )
 
 set(module Qt5Sensors)
 superbuild_package(
-  NAME           qtsensors-opensource-src
+  NAME           qtsensors-everywhere-src
   VERSION        ${version}
   DEPENDS        qtbase-${short_version}
   
@@ -362,12 +367,12 @@ superbuild_package(
 superbuild_package(
   NAME           qtserialport
   VERSION        ${short_version}
-  DEPENDS        qtserialport-opensource-src-${version}
+  DEPENDS        qtserialport-everywhere-src-${version}
 )
 
 set(module Qt5SerialPort)
 superbuild_package(
-  NAME           qtserialport-opensource-src
+  NAME           qtserialport-everywhere-src
   VERSION        ${version}
   DEPENDS        qtbase-${short_version}
   
@@ -390,7 +395,7 @@ superbuild_package(
 superbuild_package(
   NAME           qttools
   VERSION        ${short_version}
-  DEPENDS        qttools-opensource-src-${version}
+  DEPENDS        qttools-everywhere-src-${version}
 )
 
 set(qttools_install_android
@@ -406,13 +411,18 @@ set(qttools_install_android
 
 set(module Qt5LinguistTools)
 superbuild_package(
-  NAME           qttools-opensource-src
+  NAME           qttools-everywhere-src
   VERSION        ${version}
   DEPENDS        qtbase-${short_version}
+                 source:qt-${short_version}-openorienteering-${patch_version} # patches
   
   SOURCE
     URL             https://download.qt.io/archive/qt/${short_version}/${version}/submodules/qttools-everywhere-src-${version}.tar.xz
     URL_HASH        SHA256=574ce34b6e5bcd5dce4020a3947730f3c2223eee65d0396a311099223364dac3
+    PATCH_COMMAND
+      "${CMAKE_COMMAND}"
+        -Dpackage=qt-${short_version}-openorienteering-${patch_version}/qttools
+        -P "${APPLY_PATCHES_SERIES}"
   
   USING qmake qttools_install_android USE_SYSTEM_QT module
   BUILD_CONDITION  ${use_system_qt}
@@ -430,12 +440,12 @@ superbuild_package(
 superbuild_package(
   NAME           qttranslations
   VERSION        ${short_version}
-  DEPENDS        qttranslations-opensource-src-${version}
+  DEPENDS        qttranslations-everywhere-src-${version}
 )
 
 set(module Qt5Core) # Can't find qttranslations via CMake.
 superbuild_package(
-  NAME           qttranslations-opensource-src
+  NAME           qttranslations-everywhere-src
   VERSION        ${version}
   DEPENDS        qtbase-${short_version}
                  qttools-${short_version}
@@ -451,3 +461,41 @@ superbuild_package(
       "${qmake}" "${SOURCE_DIR}"
   ]]
 )
+
+
+
+# Attribution maintenance, in git
+
+find_package(PythonInterp 3)
+if(PYTHONINTERP_FOUND)
+    superbuild_package(
+      NAME           qt-${short_version}-openorienteering
+      VERSION        git
+      DEPENDS
+        qttools-everywhere-src-${version}  # for qtattributionsscanner
+        source:qtandroidextras-everywhere-src-${version}
+        source:qtbase-everywhere-src-${version}
+        source:qtimageformats-everywhere-src-${version}
+        source:qtlocation-everywhere-src-${version}
+        source:qtsensors-everywhere-src-${version}
+        source:qtserialport-everywhere-src-${version}
+        source:qttools-everywhere-src-${version}
+        source:qttranslations-everywhere-src-${version}
+      
+      SOURCE
+        GIT_REPOSITORY https://github.com/OpenOrienteering/Superbuild.git
+        GIT_TAG        qt-${short_version}-openorienteering
+      
+      USING version PYTHON_EXECUTABLE
+      BUILD [[
+        CMAKE_ARGS
+          "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
+          "-DVERSION=${version}"
+          "-DPYTHON_EXECUTABLE=${PYTHON_EXECUTABLE}"
+        BUILD_COMMAND
+          "${CMAKE_COMMAND}" --build . --target update-copyright
+        BUILD_ALWAYS 1
+        INSTALL_COMMAND ""
+      ]]
+    )
+endif()
