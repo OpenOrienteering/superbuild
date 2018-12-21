@@ -24,6 +24,20 @@ Copyright: 2016 Aaron McCarthy <mccarthy.aaron@gmail.com>
            2016 Vlad Seryakov <vseryakov@gmail.com>
 License: LGPL-3 or GPL-2
 
+Files: src/location/*
+       src/plugins/geoservices/itemsoverlay/*
+       src/plugins/geoservices/mapboxgl/*
+       src/plugins/geoservices/nokia/*
+       src/plugins/position/winrt/*
+Copyright: 2013-2014 Aaron McCarthy <mccarthy.aaron@gmail.com>
+           2014 Appello Systems AB.
+           2014 Canonical, Ltd.
+           2014 Jolla Ltd, author: <gunnar.sletta@jollamobile.com>
+           2015 Jolla Ltd.
+           2017 Mapbox, Inc.
+           2015-2018 The Qt Company Ltd.
+License: LGPL-3
+
 Files: examples/*
        src/*/doc/snippets/*
 Copyright: 2017-2018 The Qt Company Ltd.
@@ -56,304 +70,6 @@ License: GPL-3 with Qt-1.0 exception
 
 Files: src/imports/location/location.cpp
        src/imports/locationlabs/locationlabs.cpp
-       src/location/declarativemaps/error_messages.cpp
-       src/location/declarativemaps/error_messages_p.h
-       src/location/declarativemaps/locationvaluetypehelper.cpp
-       src/location/declarativemaps/locationvaluetypehelper_p.h
-       src/location/declarativemaps/qdeclarativecirclemapitem.cpp
-       src/location/declarativemaps/qdeclarativecirclemapitem_p.h
-       src/location/declarativemaps/qdeclarativegeocodemodel.cpp
-       src/location/declarativemaps/qdeclarativegeocodemodel_p.h
-       src/location/declarativemaps/qdeclarativegeomaneuver.cpp
-       src/location/declarativemaps/qdeclarativegeomaneuver_p.h
-       src/location/declarativemaps/qdeclarativegeomap.cpp
-       src/location/declarativemaps/qdeclarativegeomap_p.h
-       src/location/declarativemaps/qdeclarativegeomapcopyrightsnotice.cpp
-       src/location/declarativemaps/qdeclarativegeomapcopyrightsnotice_p.h
-       src/location/declarativemaps/qdeclarativegeomapitembase.cpp
-       src/location/declarativemaps/qdeclarativegeomapitembase_p.h
-       src/location/declarativemaps/qdeclarativegeomapitemgroup.cpp
-       src/location/declarativemaps/qdeclarativegeomapitemgroup_p.h
-       src/location/declarativemaps/qdeclarativegeomapitemtransitionmanager.cpp
-       src/location/declarativemaps/qdeclarativegeomapitemtransitionmanager_p.h
-       src/location/declarativemaps/qdeclarativegeomapitemview.cpp
-       src/location/declarativemaps/qdeclarativegeomapitemview_p.h
-       src/location/declarativemaps/qdeclarativegeomapparameter.cpp
-       src/location/declarativemaps/qdeclarativegeomapparameter_p.h
-       src/location/declarativemaps/qdeclarativegeomapquickitem.cpp
-       src/location/declarativemaps/qdeclarativegeomapquickitem_p.h
-       src/location/declarativemaps/qdeclarativegeomaptype.cpp
-       src/location/declarativemaps/qdeclarativegeomaptype_p.h
-       src/location/declarativemaps/qdeclarativegeoroute.cpp
-       src/location/declarativemaps/qdeclarativegeoroute_p.h
-       src/location/declarativemaps/qdeclarativegeoroutemodel.cpp
-       src/location/declarativemaps/qdeclarativegeoroutemodel_p.h
-       src/location/declarativemaps/qdeclarativegeoroutesegment.cpp
-       src/location/declarativemaps/qdeclarativegeoroutesegment_p.h
-       src/location/declarativemaps/qdeclarativegeoserviceprovider.cpp
-       src/location/declarativemaps/qdeclarativegeoserviceprovider_p.h
-       src/location/declarativemaps/qdeclarativepolygonmapitem.cpp
-       src/location/declarativemaps/qdeclarativepolygonmapitem_p.h
-       src/location/declarativemaps/qdeclarativepolylinemapitem.cpp
-       src/location/declarativemaps/qdeclarativepolylinemapitem_p.h
-       src/location/declarativemaps/qdeclarativerectanglemapitem.cpp
-       src/location/declarativemaps/qdeclarativerectanglemapitem_p.h
-       src/location/declarativemaps/qdeclarativeroutemapitem.cpp
-       src/location/declarativemaps/qdeclarativeroutemapitem_p.h
-       src/location/declarativemaps/qgeomapitemgeometry.cpp
-       src/location/declarativemaps/qgeomapitemgeometry_p.h
-       src/location/declarativemaps/qgeomapobject.cpp
-       src/location/declarativemaps/qgeomapobject_p.h
-       src/location/declarativemaps/qgeomapobject_p_p.h
-       src/location/declarativemaps/qparameterizableobject.cpp
-       src/location/declarativemaps/qparameterizableobject_p.h
-       src/location/declarativemaps/qquickgeomapgesturearea.cpp
-       src/location/declarativemaps/qquickgeomapgesturearea_p.h
-       src/location/declarativeplaces/qdeclarativecategory.cpp
-       src/location/declarativeplaces/qdeclarativecategory_p.h
-       src/location/declarativeplaces/qdeclarativecontactdetail.cpp
-       src/location/declarativeplaces/qdeclarativecontactdetail_p.h
-       src/location/declarativeplaces/qdeclarativeperiod_p.h
-       src/location/declarativeplaces/qdeclarativeplace.cpp
-       src/location/declarativeplaces/qdeclarativeplace_p.h
-       src/location/declarativeplaces/qdeclarativeplaceattribute.cpp
-       src/location/declarativeplaces/qdeclarativeplaceattribute_p.h
-       src/location/declarativeplaces/qdeclarativeplacecontentmodel.cpp
-       src/location/declarativeplaces/qdeclarativeplacecontentmodel_p.h
-       src/location/declarativeplaces/qdeclarativeplaceeditorialmodel.cpp
-       src/location/declarativeplaces/qdeclarativeplaceeditorialmodel_p.h
-       src/location/declarativeplaces/qdeclarativeplaceicon.cpp
-       src/location/declarativeplaces/qdeclarativeplaceicon_p.h
-       src/location/declarativeplaces/qdeclarativeplaceimagemodel.cpp
-       src/location/declarativeplaces/qdeclarativeplaceimagemodel_p.h
-       src/location/declarativeplaces/qdeclarativeplaceuser.cpp
-       src/location/declarativeplaces/qdeclarativeplaceuser_p.h
-       src/location/declarativeplaces/qdeclarativeratings.cpp
-       src/location/declarativeplaces/qdeclarativeratings_p.h
-       src/location/declarativeplaces/qdeclarativereviewmodel.cpp
-       src/location/declarativeplaces/qdeclarativereviewmodel_p.h
-       src/location/declarativeplaces/qdeclarativesearchmodelbase.cpp
-       src/location/declarativeplaces/qdeclarativesearchmodelbase_p.h
-       src/location/declarativeplaces/qdeclarativesearchresultmodel.cpp
-       src/location/declarativeplaces/qdeclarativesearchresultmodel_p.h
-       src/location/declarativeplaces/qdeclarativesearchsuggestionmodel.cpp
-       src/location/declarativeplaces/qdeclarativesearchsuggestionmodel_p.h
-       src/location/declarativeplaces/qdeclarativesupplier.cpp
-       src/location/declarativeplaces/qdeclarativesupplier_p.h
-       src/location/declarativeplaces/qdeclarativesupportedcategoriesmodel.cpp
-       src/location/declarativeplaces/qdeclarativesupportedcategoriesmodel_p.h
-       src/location/labs/qdeclarativenavigator_p.h
-       src/location/labs/qdeclarativenavigator_p_p.h
-       src/location/labs/qgeotiledmaplabs.cpp
-       src/location/labs/qgeotiledmaplabs_p.h
-       src/location/labs/qmapcircleobject.cpp
-       src/location/labs/qmapcircleobject_p.h
-       src/location/labs/qmapcircleobject_p_p.h
-       src/location/labs/qmapiconobject.cpp
-       src/location/labs/qmapiconobject_p.h
-       src/location/labs/qmapiconobject_p_p.h
-       src/location/labs/qmapobjectview.cpp
-       src/location/labs/qmapobjectview_p.h
-       src/location/labs/qmapobjectview_p_p.h
-       src/location/labs/qmappolygonobject.cpp
-       src/location/labs/qmappolygonobject_p.h
-       src/location/labs/qmappolygonobject_p_p.h
-       src/location/labs/qmappolylineobject.cpp
-       src/location/labs/qmappolylineobject_p.h
-       src/location/labs/qmappolylineobject_p_p.h
-       src/location/labs/qmaprouteobject.cpp
-       src/location/labs/qmaprouteobject_p.h
-       src/location/labs/qmaprouteobject_p_p.h
-       src/location/labs/qsg/qgeomapobjectqsgsupport.cpp
-       src/location/labs/qsg/qgeomapobjectqsgsupport_p.h
-       src/location/labs/qsg/qmapcircleobjectqsg.cpp
-       src/location/labs/qsg/qmapcircleobjectqsg_p_p.h
-       src/location/labs/qsg/qmapiconobjectqsg.cpp
-       src/location/labs/qsg/qmapiconobjectqsg_p_p.h
-       src/location/labs/qsg/qmappolygonobjectqsg.cpp
-       src/location/labs/qsg/qmappolygonobjectqsg_p_p.h
-       src/location/labs/qsg/qmappolylineobjectqsg.cpp
-       src/location/labs/qsg/qmappolylineobjectqsg_p_p.h
-       src/location/labs/qsg/qmaprouteobjectqsg.cpp
-       src/location/labs/qsg/qmaprouteobjectqsg_p_p.h
-       src/location/labs/qsg/qqsgmapobject.cpp
-       src/location/labs/qsg/qqsgmapobject_p.h
-       src/location/maps/qabstractgeotilecache.cpp
-       src/location/maps/qabstractgeotilecache_p.h
-       src/location/maps/qcache3q_p.h
-       src/location/maps/qgeocameracapabilities.cpp
-       src/location/maps/qgeocameracapabilities_p.h
-       src/location/maps/qgeocameradata.cpp
-       src/location/maps/qgeocameradata_p.h
-       src/location/maps/qgeocameratiles.cpp
-       src/location/maps/qgeocameratiles_p.h
-       src/location/maps/qgeocodereply.cpp
-       src/location/maps/qgeocodereply.h
-       src/location/maps/qgeocodereply_p.h
-       src/location/maps/qgeocodingmanager.cpp
-       src/location/maps/qgeocodingmanager.h
-       src/location/maps/qgeocodingmanager_p.h
-       src/location/maps/qgeocodingmanagerengine.cpp
-       src/location/maps/qgeocodingmanagerengine.h
-       src/location/maps/qgeocodingmanagerengine_p.h
-       src/location/maps/qgeofiletilecache.cpp
-       src/location/maps/qgeofiletilecache_p.h
-       src/location/maps/qgeomaneuver.cpp
-       src/location/maps/qgeomaneuver.h
-       src/location/maps/qgeomaneuver_p.h
-       src/location/maps/qgeomap.cpp
-       src/location/maps/qgeomap_p.h
-       src/location/maps/qgeomap_p_p.h
-       src/location/maps/qgeomapparameter.cpp
-       src/location/maps/qgeomapparameter_p.h
-       src/location/maps/qgeomappingmanager.cpp
-       src/location/maps/qgeomappingmanager_p.h
-       src/location/maps/qgeomappingmanager_p_p.h
-       src/location/maps/qgeomappingmanagerengine.cpp
-       src/location/maps/qgeomappingmanagerengine_p.h
-       src/location/maps/qgeomappingmanagerengine_p_p.h
-       src/location/maps/qgeomaptype.cpp
-       src/location/maps/qgeomaptype_p.h
-       src/location/maps/qgeomaptype_p_p.h
-       src/location/maps/qgeoprojection.cpp
-       src/location/maps/qgeoprojection_p.h
-       src/location/maps/qgeoroute.cpp
-       src/location/maps/qgeoroute.h
-       src/location/maps/qgeoroute_p.h
-       src/location/maps/qgeorouteparser.cpp
-       src/location/maps/qgeorouteparser_p.h
-       src/location/maps/qgeorouteparser_p_p.h
-       src/location/maps/qgeorouteparserosrmv4.cpp
-       src/location/maps/qgeorouteparserosrmv4_p.h
-       src/location/maps/qgeorouteparserosrmv5.cpp
-       src/location/maps/qgeorouteparserosrmv5_p.h
-       src/location/maps/qgeoroutereply.cpp
-       src/location/maps/qgeoroutereply.h
-       src/location/maps/qgeoroutereply_p.h
-       src/location/maps/qgeorouterequest.cpp
-       src/location/maps/qgeorouterequest.h
-       src/location/maps/qgeorouterequest_p.h
-       src/location/maps/qgeoroutesegment.cpp
-       src/location/maps/qgeoroutesegment.h
-       src/location/maps/qgeoroutesegment_p.h
-       src/location/maps/qgeoroutingmanager.cpp
-       src/location/maps/qgeoroutingmanager.h
-       src/location/maps/qgeoroutingmanager_p.h
-       src/location/maps/qgeoroutingmanagerengine.cpp
-       src/location/maps/qgeoroutingmanagerengine.h
-       src/location/maps/qgeoroutingmanagerengine_p.h
-       src/location/maps/qgeoserviceprovider.cpp
-       src/location/maps/qgeoserviceprovider.h
-       src/location/maps/qgeoserviceprovider_p.h
-       src/location/maps/qgeoserviceproviderfactory.cpp
-       src/location/maps/qgeoserviceproviderfactory.h
-       src/location/maps/qgeotiledmap.cpp
-       src/location/maps/qgeotiledmap_p.h
-       src/location/maps/qgeotiledmap_p_p.h
-       src/location/maps/qgeotiledmappingmanagerengine.cpp
-       src/location/maps/qgeotiledmappingmanagerengine_p.h
-       src/location/maps/qgeotiledmappingmanagerengine_p_p.h
-       src/location/maps/qgeotiledmapreply.cpp
-       src/location/maps/qgeotiledmapreply_p.h
-       src/location/maps/qgeotiledmapreply_p_p.h
-       src/location/maps/qgeotiledmapscene.cpp
-       src/location/maps/qgeotiledmapscene_p.h
-       src/location/maps/qgeotilefetcher.cpp
-       src/location/maps/qgeotilefetcher_p.h
-       src/location/maps/qgeotilefetcher_p_p.h
-       src/location/maps/qgeotilerequestmanager.cpp
-       src/location/maps/qgeotilerequestmanager_p.h
-       src/location/maps/qgeotilespec.cpp
-       src/location/maps/qgeotilespec_p.h
-       src/location/maps/qgeotilespec_p_p.h
-       src/location/maps/qnavigationmanager.cpp
-       src/location/maps/qnavigationmanager_p.h
-       src/location/maps/qnavigationmanagerengine.cpp
-       src/location/maps/qnavigationmanagerengine_p.h
-       src/location/places/placemacro.h
-       src/location/places/qplace.cpp
-       src/location/places/qplace.h
-       src/location/places/qplace_p.h
-       src/location/places/qplaceattribute.cpp
-       src/location/places/qplaceattribute.h
-       src/location/places/qplaceattribute_p.h
-       src/location/places/qplacecategory.cpp
-       src/location/places/qplacecategory.h
-       src/location/places/qplacecategory_p.h
-       src/location/places/qplacecontactdetail.cpp
-       src/location/places/qplacecontactdetail.h
-       src/location/places/qplacecontactdetail_p.h
-       src/location/places/qplacecontent.cpp
-       src/location/places/qplacecontent.h
-       src/location/places/qplacecontent_p.h
-       src/location/places/qplacecontentreply.cpp
-       src/location/places/qplacecontentreply.h
-       src/location/places/qplacecontentrequest.cpp
-       src/location/places/qplacecontentrequest.h
-       src/location/places/qplacecontentrequest_p.h
-       src/location/places/qplacedetailsreply.cpp
-       src/location/places/qplacedetailsreply.h
-       src/location/places/qplaceeditorial.cpp
-       src/location/places/qplaceeditorial.h
-       src/location/places/qplaceeditorial_p.h
-       src/location/places/qplaceicon.cpp
-       src/location/places/qplaceicon.h
-       src/location/places/qplaceicon_p.h
-       src/location/places/qplaceidreply.cpp
-       src/location/places/qplaceidreply.h
-       src/location/places/qplaceimage.cpp
-       src/location/places/qplaceimage.h
-       src/location/places/qplaceimage_p.h
-       src/location/places/qplacemanager.cpp
-       src/location/places/qplacemanager.h
-       src/location/places/qplacemanagerengine.cpp
-       src/location/places/qplacemanagerengine.h
-       src/location/places/qplacemanagerengine_p.h
-       src/location/places/qplacematchreply.cpp
-       src/location/places/qplacematchreply.h
-       src/location/places/qplacematchrequest.cpp
-       src/location/places/qplacematchrequest.h
-       src/location/places/qplaceproposedsearchresult.cpp
-       src/location/places/qplaceproposedsearchresult.h
-       src/location/places/qplaceproposedsearchresult_p.h
-       src/location/places/qplaceratings.cpp
-       src/location/places/qplaceratings.h
-       src/location/places/qplaceratings_p.h
-       src/location/places/qplacereply.cpp
-       src/location/places/qplacereply.h
-       src/location/places/qplacereply_p.h
-       src/location/places/qplaceresult.cpp
-       src/location/places/qplaceresult.h
-       src/location/places/qplaceresult_p.h
-       src/location/places/qplacereview.cpp
-       src/location/places/qplacereview.h
-       src/location/places/qplacereview_p.h
-       src/location/places/qplacesearchreply.cpp
-       src/location/places/qplacesearchreply.h
-       src/location/places/qplacesearchrequest.cpp
-       src/location/places/qplacesearchrequest.h
-       src/location/places/qplacesearchrequest_p.h
-       src/location/places/qplacesearchresult.cpp
-       src/location/places/qplacesearchresult.h
-       src/location/places/qplacesearchresult_p.h
-       src/location/places/qplacesearchsuggestionreply.cpp
-       src/location/places/qplacesearchsuggestionreply.h
-       src/location/places/qplacesupplier.cpp
-       src/location/places/qplacesupplier.h
-       src/location/places/qplacesupplier_p.h
-       src/location/places/qplaceuser.cpp
-       src/location/places/qplaceuser.h
-       src/location/places/qplaceuser_p.h
-       src/location/places/unsupportedreplies_p.h
-       src/location/qlocation.cpp
-       src/location/qlocation.h
-       src/location/qlocationglobal.h
-       src/plugins/geoservices/itemsoverlay/qgeomapitemsoverlay.cpp
-       src/plugins/geoservices/itemsoverlay/qgeomapitemsoverlay.h
-       src/plugins/geoservices/itemsoverlay/qgeomappingmanagerengineitemsoverlay.cpp
-       src/plugins/geoservices/itemsoverlay/qgeomappingmanagerengineitemsoverlay.h
-       src/plugins/geoservices/itemsoverlay/qgeoserviceproviderpluginitemsoverlay.cpp
-       src/plugins/geoservices/itemsoverlay/qgeoserviceproviderpluginitemsoverlay.h
        src/plugins/geoservices/mapbox/qgeofiletilecachemapbox.cpp
        src/plugins/geoservices/mapbox/qgeofiletilecachemapbox.h
        src/plugins/geoservices/mapbox/qgeomapreplymapbox.cpp
@@ -364,85 +80,17 @@ Files: src/imports/location/location.cpp
        src/plugins/geoservices/mapbox/qgeotiledmappingmanagerenginemapbox.h
        src/plugins/geoservices/mapbox/qgeotilefetchermapbox.cpp
        src/plugins/geoservices/mapbox/qgeotilefetchermapbox.h
-       src/plugins/geoservices/mapboxgl/qgeomapmapboxgl.cpp
-       src/plugins/geoservices/mapboxgl/qgeomapmapboxgl.h
-       src/plugins/geoservices/mapboxgl/qgeomapmapboxgl_p.h
-       src/plugins/geoservices/mapboxgl/qgeomappingmanagerenginemapboxgl.cpp
-       src/plugins/geoservices/mapboxgl/qgeomappingmanagerenginemapboxgl.h
-       src/plugins/geoservices/mapboxgl/qgeoserviceproviderpluginmapboxgl.cpp
-       src/plugins/geoservices/mapboxgl/qgeoserviceproviderpluginmapboxgl.h
-       src/plugins/geoservices/mapboxgl/qmapboxglstylechange.cpp
-       src/plugins/geoservices/mapboxgl/qmapboxglstylechange_p.h
-       src/plugins/geoservices/mapboxgl/qsgmapboxglnode.cpp
-       src/plugins/geoservices/mapboxgl/qsgmapboxglnode.h
-       src/plugins/geoservices/nokia/marclanguagecodes.h
-       src/plugins/geoservices/nokia/placesv2/jsonparserhelpers.cpp
-       src/plugins/geoservices/nokia/placesv2/jsonparserhelpers.h
-       src/plugins/geoservices/nokia/placesv2/qplacecategoriesreplyhere.cpp
-       src/plugins/geoservices/nokia/placesv2/qplacecategoriesreplyhere.h
-       src/plugins/geoservices/nokia/placesv2/qplacecontentreplyimpl.cpp
-       src/plugins/geoservices/nokia/placesv2/qplacecontentreplyimpl.h
-       src/plugins/geoservices/nokia/placesv2/qplacedetailsreplyimpl.cpp
-       src/plugins/geoservices/nokia/placesv2/qplacedetailsreplyimpl.h
-       src/plugins/geoservices/nokia/placesv2/qplaceidreplyimpl.cpp
-       src/plugins/geoservices/nokia/placesv2/qplaceidreplyimpl.h
-       src/plugins/geoservices/nokia/placesv2/qplacesearchreplyhere.cpp
-       src/plugins/geoservices/nokia/placesv2/qplacesearchreplyhere.h
-       src/plugins/geoservices/nokia/placesv2/qplacesearchsuggestionreplyimpl.cpp
-       src/plugins/geoservices/nokia/placesv2/qplacesearchsuggestionreplyimpl.h
-       src/plugins/geoservices/nokia/qgeocodejsonparser.cpp
-       src/plugins/geoservices/nokia/qgeocodejsonparser.h
-       src/plugins/geoservices/nokia/qgeocodereply_nokia.cpp
-       src/plugins/geoservices/nokia/qgeocodereply_nokia.h
-       src/plugins/geoservices/nokia/qgeocodingmanagerengine_nokia.cpp
-       src/plugins/geoservices/nokia/qgeocodingmanagerengine_nokia.h
-       src/plugins/geoservices/nokia/qgeoerror_messages.cpp
-       src/plugins/geoservices/nokia/qgeoerror_messages.h
-       src/plugins/geoservices/nokia/qgeofiletilecachenokia.cpp
-       src/plugins/geoservices/nokia/qgeofiletilecachenokia.h
-       src/plugins/geoservices/nokia/qgeointrinsicnetworkaccessmanager.cpp
-       src/plugins/geoservices/nokia/qgeointrinsicnetworkaccessmanager.h
-       src/plugins/geoservices/nokia/qgeomapreply_nokia.cpp
-       src/plugins/geoservices/nokia/qgeomapreply_nokia.h
-       src/plugins/geoservices/nokia/qgeomapversion.cpp
-       src/plugins/geoservices/nokia/qgeomapversion.h
-       src/plugins/geoservices/nokia/qgeonetworkaccessmanager.h
-       src/plugins/geoservices/nokia/qgeoroutereply_nokia.cpp
-       src/plugins/geoservices/nokia/qgeoroutereply_nokia.h
-       src/plugins/geoservices/nokia/qgeoroutexmlparser.cpp
-       src/plugins/geoservices/nokia/qgeoroutexmlparser.h
-       src/plugins/geoservices/nokia/qgeoroutingmanagerengine_nokia.cpp
-       src/plugins/geoservices/nokia/qgeoroutingmanagerengine_nokia.h
-       src/plugins/geoservices/nokia/qgeoserviceproviderplugin_nokia.cpp
-       src/plugins/geoservices/nokia/qgeoserviceproviderplugin_nokia.h
-       src/plugins/geoservices/nokia/qgeotiledmap_nokia.cpp
-       src/plugins/geoservices/nokia/qgeotiledmap_nokia.h
-       src/plugins/geoservices/nokia/qgeotiledmappingmanagerengine_nokia.cpp
-       src/plugins/geoservices/nokia/qgeotiledmappingmanagerengine_nokia.h
-       src/plugins/geoservices/nokia/qgeotilefetcher_nokia.cpp
-       src/plugins/geoservices/nokia/qgeotilefetcher_nokia.h
-       src/plugins/geoservices/nokia/qgeouriprovider.cpp
-       src/plugins/geoservices/nokia/qgeouriprovider.h
-       src/plugins/geoservices/nokia/qplacemanagerengine_nokiav2.cpp
-       src/plugins/geoservices/nokia/qplacemanagerengine_nokiav2.h
-       src/plugins/geoservices/nokia/uri_constants.cpp
-       src/plugins/geoservices/nokia/uri_constants.h
        src/plugins/geoservices/osm/qgeofiletilecacheosm.cpp
        src/plugins/geoservices/osm/qgeofiletilecacheosm.h
        src/plugins/geoservices/osm/qgeotileproviderosm.cpp
        src/plugins/geoservices/osm/qgeotileproviderosm.h
-       src/plugins/position/winrt/qgeopositioninfosource_winrt.cpp
-       src/plugins/position/winrt/qgeopositioninfosource_winrt_p.h
-       src/plugins/position/winrt/qgeopositioninfosourcefactory_winrt.cpp
-       src/plugins/position/winrt/qgeopositioninfosourcefactory_winrt.h
-Copyright: 2013-2014 Aaron McCarthy <mccarthy.aaron@gmail.com>
-           2014 Appello Systems AB.
-           2014 Canonical, Ltd.
-           2014 Jolla Ltd, author: <gunnar.sletta@jollamobile.com>
-           2015 Jolla Ltd.
-           2017 Mapbox, Inc.
+Copyright: 2014 Canonical, Ltd.
            2015-2018 The Qt Company Ltd.
 License: LGPL-3
+
+Files: src/location/qlocationglobal_p.h
+Copyright: 2016 The Qt Company Ltd.
+License: LGPL-3 or GPL-2
 
 # Qt 3rd-party attribution
 

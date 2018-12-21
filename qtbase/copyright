@@ -81,7 +81,10 @@ Copyright: 2015-2016 Alex Trotsenko <alex1973tr@gmail.com>
            2016-2018 The Qt Company Ltd.
 License: BSD-3-clause
 
-Files: tests/*
+Files: qmake/*
+       src/tools/*
+       tests/*
+       util/*
 Copyright: 2016 Alex Trotsenko <alex1973tr@gmail.com>
            2015 André Klitzing <aklitzing@gmail.com>
            2013-2014 BlackBerry Limited (formerly Research In Motion)
@@ -102,6 +105,7 @@ Copyright: 2016 Alex Trotsenko <alex1973tr@gmail.com>
            2015 Mikkel Krautz <mikkel@krautz.dk>
            2011-2016 Olivier Goffart <ogoffart@woboq.com>
            2014 Petroules Corporation.
+           2017 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
            2011-2016 Robin Burchell <robin.burchell@viroteck.net>
            2013 Ruslan Nigmatullin <euroelessar@yandex.ru>
            2014-2017 Samuel Gaist <samuel.gaist@edeltech.ch>
@@ -111,6 +115,15 @@ Copyright: 2016 Alex Trotsenko <alex1973tr@gmail.com>
            2012-2013 Thorbjørn Lund Martsum <tmartsum@gmail.com>
            2014-2016 by Southwest Research Institute (R)
 License: GPL-3 with Qt-1.0 exception
+
+Files: src/tools/tracegen/*
+Copyright: 2017 Klarälvdalens Datakonsult AB, a KDAB Group company
+License: LGPL-3 or GPL-2
+
+Files: src/plugins/platforms/wasm/*
+       tests/testserver/*.sh
+Copyright: 2018 The Qt Company Ltd.
+License: GPL-3
 
 Files: *.qdoc
 Copyright: 2016 Intel Corporation
@@ -160,245 +173,14 @@ Files: src/printsupport/kernel/qprinterinfo.cpp
 Copyright: 2016 The Qt Company Ltd.
 License: GFDL-NIV-1.3
 
-Files: src/plugins/platforms/wasm/main.cpp
-       src/plugins/platforms/wasm/qtloader.js
-       src/plugins/platforms/wasm/qwasmbackingstore.cpp
-       src/plugins/platforms/wasm/qwasmbackingstore.h
-       src/plugins/platforms/wasm/qwasmcompositor.cpp
-       src/plugins/platforms/wasm/qwasmcompositor.h
-       src/plugins/platforms/wasm/qwasmcursor.cpp
-       src/plugins/platforms/wasm/qwasmcursor.h
-       src/plugins/platforms/wasm/qwasmeventdispatcher.cpp
-       src/plugins/platforms/wasm/qwasmeventdispatcher.h
-       src/plugins/platforms/wasm/qwasmeventtranslator.cpp
-       src/plugins/platforms/wasm/qwasmeventtranslator.h
-       src/plugins/platforms/wasm/qwasmfontdatabase.cpp
-       src/plugins/platforms/wasm/qwasmfontdatabase.h
-       src/plugins/platforms/wasm/qwasmintegration.cpp
-       src/plugins/platforms/wasm/qwasmintegration.h
-       src/plugins/platforms/wasm/qwasmopenglcontext.cpp
-       src/plugins/platforms/wasm/qwasmopenglcontext.h
-       src/plugins/platforms/wasm/qwasmscreen.cpp
-       src/plugins/platforms/wasm/qwasmscreen.h
-       src/plugins/platforms/wasm/qwasmstylepixmaps_p.h
-       src/plugins/platforms/wasm/qwasmtheme.cpp
-       src/plugins/platforms/wasm/qwasmtheme.h
-       src/plugins/platforms/wasm/qwasmwindow.cpp
-       src/plugins/platforms/wasm/qwasmwindow.h
-       tests/testserver/apache2/apache2.sh
-       tests/testserver/common/ssl.sh
-       tests/testserver/common/startup.sh
-       tests/testserver/danted/danted.sh
-       tests/testserver/ftp-proxy/ftp-proxy.sh
-       tests/testserver/squid/squid.sh
-       tests/testserver/vsftpd/vsftpd.sh
-Copyright: 2018 The Qt Company Ltd.
-License: GPL-3
-
 Files: config.tests/unix/cxx11_random/cxx11_random.cpp
        config.tests/unix/getauxval/getauxval.cpp
        config.tests/unix/getentropy/getentropy.cpp
        configure
        configure.bat
-       qmake/cachekeys.h
-       qmake/generators/mac/pbuilder_pbx.cpp
-       qmake/generators/mac/pbuilder_pbx.h
-       qmake/generators/makefile.cpp
-       qmake/generators/makefile.h
-       qmake/generators/makefiledeps.cpp
-       qmake/generators/makefiledeps.h
-       qmake/generators/metamakefile.cpp
-       qmake/generators/metamakefile.h
-       qmake/generators/projectgenerator.cpp
-       qmake/generators/projectgenerator.h
-       qmake/generators/unix/unixmake.cpp
-       qmake/generators/unix/unixmake.h
-       qmake/generators/unix/unixmake2.cpp
-       qmake/generators/win32/mingw_make.cpp
-       qmake/generators/win32/mingw_make.h
-       qmake/generators/win32/msbuild_objectmodel.cpp
-       qmake/generators/win32/msbuild_objectmodel.h
-       qmake/generators/win32/msvc_nmake.cpp
-       qmake/generators/win32/msvc_nmake.h
-       qmake/generators/win32/msvc_objectmodel.cpp
-       qmake/generators/win32/msvc_objectmodel.h
-       qmake/generators/win32/msvc_vcproj.cpp
-       qmake/generators/win32/msvc_vcproj.h
-       qmake/generators/win32/msvc_vcxproj.cpp
-       qmake/generators/win32/msvc_vcxproj.h
-       qmake/generators/win32/registry.cpp
-       qmake/generators/win32/registry_p.h
-       qmake/generators/win32/winmakefile.cpp
-       qmake/generators/win32/winmakefile.h
-       qmake/generators/xmloutput.cpp
-       qmake/generators/xmloutput.h
-       qmake/library/ioutils.cpp
-       qmake/library/ioutils.h
-       qmake/library/proitems.cpp
-       qmake/library/proitems.h
-       qmake/library/qmake_global.h
-       qmake/library/qmakebuiltins.cpp
-       qmake/library/qmakeevaluator.cpp
-       qmake/library/qmakeevaluator.h
-       qmake/library/qmakeevaluator_p.h
-       qmake/library/qmakeglobals.cpp
-       qmake/library/qmakeglobals.h
-       qmake/library/qmakeparser.cpp
-       qmake/library/qmakeparser.h
-       qmake/library/qmakevfs.cpp
-       qmake/library/qmakevfs.h
-       qmake/main.cpp
-       qmake/meta.cpp
-       qmake/meta.h
-       qmake/option.cpp
-       qmake/option.h
-       qmake/project.cpp
-       qmake/project.h
-       qmake/property.cpp
-       qmake/property.h
-       qmake/qmake_pch.h
        src/corelib/debug_script.py
-       src/tools/androiddeployqt/main.cpp
-       src/tools/moc/cbordevice.h
-       src/tools/moc/generator.cpp
-       src/tools/moc/generator.h
-       src/tools/moc/keywords.cpp
-       src/tools/moc/main.cpp
-       src/tools/moc/moc.cpp
-       src/tools/moc/moc.h
-       src/tools/moc/outputrevision.h
-       src/tools/moc/parser.cpp
-       src/tools/moc/parser.h
-       src/tools/moc/ppkeywords.cpp
-       src/tools/moc/preprocessor.cpp
-       src/tools/moc/preprocessor.h
-       src/tools/moc/symbols.h
-       src/tools/moc/token.cpp
-       src/tools/moc/token.h
-       src/tools/moc/util/generate.sh
-       src/tools/moc/util/generate_keywords.cpp
-       src/tools/moc/util/licenseheader.txt
-       src/tools/moc/utils.h
-       src/tools/qdbuscpp2xml/qdbuscpp2xml.cpp
-       src/tools/qdbusxml2cpp/qdbusxml2cpp.cpp
-       src/tools/qlalr/compress.cpp
-       src/tools/qlalr/compress.h
-       src/tools/qlalr/cppgenerator.cpp
-       src/tools/qlalr/cppgenerator.h
-       src/tools/qlalr/dotgraph.cpp
-       src/tools/qlalr/dotgraph.h
-       src/tools/qlalr/examples/dummy-xml/ll/dummy-xml-ll.cpp
-       src/tools/qlalr/examples/dummy-xml/xml.g
-       src/tools/qlalr/examples/glsl/build.sh
-       src/tools/qlalr/examples/glsl/glsl-lex.l
-       src/tools/qlalr/examples/glsl/glsl.g
-       src/tools/qlalr/examples/lambda/lambda.g
-       src/tools/qlalr/examples/lambda/main.cpp
-       src/tools/qlalr/examples/qparser/calc.g
-       src/tools/qlalr/examples/qparser/calc.l
-       src/tools/qlalr/examples/qparser/qparser.cpp
-       src/tools/qlalr/examples/qparser/qparser.h
-       src/tools/qlalr/grammar.cpp
-       src/tools/qlalr/grammar_p.h
-       src/tools/qlalr/lalr.cpp
-       src/tools/qlalr/lalr.g
-       src/tools/qlalr/lalr.h
-       src/tools/qlalr/main.cpp
-       src/tools/qlalr/parsetable.cpp
-       src/tools/qlalr/parsetable.h
-       src/tools/qlalr/recognizer.cpp
-       src/tools/qlalr/recognizer.h
-       src/tools/qvkgen/qvkgen.cpp
-       src/tools/rcc/main.cpp
-       src/tools/rcc/rcc.cpp
-       src/tools/rcc/rcc.h
-       src/tools/uic/cpp/cppwritedeclaration.cpp
-       src/tools/uic/cpp/cppwritedeclaration.h
-       src/tools/uic/cpp/cppwriteincludes.cpp
-       src/tools/uic/cpp/cppwriteincludes.h
-       src/tools/uic/cpp/cppwriteinitialization.cpp
-       src/tools/uic/cpp/cppwriteinitialization.h
-       src/tools/uic/customwidgetsinfo.cpp
-       src/tools/uic/customwidgetsinfo.h
-       src/tools/uic/databaseinfo.cpp
-       src/tools/uic/databaseinfo.h
-       src/tools/uic/driver.cpp
-       src/tools/uic/driver.h
-       src/tools/uic/globaldefs.h
-       src/tools/uic/main.cpp
-       src/tools/uic/option.h
-       src/tools/uic/treewalker.cpp
-       src/tools/uic/treewalker.h
-       src/tools/uic/ui4.cpp
-       src/tools/uic/ui4.h
-       src/tools/uic/uic.cpp
-       src/tools/uic/uic.h
-       src/tools/uic/utils.h
-       src/tools/uic/validator.cpp
-       src/tools/uic/validator.h
-       util/accessibilityinspector/accessibilityinspector.cpp
-       util/accessibilityinspector/accessibilityinspector.h
-       util/accessibilityinspector/accessibilityscenemanager.cpp
-       util/accessibilityinspector/accessibilityscenemanager.h
-       util/accessibilityinspector/main.cpp
-       util/accessibilityinspector/optionswidget.cpp
-       util/accessibilityinspector/optionswidget.h
-       util/accessibilityinspector/screenreader.cpp
-       util/accessibilityinspector/screenreader.h
-       util/aglfn/main.cpp
-       util/corelib/qurl-generateTLDs/main.cpp
-       util/edid/qedidvendortable.py
-       util/glgen/codegenerator.cpp
-       util/glgen/codegenerator.h
-       util/glgen/legacyspecparser.cpp
-       util/glgen/legacyspecparser.h
-       util/glgen/main.cpp
-       util/glgen/qopenglversionfunctions.cpp.header
-       util/glgen/qopenglversionfunctions.h.header
-       util/glgen/qopenglversionfunctions__VERSION__.cpp.header
-       util/glgen/qopenglversionfunctions__VERSION__.h.header
-       util/glgen/qopenglversionfunctionsfactory.cpp.header
-       util/glgen/qopenglversionfunctionsfactory_p.h.header
-       util/glgen/specparser.h
-       util/glgen/xmlspecparser.cpp
-       util/glgen/xmlspecparser.h
-       util/gradientgen/gradientgen.js
-       util/gradientgen/tobinaryjson.cpp
-       util/includemocs/includemocs.pl
-       util/lexgen/configfile.cpp
-       util/lexgen/configfile.h
-       util/lexgen/generator.cpp
-       util/lexgen/generator.h
-       util/lexgen/global.h
-       util/lexgen/main.cpp
-       util/lexgen/nfa.cpp
-       util/lexgen/nfa.h
-       util/lexgen/re2nfa.cpp
-       util/lexgen/re2nfa.h
-       util/lexgen/tests/tst_lexgen.cpp
-       util/lexgen/tokenizer.cpp
-       util/local_database/cldr2qlocalexml.py
-       util/local_database/cldr2qtimezone.py
-       util/local_database/dateconverter.py
-       util/local_database/enumdata.py
-       util/local_database/localexml.py
-       util/local_database/qlocalexml2cpp.py
-       util/local_database/testlocales/localemodel.cpp
-       util/local_database/testlocales/localemodel.h
-       util/local_database/testlocales/localewidget.cpp
-       util/local_database/testlocales/localewidget.h
-       util/local_database/testlocales/main.cpp
-       util/local_database/xpathlite.py
-       util/plugintest/main.cpp
-       util/unicode/codecs/big5/main.cpp
-       util/unicode/main.cpp
-       util/unicode/writingSystems.sh
-       util/xkbdatagen/main.cpp
-Copyright: 2016-2018 Intel Corporation
-           2013-2014 Klarälvdalens Datakonsult AB, a KDAB Group company
-           2013-2016 Olivier Goffart <ogoffart@woboq.com>
-           2017 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
-           2016-2018 The Qt Company Ltd.
+Copyright: 2016-2017 Intel Corporation
+           2016-2017 The Qt Company Ltd.
 License: GPL-3 with Qt-1.0 exception
 
 Files: src/corelib/doc/snippets/code/src_corelib_animation_qparallelanimationgroup.cpp
@@ -442,6 +224,7 @@ Files: src/corelib/doc/snippets/code/src_corelib_animation_qparallelanimationgro
        src/opengl/doc/snippets/code/src_opengl_qglfunctions.cpp
        src/opengl/doc/snippets/code/src_opengl_qgraphicsshadereffect.cpp
        src/plugins/doc/snippets/code/src_plugins_platforms_qnx_qqnxwindow.cpp
+       src/tools/qfloat16-tables/gen_qfloat16_tables.cpp
        src/widgets/doc/snippets/code/src_widgets_util_qscroller.cpp
        src/widgets/doc/snippets/code/src_widgets_widgets_qmainwindow.cpp
        src/widgets/doc/snippets/macmainwindow.mm
@@ -454,7 +237,7 @@ Files: src/corelib/doc/snippets/code/src_corelib_animation_qparallelanimationgro
 Copyright: 2018 Intel Corporation
            2014 Ivan Komissarov <ABBAPOH@gmail.com>
            2016-2018 The Qt Company Ltd.
-           2014 by Southwest Research Institute (R)
+           2014-2016 by Southwest Research Institute (R)
 License: LGPL-3 or GPL-2
 
 Files: util/x86simdgen/generate.pl
