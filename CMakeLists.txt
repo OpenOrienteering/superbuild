@@ -50,7 +50,7 @@ set(qt_modules
 add_custom_target(update-copyright)
 
 foreach(module ${qt_modules})
-    set(module_source_dir "${CMAKE_CURRENT_LIST_DIR}/../${module}-opensource-src-${VERSION}")
+    set(module_source_dir "${CMAKE_CURRENT_LIST_DIR}/../${module}-everywhere-src-${VERSION}")
     if(NOT EXISTS "${module_source_dir}")
        continue()
     endif()
