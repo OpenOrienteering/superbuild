@@ -73,8 +73,12 @@ licenses_map = {
 }
 
 exclude_prefixes = (
-    'header',
-    '.git',
+    re.compile('^\.git'),
+    re.compile('^header'),
+    re.compile('^examples/'),
+    re.compile('^tests/'),
+    re.compile('^.*/snippets/'),
+    re.compile('^(?!src/assistant/assistant/doc).*\.qdoc'),
 )
 
 exclude_modules = (
@@ -185,7 +189,7 @@ def get_source_files(root_directory):
             full_path = os.path.join(dirpath, filename)
             if full_path.startswith('./'):
                 full_path = full_path[2:]
-            if any(full_path.startswith(prefix) for prefix in exclude_prefixes):
+            if any(prefix.match(full_path) for prefix in exclude_prefixes):
                 continue
             yield full_path
 

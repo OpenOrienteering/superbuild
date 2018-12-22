@@ -17,28 +17,13 @@ Files: *
 Copyright: 2016-2018 The Qt Company Ltd.
 License: LGPL-3 or GPL-2
 
-Files: examples/*
-       src/*/doc/snippets/*
-Copyright: 2016-2017 The Qt Company Ltd.
-License: BSD-3-clause
-
-Files: tests/*
-Copyright: 2016 Klarälvdalens Datakonsult AB, a KDAB Group company
-           2016 Stephen Kelly <steveire@gmail.com>
-           2016-2017 The Qt Company Ltd.
-License: GPL-3 with Qt-1.0 exception
-
 Files: *.qdoc
-Copyright: 2016-2018 The Qt Company Ltd.
+Copyright: 2016-2017 The Qt Company Ltd.
 License: GFDL-NIV-1.3
 
 # Per-file overrides
 
-Files: examples/linguist/doc/snippets/doc_src_examples_arrowpad.qdoc
-       examples/linguist/doc/snippets/doc_src_examples_hellotr.qdoc
-       src/assistant/assistant/doc/snippets/doc_src_assistant-manual.qdoc
-       src/assistant/help/doc/snippets/doc_src_qthelp.qdoc
-       src/designer/src/lib/uilib/abstractformbuilder.cpp
+Files: src/designer/src/lib/uilib/abstractformbuilder.cpp
        src/designer/src/lib/uilib/abstractformbuilder.h
        src/designer/src/lib/uilib/formbuilder.cpp
        src/designer/src/lib/uilib/formbuilder.h
@@ -68,13 +53,6 @@ Files: examples/linguist/doc/snippets/doc_src_examples_arrowpad.qdoc
 Copyright: 2016 Sune Vuorela <sune@kde.org>
            2016-2018 The Qt Company Ltd.
 License: BSD-3-clause
-
-Files: src/qdoc/doc/examples/componentset/uicomponents.qdoc.sample
-       src/qdoc/doc/examples/cpp.qdoc.sample
-       src/qdoc/doc/examples/qml.qdoc.sample
-       src/qdoc/doc/examples/samples.qdocinc
-Copyright: 2016 The Qt Company Ltd.
-License: GFDL-NIV-1.3
 
 Files: src/assistant/assistant/aboutdialog.cpp
        src/assistant/assistant/aboutdialog.h

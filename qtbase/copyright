@@ -60,59 +60,14 @@ Copyright: 2013 Aleix Pol Gonzalez <aleixpol@kde.org>
            2015 ownCloud Inc
 License: LGPL-3 or GPL-2
 
-Files: doc/src/snippets/*
-       examples/*
-       src/*/doc/snippets/*
-Copyright: 2015-2016 Alex Trotsenko <alex1973tr@gmail.com>
-           2016 BlackBerry Limited (formerly Research In Motion)
-           2016 David Faure
-           2016 Giuseppe D'Angelo <dangelog@gmail.com>
-           2018 Intel Corporation
-           2016 Ivan Komissarov <ABBAPOH@gmail.com>
-           2016 Jeremy Lainé <jeremy.laine@m4x.org>
-           2016 Keith Gardner <kreios4004@gmail.com>
-           2016-2018 Klarälvdalens Datakonsult AB, a KDAB Group company
-           2016 Laszlo Papp <lpapp@kde.org>
-           2016 Olivier Goffart <ogoffart@woboq.com>
-           2016 Rick Stockton <rickstockton@reno-computerhelp.com>
-           2016 Ruslan Nigmatullin <euroelessar@yandex.ru>
-           2015-2016 Samuel Gaist <samuel.gaist@edeltech.ch>
-           2016-2018 The Qt Company Ltd.
-License: BSD-3-clause
-
 Files: qmake/*
        src/tools/*
-       tests/*
        util/*
-Copyright: 2016 Alex Trotsenko <alex1973tr@gmail.com>
-           2015 André Klitzing <aklitzing@gmail.com>
-           2013-2014 BlackBerry Limited (formerly Research In Motion)
-           2012-2013 BogDan Vatra
-           2013 Canonical, Ltd.
-           2012-2014 David Faure
-           2012-2015 Giuseppe D'Angelo <dangelog@gmail.com>
-           2014 Governikus GmbH & Co. KG
-           2012 Hewlett-Packard Development Company, L.P.
-           2016-2018 Intel Corporation
-           2014 Ivan Komissarov <ABBAPOH@gmail.com>
-           2012-2014 Jeremy Lainé <jeremy.laine@m4x.org>
-           2014 John Layt <jlayt@kde.org>
-           2016 Kai Pastor
-           2014 Keith Gardner <kreios4004@gmail.com>
-           2011-2018 Klarälvdalens Datakonsult AB, a KDAB Group company
-           2013 Laszlo Papp <lpapp@kde.org>
-           2015 Mikkel Krautz <mikkel@krautz.dk>
-           2011-2016 Olivier Goffart <ogoffart@woboq.com>
-           2014 Petroules Corporation.
+Copyright: 2016-2018 Intel Corporation
+           2013-2014 Klarälvdalens Datakonsult AB, a KDAB Group company
+           2013-2016 Olivier Goffart <ogoffart@woboq.com>
            2017 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
-           2011-2016 Robin Burchell <robin.burchell@viroteck.net>
-           2013 Ruslan Nigmatullin <euroelessar@yandex.ru>
-           2014-2017 Samuel Gaist <samuel.gaist@edeltech.ch>
-           2009-2016 Stephen Kelly <steveire@gmail.com>
-           2015-2018 The Qt Company Ltd.
-           2016 Thiago Macieira <thiago@kde.org>
-           2012-2013 Thorbjørn Lund Martsum <tmartsum@gmail.com>
-           2014-2016 by Southwest Research Institute (R)
+           2016-2018 The Qt Company Ltd.
 License: GPL-3 with Qt-1.0 exception
 
 Files: src/tools/tracegen/*
@@ -120,52 +75,19 @@ Copyright: 2017 Klarälvdalens Datakonsult AB, a KDAB Group company
 License: LGPL-3 or GPL-2
 
 Files: src/plugins/platforms/wasm/*
-       tests/testserver/*.sh
 Copyright: 2018 The Qt Company Ltd.
 License: GPL-3
 
-Files: *.qdoc
-Copyright: 2016 Intel Corporation
-           2014-2018 Klarälvdalens Datakonsult AB, a KDAB Group company
-           2016 Rick Stockton <rickstockton@reno-computerhelp.com>
-           2016-2018 The Qt Company Ltd.
-License: GFDL-NIV-1.3
-
 # Per-file overrides
 
-Files: doc/src/snippets/code/doc_src_examples_svgalib.qdoc
-       qmake/doc/snippets/code/doc_src_qmake-manual.cpp
-       qmake/doc/snippets/code/doc_src_qmake-manual.pro
-       qmake/doc/snippets/qmake/delegate.h
-       qmake/doc/snippets/qmake/main.cpp
-       qmake/doc/snippets/qmake/model.cpp
-       qmake/doc/snippets/qmake/model.h
-       qmake/doc/snippets/qmake/paintwidget_mac.cpp
-       qmake/doc/snippets/qmake/paintwidget_unix.cpp
-       qmake/doc/snippets/qmake/paintwidget_win.cpp
-       qmake/doc/snippets/qmake/precompile-stable.h
-       qmake/doc/snippets/qmake/view.h
-       src/corelib/doc/snippets/code/doc_src_qnamespace.qdoc
-       src/corelib/doc/snippets/code/doc_src_resources.qdoc
-       src/dbus/doc/snippets/code/doc_src_introtodbus.qdoc
-       src/gui/doc/snippets/code/doc_src_richtext.qdoc
-       src/gui/doc/snippets/separations/separations.qdoc
-       src/openglextensions/qopenglextensions.cpp
+Files: src/openglextensions/qopenglextensions.cpp
        src/openglextensions/qopenglextensions.h
-       src/sql/doc/snippets/code/doc_src_sql-driver.qdoc
-       src/testlib/doc/snippets/code/doc_src_qtestlib.qdoc
-       src/widgets/doc/snippets/code/doc_src_examples_dropsite.qdoc
-       src/widgets/doc/snippets/code/doc_src_stylesheet.qdoc
        src/winmain/qtmain_win.cpp
        src/winmain/qtmain_winrt.cpp
-       src/xml/doc/snippets/code/doc_src_qtxml.qdoc
-       tests/manual/qtabbar/main.cpp
-       tests/manual/touchGraphicsItem/main.cpp
-       tests/manual/widgets/widgets/defaultUpMenuBar/main.cpp
        util/glgen/qopenglextensions.cpp.header
        util/glgen/qopenglextensions.h.header
 Copyright: 2016 Klarälvdalens Datakonsult AB, a KDAB Group company
-           2016-2018 The Qt Company Ltd.
+           2016 The Qt Company Ltd.
 License: BSD-3-clause
 
 Files: src/printsupport/kernel/qprinterinfo.cpp
@@ -182,61 +104,8 @@ Copyright: 2016-2017 Intel Corporation
            2016-2017 The Qt Company Ltd.
 License: GPL-3 with Qt-1.0 exception
 
-Files: src/corelib/doc/snippets/code/src_corelib_animation_qparallelanimationgroup.cpp
-       src/corelib/doc/snippets/code/src_corelib_animation_qpropertyanimation.cpp
-       src/corelib/doc/snippets/code/src_corelib_animation_qsequentialanimationgroup.cpp
-       src/corelib/doc/snippets/code/src_corelib_animation_qvariantanimation.cpp
-       src/corelib/doc/snippets/code/src_corelib_global_qlogging.cpp
-       src/corelib/doc/snippets/code/src_corelib_global_qnumeric.cpp
-       src/corelib/doc/snippets/code/src_corelib_global_qoperatingsystemversion.cpp
-       src/corelib/doc/snippets/code/src_corelib_global_qrandom.cpp
-       src/corelib/doc/snippets/code/src_corelib_io_qdebug.cpp
-       src/corelib/doc/snippets/code/src_corelib_io_qfileselector.cpp
-       src/corelib/doc/snippets/code/src_corelib_io_qloggingcategory.cpp
-       src/corelib/doc/snippets/code/src_corelib_io_qstorageinfo.cpp
-       src/corelib/doc/snippets/code/src_corelib_io_qurlquery.cpp
-       src/corelib/doc/snippets/code/src_corelib_kernel_qdeadlinetimer.cpp
-       src/corelib/doc/snippets/code/src_corelib_kernel_qtestsupport_core.cpp
-       src/corelib/doc/snippets/code/src_corelib_serialization_qcborstream.cpp
-       src/corelib/doc/snippets/code/src_corelib_serialization_qcborvalue.cpp
-       src/corelib/doc/snippets/code/src_corelib_serialization_qdatastream.cpp
-       src/corelib/doc/snippets/code/src_corelib_serialization_qjsondocument.cpp
-       src/corelib/doc/snippets/code/src_corelib_tools_qbytearraymatcher.cpp
-       src/corelib/doc/snippets/code/src_corelib_tools_qcontiguouscache.cpp
-       src/corelib/doc/snippets/code/src_corelib_tools_qshareddata.cpp
-       src/corelib/doc/snippets/code/src_corelib_tools_qsharedpointer.cpp
-       src/corelib/doc/snippets/code/src_corelib_tools_qstringview.cpp
-       src/corelib/doc/snippets/qbytearraylist/main.cpp
-       src/gui/doc/snippets/code/src_gui_math3d_qquaternion.cpp
-       src/gui/doc/snippets/code/src_gui_opengl_qopenglbuffer.cpp
-       src/gui/doc/snippets/code/src_gui_opengl_qopengldebug.cpp
-       src/gui/doc/snippets/code/src_gui_opengl_qopenglfunctions.cpp
-       src/gui/doc/snippets/code/src_gui_vulkan_qvulkanfunctions.cpp
-       src/gui/doc/snippets/code/src_gui_vulkan_qvulkaninstance.cpp
-       src/gui/doc/snippets/code/src_gui_vulkan_qvulkanwindow.cpp
-       src/network/doc/snippets/code/src_network_access_qhttpmultipart.cpp
-       src/network/doc/snippets/code/src_network_access_qhttppart.cpp
-       src/network/doc/snippets/code/src_network_bearer_qnetworksession.cpp
-       src/network/doc/snippets/code/src_network_kernel_qnetworkinterface.cpp
-       src/network/doc/snippets/code/src_network_ssl_qsslpresharedkeyauthenticator.cpp
-       src/opengl/doc/snippets/code/src_opengl_qglbuffer.cpp
-       src/opengl/doc/snippets/code/src_opengl_qglfunctions.cpp
-       src/opengl/doc/snippets/code/src_opengl_qgraphicsshadereffect.cpp
-       src/plugins/doc/snippets/code/src_plugins_platforms_qnx_qqnxwindow.cpp
-       src/tools/qfloat16-tables/gen_qfloat16_tables.cpp
-       src/widgets/doc/snippets/code/src_widgets_util_qscroller.cpp
-       src/widgets/doc/snippets/code/src_widgets_widgets_qmainwindow.cpp
-       src/widgets/doc/snippets/macmainwindow.mm
-       src/widgets/doc/snippets/styles/qcustompixmapstyle.cpp
-       tests/auto/corelib/serialization/qcborstreamreader/tst_qcborstreamreader.cpp
-       tests/auto/corelib/serialization/qcborstreamwriter/tst_qcborstreamwriter.cpp
-       tests/auto/corelib/serialization/qcborvalue/tst_qcborvalue.cpp
-       tests/auto/corelib/serialization/qcborvalue_json/tst_qcborvalue_json.cpp
-       tests/auto/tools/qmake/testdata/rawString/object2.h
-Copyright: 2018 Intel Corporation
-           2014 Ivan Komissarov <ABBAPOH@gmail.com>
-           2016-2018 The Qt Company Ltd.
-           2014-2016 by Southwest Research Institute (R)
+Files: src/tools/qfloat16-tables/gen_qfloat16_tables.cpp
+Copyright: 2016 by Southwest Research Institute (R)
 License: LGPL-3 or GPL-2
 
 Files: util/x86simdgen/generate.pl
