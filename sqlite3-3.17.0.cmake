@@ -79,6 +79,7 @@ superbuild_package(
         --disable-static
         --enable-shared
         --enable-threadsafe
+        CPPFLAGS=-DSQLITE_ENABLE_COLUMN_METADATA
         $<$<STREQUAL:${ANDROID_PLATFORM},android-18>:
         LDFLAGS=-lcompiler_rt-extras
         >
