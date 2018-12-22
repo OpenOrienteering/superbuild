@@ -126,7 +126,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON  CACHE BOOL "Enable verbose output from Makefile b
         set(configure_command [[CMAKE_ARGS
           "-DCMAKE_TOOLCHAIN_FILE=${SOURCE_DIR}/toolchain.cmake"]])
         set(build_command     [[BUILD_COMMAND
-          "${CMAKE_COMMAND}" -E env "DESTDIR=${INSTALL_DIR}"
+          "${CMAKE_COMMAND}" -E env "DESTDIR=$${}{$${}{system_name}_INSTALL_DIR}"
             "${CMAKE_COMMAND}" -P cmake_install.cmake]])
     endif()
     superbuild_package(
@@ -142,6 +142,8 @@ set(CMAKE_VERBOSE_MAKEFILE ON  CACHE BOOL "Enable verbose output from Makefile b
       USING
         configure_command
         build_command
+        system_name
+        ${system_name}_INSTALL_DIR
       BUILD [[
         ${configure_command}
         ${build_command}
