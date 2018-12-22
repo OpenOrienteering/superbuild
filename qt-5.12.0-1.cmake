@@ -151,6 +151,9 @@ superbuild_package(
     COMMAND
       "${CMAKE_COMMAND}" -E remove_directory src/3rdparty/zlib # excluded by -system-zlib
     COMMAND
+      # Fix bootstrap of cross tools after zlib removal: We have external system and host zlib.
+      "${CMAKE_COMMAND}" -E copy_if_different src/3rdparty/zlib_dependency.pri src/3rdparty/zlib.pri
+    COMMAND
       "${CMAKE_COMMAND}"
         -Dpackage=qt-${short_version}-openorienteering-${patch_version}/qtbase
         -P "${APPLY_PATCHES_SERIES}"
@@ -218,6 +221,7 @@ superbuild_package(
           -device-option CROSS_COMPILE=${SUPERBUILD_TOOLCHAIN_TRIPLET}-
           -xplatform     win32-g++
           -opengl desktop
+          -no-feature-systemtrayicon # Workaround missing ChangeWindowMessageFilterEx symbol
         >
         $<${android}:
           $<$<STREQUAL:${CMAKE_CXX_COMPILER_ID},GNU>:
