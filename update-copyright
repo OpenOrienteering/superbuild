@@ -77,6 +77,11 @@ exclude_prefixes = (
     '.git',
 )
 
+exclude_modules = (
+    'qttestlib',
+    'somemodule',
+)
+
 start_header = '## BEGIN AUTO GENERATED BLOCK'
 start_patterns = '# Filepath patterns'
 start_overrides = '# Per-file overrides'
@@ -289,6 +294,8 @@ def read_attribution(root_directory):
     with open('debian/attribution.json') as attribution_file:
         attribution = json.load(attribution_file)
         for item in attribution:
+            if item['QDocModule'] in exclude_modules:
+                continue
             copyright_info = CopyrightInfo()
             license = item['LicenseId'].replace('Clause', 'clause').replace(' WITH ', ' with ')
             if item['LicenseId'] in ('', 'NONE'):
