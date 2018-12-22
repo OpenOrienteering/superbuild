@@ -1,0 +1,93 @@
+From 82f46d612840cf5ac41396163d9f26b9e4b6deeb Mon Sep 17 00:00:00 2001
+From: Jarek Kobus <jaroslaw.kobus@qt.io>
+Date: Fri, 14 Dec 2018 12:19:06 +0100
+Subject: [PATCH] Assistant: Mark the readonly collection files
+
+The qhc file may be installed in readonly location.
+Don't try to fix tables there, we leave it for the
+cached qhc file.
+
+Task-number: QTBUG-72174
+Change-Id: I513c799d2b571a9dd9bc77b7c122e635c863fcff
+---
+ src/assistant/assistant/main.cpp              | 1 +
+ src/assistant/help/qhelpcollectionhandler.cpp | 8 ++++++++
+ src/assistant/help/qhelpcollectionhandler_p.h | 3 +++
+ src/assistant/help/qhelpenginecore.cpp        | 4 ++++
+ 4 files changed, 16 insertions(+)
+
+diff --git a/src/assistant/assistant/main.cpp b/src/assistant/assistant/main.cpp
+index 04f0fc968..0d6f13a6e 100644
+--- a/src/assistant/assistant/main.cpp
++++ b/src/assistant/assistant/main.cpp
+@@ -301,6 +301,7 @@ int main(int argc, char *argv[])
+     QScopedPointer<QHelpEngineCore> collection;
+     if (collectionFileGiven) {
+         collection.reset(new QHelpEngineCore(collectionFile));
++        collection->setProperty("_q_readonly", QVariant::fromValue<bool>(true));
+         if (!collection->setupData()) {
+             cmd.showMessage(QCoreApplication::translate("Assistant",
+                                 "Error reading collection file '%1': %2.").
+diff --git a/src/assistant/help/qhelpcollectionhandler.cpp b/src/assistant/help/qhelpcollectionhandler.cpp
+index 32ce01bf0..4ca428657 100644
+--- a/src/assistant/help/qhelpcollectionhandler.cpp
++++ b/src/assistant/help/qhelpcollectionhandler.cpp
+@@ -152,6 +152,9 @@ bool QHelpCollectionHandler::openCollectionFile()
+         }
+     }
+ 
++    if (m_readOnly)
++        return true;
++
+     m_query->exec(QLatin1String("PRAGMA synchronous=OFF"));
+     m_query->exec(QLatin1String("PRAGMA cache_size=3000"));
+ 
+@@ -1770,4 +1773,9 @@ QMap<QString, QUrl> QHelpCollectionHandler::linksForField(const QString &fieldNa
+     return linkMap;
+ }
+ 
++void QHelpCollectionHandler::setReadOnly(bool readOnly)
++{
++    m_readOnly = readOnly;
++}
++
+ QT_END_NAMESPACE
+diff --git a/src/assistant/help/qhelpcollectionhandler_p.h b/src/assistant/help/qhelpcollectionhandler_p.h
+index e8cfe3474..a0a8ace7a 100644
+--- a/src/assistant/help/qhelpcollectionhandler_p.h
++++ b/src/assistant/help/qhelpcollectionhandler_p.h
+@@ -141,6 +141,8 @@ public:
+     QMap<QString, QUrl> linksForKeyword(const QString &keyword,
+                                         const QStringList &filterAttributes) const;
+ 
++    void setReadOnly(bool readOnly);
++
+ signals:
+     void error(const QString &msg) const;
+ 
+@@ -169,6 +171,7 @@ private:
+     QString m_connectionName;
+     QSqlQuery *m_query = nullptr;
+     bool m_vacuumScheduled = false;
++    bool m_readOnly = false;
+ };
+ 
+ QT_END_NAMESPACE
+diff --git a/src/assistant/help/qhelpenginecore.cpp b/src/assistant/help/qhelpenginecore.cpp
+index 238fbfce3..0e8535415 100644
+--- a/src/assistant/help/qhelpenginecore.cpp
++++ b/src/assistant/help/qhelpenginecore.cpp
+@@ -83,6 +83,10 @@ bool QHelpEngineCorePrivate::setup()
+     emit q->setupStarted();
+     emitReadersAboutToBeInvalidated();
+ 
++    const QVariant readOnlyVariant = q->property("_q_readonly");
++    const bool readOnly = readOnlyVariant.isValid()
++            ? readOnlyVariant.toBool() : false;
++    collectionHandler->setReadOnly(readOnly);
+     const bool opened = collectionHandler->openCollectionFile();
+     if (opened)
+         q->currentFilter();
+-- 
+2.16.3
+

@@ -1,0 +1,29 @@
+From 3d38d96c44d376a10cbe140f7b7c6866bd203471 Mon Sep 17 00:00:00 2001
+From: Alex Blasche <alexander.blasche@qt.io>
+Date: Wed, 5 Dec 2018 15:02:53 +0100
+Subject: [PATCH] Fix horizontal accuracy comparison for competing position
+ results
+
+Fixes: QTBUG-72291
+Change-Id: Id2c2ce04e12f1470b08e93ec3512ab39b4054f7d
+Reviewed-by: Paolo Angelelli <paolo.angelelli@qt.io>
+---
+ src/plugins/position/android/src/qgeopositioninfosource_android.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/plugins/position/android/src/qgeopositioninfosource_android.cpp b/src/plugins/position/android/src/qgeopositioninfosource_android.cpp
+index 76b7a3888..59b8beab3 100644
+--- a/src/plugins/position/android/src/qgeopositioninfosource_android.cpp
++++ b/src/plugins/position/android/src/qgeopositioninfosource_android.cpp
+@@ -232,7 +232,7 @@ void QGeoPositionInfoSourceAndroid::requestTimeout()
+ 
+         //compare accuracy
+         if (info.hasAttribute(QGeoPositionInfo::HorizontalAccuracy) &&
+-                info.hasAttribute(QGeoPositionInfo::HorizontalAccuracy))
++                best.hasAttribute(QGeoPositionInfo::HorizontalAccuracy))
+         {
+             best = info.attribute(QGeoPositionInfo::HorizontalAccuracy) <
+                     best.attribute(QGeoPositionInfo::HorizontalAccuracy) ? info : best;
+-- 
+2.16.3
+
