@@ -206,9 +206,9 @@ superbuild_package(
       $<$<OR:${android},${macos},${windows}>:
         -no-dbus
       >
-      -make tools
       -nomake examples
       -nomake tests
+      -nomake tools
       -system-proxies
       -no-glib
       -prefix "${CMAKE_INSTALL_PREFIX}"
@@ -402,17 +402,6 @@ superbuild_package(
   DEPENDS        qttools-everywhere-src-${version}
 )
 
-set(qttools_install_android
-  INSTALL_COMMAND
-    "$(MAKE)" -C src/linguist/lconvert install
-  COMMAND
-    "$(MAKE)" -C src/linguist/lrelease install
-  COMMAND
-    "$(MAKE)" -C src/linguist/lupdate install
-  COMMAND
-    "$(MAKE)" -C src/linguist install_cmake_linguist_tools_files
-)
-
 set(module Qt5LinguistTools)
 superbuild_package(
   NAME           qttools-everywhere-src
@@ -433,7 +422,26 @@ superbuild_package(
   BUILD [[
     CONFIGURE_COMMAND
       "${qmake}" "${SOURCE_DIR}"
-    $<$<AND:$<BOOL:${CMAKE_CROSSCOMPILING}>,$<BOOL:${ANDROID}>>:${qttools_install_android}>
+    BUILD_COMMAND
+      "$(MAKE)"
+    $<$<NOT:$<BOOL:${ANDROID}>>:
+    COMMAND
+      "$(MAKE)" -C src/assistant sub-assistant
+    COMMAND
+      "$(MAKE)" -C src/assistant sub-qhelpgenerator
+    COMMAND
+      "$(MAKE)" -C src/linguist sub-linguist
+    >
+    INSTALL_COMMAND
+      "$(MAKE)" install
+    $<$<NOT:$<BOOL:${ANDROID}>>:
+    COMMAND
+      "$(MAKE)" -C src/assistant/assistant install
+    COMMAND
+      "$(MAKE)" -C src/assistant/qhelpgenerator install
+    COMMAND
+      "$(MAKE)" -C src/linguist/linguist install
+    >
   ]]
 )
 
