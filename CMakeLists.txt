@@ -78,8 +78,8 @@ set(no_warn_unused
 
 # Global utilities
 function(sb_install_dir var system_name)
-	if(DEFINED ${SYSTEM_NAME}_INSTALL_DIR)
-		set(${var} "${SYSTEM_NAME}_INSTALL_DIR" PARENT_SCOPE)
+	if(DEFINED ${system_name}_INSTALL_DIR)
+		set(${var} "${${system_name}_INSTALL_DIR}" PARENT_SCOPE)
 	else()
 		set(${var} "${PROJECT_BINARY_DIR}/${system_name}/install" PARENT_SCOPE)
 	endif()
@@ -88,8 +88,8 @@ endfunction()
 
 
 function(sb_toolchain_dir var system_name)
-	if(DEFINED ${SYSTEM_NAME}_TOOLCHAIN_DIR)
-		set(${var} "${SYSTEM_NAME}_TOOLCHAIN_DIR" PARENT_SCOPE)
+	if(DEFINED ${system_name}_TOOLCHAIN_DIR)
+		set(${var} "${${system_name}_TOOLCHAIN_DIR}" PARENT_SCOPE)
 	else()
 		set(${var} "${PROJECT_BINARY_DIR}/${system_name}/toolchain" PARENT_SCOPE)
 	endif()
