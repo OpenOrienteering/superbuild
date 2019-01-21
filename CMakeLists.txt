@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016-2018 Kai Pastor
+# Copyright 2016-2019 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -56,6 +56,16 @@ list(APPEND SUPERBUILD_HANDLE_ENV
 )
 list(REMOVE_DUPLICATES SUPERBUILD_HANDLE_ENV)
 
+if(DEFINED DISABLE_DEPENDENCIES)
+	message(WARNING "DISABLE_DEPENDENCIES is deprecated, use SUPERBUILD_DISABLE_DEPENDENCIES instead")
+	set(SUPERBUILD_DISABLE_DEPENDENCIES "${DISABLE_DEPENDENCIES}" CACHE BOOL
+	  "Disable dependencies between binary packages")
+	unset(DISABLE_DEPENDENCIES CACHE)
+endif()
+set(SUPERBUILD_DISABLE_DEPENDENCIES FALSE CACHE BOOL
+  "Disable dependencies between binary packages")
+mark_as_advanced(SUPERBUILD_DISABLE_DEPENDENCIES)
+
 # Base URLs for source and patch tarballs
 set(SUPERBUILD_RELEASE_BASE_URL_2017_06 "https://github.com/OpenOrienteering/superbuild/releases/download/2017.06")
 set(SUPERBUILD_RELEASE_BASE_URL_2017_11 "https://github.com/OpenOrienteering/superbuild/releases/download/2017.11")
@@ -73,6 +83,7 @@ include(ExternalProject)
 # Silence warnings about unused variables (Qt Creator)
 set(no_warn_unused
   ${CMAKE_CXX_COMPILER}
+  ${SUPERBUILD_DISABLE_DEPENDENCIES}
 )
 
 
@@ -653,7 +664,7 @@ function(_sb_resolve_dependencies)
 		get_property(dependencies TARGET ${package} PROPERTY SB_PACKAGE_DEPENDS)
 		foreach(dependency ${dependencies})
 			if(dependency MATCHES "^host:")
-				if(DISABLE_DEPENDENCIES)
+				if(SUPERBUILD_DISABLE_DEPENDENCIES)
 					continue()
 				endif()
 				string(REGEX REPLACE "^host:" "" real_dependency ${dependency})
@@ -666,7 +677,7 @@ function(_sb_resolve_dependencies)
 				set(real_suffix "-source")
 				set(real_package ${package}-source)
 			else()
-				if(DISABLE_DEPENDENCIES)
+				if(SUPERBUILD_DISABLE_DEPENDENCIES)
 					continue()
 				endif()
 				set(real_dependency ${dependency})
