@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016, 2017 Kai Pastor
+# Copyright 2016-2019 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -82,12 +82,13 @@ superbuild_package(
         "-DCMAKE_BUILD_TYPE:STRING=$<CONFIG>"
         "-DBUILD_SHARED_LIBS:BOOL=ON" # install fails for static lib
         --no-warn-unused-cli
-    # polyclipping uses CMAKE_INSTALL_PREFIX incorrectly
+        # polyclipping uses CMAKE_{INSTALL,STAGING}_PREFIX incorrectly
+        -UCMAKE_STAGING_PREFIX
     INSTALL_COMMAND
-      "$(MAKE)" install "DESTDIR=${INSTALL_DIR}"
+      "${CMAKE_COMMAND}" --build . --target install/strip/fast -- "DESTDIR=${DESTDIR}${INSTALL_DIR}"
     COMMAND
       "${CMAKE_COMMAND}" -E copy
         "<SOURCE_DIR>/../libpolyclipping-patches-${patch_version}/copyright"
-        "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/share/doc/copyright/libpolyclipping-${patch_version}.txt"
+        "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/libpolyclipping-${patch_version}.txt"
   ]]
 )

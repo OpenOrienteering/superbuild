@@ -82,7 +82,7 @@ set(windows        [[$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>]])
 set(macos          [[$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>]])
 set(android        [[$<BOOL:${ANDROID}>]])
 set(use_sysroot    [[$<NOT:$<AND:$<BOOL:${CMAKE_CROSSCOMPILING}>,$<BOOL:${ANDROID}>>>]])
-set(qmake          [[$<$<BOOL:${CMAKE_CROSSCOMPILING}>:${TOOLCHAIN_DIR}>$<$<NOT:$<BOOL:${CMAKE_CROSSCOMPILING}>>:${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}>/bin/qmake]])
+set(qmake          [[$<$<BOOL:${CMAKE_CROSSCOMPILING}>:${TOOLCHAIN_DIR}>$<$<NOT:$<BOOL:${CMAKE_CROSSCOMPILING}>>:${CMAKE_STAGING_PREFIX}>/bin/qmake]])
 
 
 set(module Qt5Core)
@@ -217,7 +217,7 @@ superbuild_package(
       -no-glib
       -prefix "${CMAKE_INSTALL_PREFIX}"
       -datadir "${CMAKE_INSTALL_PREFIX}/share"
-      -extprefix "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
+      -extprefix "${CMAKE_STAGING_PREFIX}"
       $<${crosscompiling}:
         -no-pkg-config
         -hostprefix "${TOOLCHAIN_DIR}"
@@ -239,8 +239,8 @@ superbuild_package(
           -android-ndk-platform "${ANDROID_PLATFORM}"
         >
       >
-      -I "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/include"
-      -L "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/lib"
+      -I "${CMAKE_STAGING_PREFIX}/include"
+      -L "${CMAKE_STAGING_PREFIX}/lib"
   ]]
 )
 

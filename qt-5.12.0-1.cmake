@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016-2018 Kai Pastor
+# Copyright 2016-2019 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -78,7 +78,7 @@ set(windows        [[$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>]])
 set(macos          [[$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>]])
 set(android        [[$<BOOL:${ANDROID}>]])
 set(use_sysroot    [[$<NOT:$<AND:$<BOOL:${CMAKE_CROSSCOMPILING}>,$<BOOL:${ANDROID}>>>]])
-set(qmake          [[$<$<BOOL:${CMAKE_CROSSCOMPILING}>:${TOOLCHAIN_DIR}>$<$<NOT:$<BOOL:${CMAKE_CROSSCOMPILING}>>:${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}>/bin/qmake]])
+set(qmake          [[$<$<BOOL:${CMAKE_CROSSCOMPILING}>:${TOOLCHAIN_DIR}>$<$<NOT:$<BOOL:${CMAKE_CROSSCOMPILING}>>:${CMAKE_STAGING_PREFIX}>/bin/qmake]])
 
 
 set(module Qt5Core)
@@ -99,7 +99,6 @@ superbuild_package(
       "-DVERSION=${version}"
     BUILD_COMMAND ""
     INSTALL_COMMAND
-      "${CMAKE_COMMAND}" -E env "DESTDIR=${INSTALL_DIR}"
       "${CMAKE_COMMAND}" -P cmake_install.cmake
   ]]
 )
@@ -162,7 +161,7 @@ superbuild_package(
   BUILD_CONDITION  ${use_system_qt}
   BUILD [[
     CONFIGURE_COMMAND 
-    $<${crosscompiling}:
+    $<@crosscompiling@:
       COMMAND
        # Cf. qtbase configure "SYSTEM_VARIABLES"
        "${CMAKE_COMMAND}" -E env 
@@ -183,7 +182,7 @@ superbuild_package(
       -confirm-license
       $<$<CONFIG:Debug>:-debug>$<$<NOT:$<CONFIG:Debug>>:-release $<$<CONFIG:RelWithDebInfo>:-force-debug-info>>
       -shared
-      $<${macos}:-no-framework>
+      $<@macos@:-no-framework>
       -gui
       -widgets
       -system-libjpeg
@@ -203,7 +202,7 @@ superbuild_package(
       -no-openssl
       -no-directfb
       -no-linuxfb
-      $<$<OR:${android},${macos},${windows}>:
+      $<$<OR:@android@,@macos@,@windows@>:
         -no-dbus
       >
       -nomake examples
@@ -213,20 +212,20 @@ superbuild_package(
       -no-glib
       -prefix "${CMAKE_INSTALL_PREFIX}"
       -datadir "${CMAKE_INSTALL_PREFIX}/share"
-      -extprefix "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
-      $<${crosscompiling}:
+      -extprefix "${CMAKE_STAGING_PREFIX}"
+      $<@crosscompiling@:
         -no-pkg-config
         -hostprefix "${TOOLCHAIN_DIR}"
-        $<${windows}:
+        $<@windows@:
           -device-option CROSS_COMPILE=${SUPERBUILD_TOOLCHAIN_TRIPLET}-
           -xplatform     win32-g++
           -opengl desktop
           -no-feature-systemtrayicon # Workaround missing ChangeWindowMessageFilterEx symbol
         >
-        $<${android}:
-          $<$<STREQUAL:${CMAKE_CXX_COMPILER_ID},GNU>:
+        $<@android@:
+          $<$<STREQUAL:@CMAKE_CXX_COMPILER_ID@,GNU>:
             -xplatform     android-g++
-          >$<$<STREQUAL:${CMAKE_CXX_COMPILER_ID},Clang>:
+          >$<$<STREQUAL:@CMAKE_CXX_COMPILER_ID@,Clang>:
             -xplatform     android-clang
             -disable-rpath
           >
@@ -236,8 +235,10 @@ superbuild_package(
           -android-ndk-platform "${ANDROID_PLATFORM}"
         >
       >
-      -I "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/include"
-      -L "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/lib"
+      -I "${CMAKE_STAGING_PREFIX}/include"
+      -L "${CMAKE_STAGING_PREFIX}/lib"
+    INSTALL_COMMAND
+      "$(MAKE)" install INSTALL_ROOT=${DESTDIR}
   ]]
 )
 
@@ -266,6 +267,8 @@ superbuild_package(
   BUILD [[
     CONFIGURE_COMMAND
       "${qmake}" "${SOURCE_DIR}"
+    INSTALL_COMMAND
+      "$(MAKE)" install INSTALL_ROOT=${DESTDIR}
   ]]
 )
 
@@ -299,6 +302,8 @@ superbuild_package(
   BUILD [[
     CONFIGURE_COMMAND
       "${qmake}" "${SOURCE_DIR}"
+    INSTALL_COMMAND
+      "$(MAKE)" install INSTALL_ROOT=${DESTDIR}
   ]]
 )
 
@@ -333,6 +338,8 @@ superbuild_package(
   BUILD [[
     CONFIGURE_COMMAND
       "${qmake}" "${SOURCE_DIR}"
+    INSTALL_COMMAND
+      "$(MAKE)" install INSTALL_ROOT=${DESTDIR}
   ]]
 )
 
@@ -361,6 +368,8 @@ superbuild_package(
   BUILD [[
     CONFIGURE_COMMAND
       "${qmake}" "${SOURCE_DIR}"
+    INSTALL_COMMAND
+      "$(MAKE)" install INSTALL_ROOT=${DESTDIR}
   ]]
 )
 
@@ -389,6 +398,8 @@ superbuild_package(
   BUILD [[
     CONFIGURE_COMMAND
       "${qmake}" "${SOURCE_DIR}"
+    INSTALL_COMMAND
+      "$(MAKE)" install INSTALL_ROOT=${DESTDIR}
   ]]
 )
 
@@ -424,7 +435,7 @@ superbuild_package(
       "${qmake}" "${SOURCE_DIR}"
     BUILD_COMMAND
       "$(MAKE)"
-    $<$<NOT:$<BOOL:${ANDROID}>>:
+    $<$<NOT:$<BOOL:@ANDROID@>>:
     COMMAND
       "$(MAKE)" -C src/assistant sub-assistant
     COMMAND
@@ -433,14 +444,14 @@ superbuild_package(
       "$(MAKE)" -C src/linguist sub-linguist
     >
     INSTALL_COMMAND
-      "$(MAKE)" install
-    $<$<NOT:$<BOOL:${ANDROID}>>:
+      "$(MAKE)" install INSTALL_ROOT=${DESTDIR}
+    $<$<NOT:$<BOOL:@ANDROID@>>:
     COMMAND
-      "$(MAKE)" -C src/assistant/assistant install
+      "$(MAKE)" -C src/assistant/assistant install INSTALL_ROOT=${DESTDIR}
     COMMAND
-      "$(MAKE)" -C src/assistant/qhelpgenerator install
+      "$(MAKE)" -C src/assistant/qhelpgenerator install INSTALL_ROOT=${DESTDIR}
     COMMAND
-      "$(MAKE)" -C src/linguist/linguist install
+      "$(MAKE)" -C src/linguist/linguist install INSTALL_ROOT=${DESTDIR}
     >
   ]]
 )
@@ -471,6 +482,8 @@ superbuild_package(
   BUILD [[
     CONFIGURE_COMMAND
       "${qmake}" "${SOURCE_DIR}"
+    INSTALL_COMMAND
+      "$(MAKE)" install INSTALL_ROOT=${DESTDIR}
   ]]
 )
 

@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016, 2017 Kai Pastor
+# Copyright 2016-2019 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -34,7 +34,7 @@ option(USE_SYSTEM_DOXYGEN "Use the system DOXYGEN if possible" ON)
 
 set(test_system_doxygen [[
 	if(USE_SYSTEM_DOXYGEN)
-		find_program(DOXYGEN_EXECUTABLE NAMES doxygen QUIET)
+		find_program(DOXYGEN_EXECUTABLE NAMES doxygen ONLY_CMAKE_FIND_ROOT_PATH QUIET)
 		if(DOXYGEN_EXECUTABLE
 		   AND NOT DOXYGEN_EXECUTABLE MATCHES "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}")
 			message(STATUS "Found ${SYSTEM_NAME} doxygen: ${DOXYGEN_EXECUTABLE}")
@@ -59,6 +59,6 @@ superbuild_package(
       "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
       -Denglish_only=1
     INSTALL_COMMAND
-      "${CMAKE_COMMAND}" --build . --target install/strip -- "DESTDIR=${INSTALL_DIR}"
+      "${CMAKE_COMMAND}" --build . --target install/strip/fast
   ]]
 )

@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016-2018 Kai Pastor
+# Copyright 2016-2019 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -91,11 +91,13 @@ superbuild_package(
       # default for autoconf/configure controlled builds. In addition, more
       # trouble is pending, http://bugzilla.maptools.org/show_bug.cgi?id=1941.
       "-DUSE_WIN32_FILEIO:BOOL=OFF"
+      # GNUInstallDirs doesn't work with CMAKE_STAGING_PREFIX
+      -UCMAKE_STAGING_PREFIX
     INSTALL_COMMAND
-      "${CMAKE_COMMAND}" --build . --target install/strip -- "DESTDIR=${INSTALL_DIR}"
+      "${CMAKE_COMMAND}" --build . --target install/strip/fast -- "DESTDIR=${DESTDIR}${INSTALL_DIR}"
     COMMAND
       "${CMAKE_COMMAND}" -E copy
         "<SOURCE_DIR>/../tiff-patches-${patch_version}/copyright"
-        "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/share/doc/copyright/tiff-${patch_version}.txt"
+        "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/tiff-${patch_version}.txt"
   ]]
 )

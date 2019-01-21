@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016, 2017 Kai Pastor
+# Copyright 2016-2019 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -64,6 +64,7 @@ superbuild_package(
   BUILD [[
     CMAKE_ARGS
       "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
+      "-UCMAKE_STAGING_PREFIX"
       "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
       "-DBUILD_SHARED_LIBS=0"
       "-DMapper_AUTORUN_SYSTEM_TESTS=0"
@@ -71,22 +72,22 @@ superbuild_package(
       "-DMapper_BUILD_PACKAGE=1"
       "-DMapper_VERSION_DISPLAY=${Mapper_VERSION_DISPLAY}"
       "-DMapper_MANUAL_PDF=$<BOOL:${Mapper_MANUAL_PDF}>"
-    $<$<BOOL:${ANDROID}>:
+    $<$<BOOL:@ANDROID@>:
       "-DCMAKE_DISABLE_FIND_PACKAGE_Qt5PrintSupport=TRUE"
       "-DKEYSTORE_URL=${KEYSTORE_URL}"
       "-DKEYSTORE_ALIAS=${KEYSTORE_ALIAS}"
     >
-    $<$<NOT:$<OR:$<BOOL:${ANDROID}>,$<BOOL:${Mapper_ENABLE_POSITIONING}>>>:
+    $<$<NOT:$<OR:$<BOOL:@ANDROID@>,$<BOOL:@Mapper_ENABLE_POSITIONING@>>>:
       "-DCMAKE_DISABLE_FIND_PACKAGE_Qt5Positioning:BOOL=TRUE"
       "-UQt5Positioning_DIR"
       "-DCMAKE_DISABLE_FIND_PACKAGE_Qt5Sensors:BOOL=TRUE"
       "-UQt5Sensors_DIR"
     >
     INSTALL_COMMAND
-      "${CMAKE_COMMAND}" --build . --target install -- VERBOSE=1
+      "${CMAKE_COMMAND}" --build . --target install/fast -- VERBOSE=1
         # Mapper Windows installation layout is weird
-        "DESTDIR=${INSTALL_DIR}$<$<BOOL:${WIN32}>:/OpenOrienteering>"
-  $<$<NOT:$<BOOL:${CMAKE_CROSSCOMPILING}>>:
+        "DESTDIR=${DESTDIR}${INSTALL_DIR}$<$<BOOL:@WIN32@>:/OpenOrienteering>"
+  $<$<NOT:$<BOOL:@CMAKE_CROSSCOMPILING@>>:
     TEST_BEFORE_INSTALL 1
   >
   ]]
