@@ -56,6 +56,9 @@ list(APPEND SUPERBUILD_HANDLE_ENV
 )
 list(REMOVE_DUPLICATES SUPERBUILD_HANDLE_ENV)
 
+set(SUPERBUILD_STEP_TARGETS "" CACHE STRING
+  "CMake ExternalProject step targets to be created")
+
 if(DEFINED DISABLE_DEPENDENCIES)
 	message(WARNING "DISABLE_DEPENDENCIES is deprecated, use SUPERBUILD_DISABLE_DEPENDENCIES instead")
 	set(SUPERBUILD_DISABLE_DEPENDENCIES "${DISABLE_DEPENDENCIES}" CACHE BOOL
@@ -382,6 +385,13 @@ if(stamp_dir)
 endif()
 
 ")
+	if(SUPERBUILD_STEP_TARGETS)
+		string(REPLACE ";" " " step_targets "${SUPERBUILD_STEP_TARGETS}")
+		list(APPEND output "
+ExternalProject_Add_StepTargets(${package}-@SYSTEM_NAME@ ${step_targets})
+
+")
+	endif()
 	if(SB_PACKAGE_PACKAGE)
 		list(APPEND output "
 ExternalProject_Add_Step(${package}-@SYSTEM_NAME@ package
@@ -956,6 +966,19 @@ function(_sb_make_toolchained_project package toolchain)
 		# Normal packages depend on toolchain via toolchain-info
 		add_dependencies(${package}${suffix} "toolchain-info${suffix}")
 	endif()
+	
+	foreach(step ${SUPERBUILD_STEP_TARGETS})
+		_sb_get_build_command(build_command ${package}-${SYSTEM_NAME}-${step})
+		add_custom_target(${package}${suffix}-${step}
+		  DEPENDS "${tmp_dir}/CMakeLists.txt"
+				  ${source_files}
+		  COMMAND ${CMAKE_COMMAND} -E env ${define_env}
+			${build_command}
+		  WORKING_DIRECTORY "${tmp_dir}/config"
+		  COMMENT "Building ${package}${suffix}"
+		)
+		add_dependencies(${package}${suffix}-${step} ${package}-source)
+	endforeach()
 	
 	get_property(build_package TARGET ${package} PROPERTY SB_PACKAGE_PACKAGE SET)
 	if(build_package OR SB_PACKAGE_PACKAGE)
