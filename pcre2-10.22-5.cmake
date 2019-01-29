@@ -70,6 +70,8 @@ superbuild_package(
       gunzip -c "${PROJECT_SOURCE_DIR}/pcre2_${patch_version}.diff.gz" > "pcre2_${patch_version}.diff"
     COMMAND
       patch -N -p1 < "pcre2_${patch_version}.diff"
+    COMMAND
+      sed -i -e "/INSTALL/ s,DESTINATION man,DESTINATION share/man," CMakeLists.txt
   
   USING            USE_SYSTEM_PCRE2 patch_version
   BUILD_CONDITION  ${test_system_pcre2}

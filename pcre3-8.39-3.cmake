@@ -69,6 +69,8 @@ superbuild_package(
       "${CMAKE_COMMAND}"
         -Dpackage=pcre3-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
+    COMMAND
+      sed -i -e "/INSTALL/ s,DESTINATION man,DESTINATION share/man," CMakeLists.txt
   
   USING            USE_SYSTEM_PCRE3 patch_version
   BUILD_CONDITION  ${test_system_pcre3}
