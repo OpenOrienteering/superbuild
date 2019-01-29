@@ -724,7 +724,9 @@ function(_sb_resolve_dependencies)
 		endif()
 		
 		# Source dependencies
-		add_dependencies(${package}${suffix} ${package}-source)
+		if(TARGET ${package}-source)
+			add_dependencies(${package}${suffix} ${package}-source)
+		endif()
 		
 		# Build dependencies
 		get_property(dependencies TARGET ${package} PROPERTY SB_PACKAGE_DEPENDS)
@@ -766,19 +768,27 @@ endfunction()
 # Toolchain handling
 function(_sb_handle_toolchains)
 	set(regular_packages)
+	set(virtual_packages)
 	set(toolchains)
 	get_property(packages GLOBAL PROPERTY SB_PACKAGES)
 	foreach(package ${packages})
 		get_property(SYSTEM_NAME TARGET ${package} PROPERTY SB_PACKAGE_SYSTEM_NAME)
+		get_property(build_ TARGET ${package} PROPERTY SB_PACKAGE_BUILD)
+		get_property(depends_ TARGET ${package} PROPERTY SB_PACKAGE_DEPENDS)
 		if(SYSTEM_NAME)
 			list(APPEND toolchains ${package})
-		else()
+		elseif(build_ OR package MATCHES "toolchain-info")
 			list(APPEND regular_packages ${package})
+		elseif(depends_)
+			list(APPEND virtual_packages ${package})
 		endif()
 	endforeach()
 	foreach(toolchain ${toolchains})
 		foreach(package ${regular_packages})
-			_sb_make_toolchained_project(${package} ${toolchain})
+			_sb_make_toolchained_build(${package} ${toolchain})
+		endforeach()
+		foreach(package ${virtual_packages})
+ 			_sb_make_toolchained_virtual(${package} ${toolchain})
 		endforeach()
 		get_property(SYSTEM_NAME TARGET ${toolchain} PROPERTY SB_PACKAGE_SYSTEM_NAME)
 		_sb_resolve_dependencies("-${SYSTEM_NAME}")
@@ -829,7 +839,7 @@ function(_sb_make_source package)
 	
 	if(length EQUAL 0)
 		# No external source
-		add_custom_target(${package}-source)
+		return() 
 	elseif(length EQUAL 1)
 		# Use another package's source.
 		add_custom_target(${package}-source)
@@ -868,8 +878,14 @@ function(_sb_make_source package)
 endfunction()
 
 
+# Create virtual packages
+function(_sb_make_toolchained_virtual package toolchain)
+	get_property(system_name TARGET ${toolchain} PROPERTY SB_PACKAGE_SYSTEM_NAME)
+	add_custom_target(${package}-${system_name})
+endfunction()
+
 # Create actual build projects
-function(_sb_make_toolchained_project package toolchain)
+function(_sb_make_toolchained_build package toolchain)
 	get_property(SYSTEM_NAME TARGET ${toolchain} PROPERTY SB_PACKAGE_SYSTEM_NAME)
 	sb_toolchain_dir(toolchain_dir "${SYSTEM_NAME}")
 	sb_install_dir(install_dir "${SYSTEM_NAME}")
@@ -949,7 +965,11 @@ function(_sb_make_toolchained_project package toolchain)
 	  COMMENT "Generating configuration for ${package}${suffix}"
 	)
 	
-	get_property(source_files TARGET ${package}-source PROPERTY SB_SOURCE_FILES)
+	if(TARGET ${package}-source)
+		get_property(source_files TARGET ${package}-source PROPERTY SB_SOURCE_FILES)
+	else()
+		set(source_files )
+	endif()
 	_sb_get_build_command(build_command)
 	add_custom_target(${package}${suffix}
 	  DEPENDS "${tmp_dir}/CMakeLists.txt"
@@ -977,7 +997,9 @@ function(_sb_make_toolchained_project package toolchain)
 		  WORKING_DIRECTORY "${tmp_dir}/config"
 		  COMMENT "Building ${package}${suffix}"
 		)
-		add_dependencies(${package}${suffix}-${step} ${package}-source)
+		if(TARGET ${package}-source)
+			add_dependencies(${package}${suffix}-${step} ${package}-source)
+		endif()
 	endforeach()
 	
 	get_property(build_package TARGET ${package} PROPERTY SB_PACKAGE_PACKAGE SET)
@@ -1053,76 +1075,87 @@ function(superbuild_package)
 		set(INSTALL_DIR   [[${${SYSTEM_NAME}_INSTALL_DIR}]])
 	endif()
 	_sb_make_source(${package})
-	get_property(SOURCE_DIR TARGET ${package}-source PROPERTY SB_SOURCE_DIR)
-	set(DOWNLOAD_DIR     "${PROJECT_SOURCE_DIR}")
 	
-	_sb_write_config("${config_dir}"
-	  HOST_DIR
-	  DOWNLOAD_DIR
-	  SOURCE_DIR
-	  BINARY_DIR
-	  TMP_DIR
-	  ${SB_PACKAGE_USING} # May use the previous variables
-	)
-	_sb_write_build("${config_dir}")
-	_sb_make_toolchained_project(${package} default-toolchain)
-	
-	# Export executables from default toolchain
-	if (SB_PACKAGE_EXECUTABLES)
-		# Bring keywords in front of executables
-		list(REVERSE SB_PACKAGE_EXECUTABLES)
-	endif()
-	set(keyword "")
-	foreach(executable_path ${SB_PACKAGE_EXECUTABLES})
-		if("${executable_path}" STREQUAL "MACOSX_BUNDLE")
-			if(APPLE)
-				set(keyword "${executable_path}")
-			endif()
-			continue()
-		endif()
-
-		set(project_file "${PROJECT_BINARY_DIR}/source/${package}/CMakeLists.txt")
-		if(NOT EXISTS "${project_file}")
-			set(project_file )
-		endif()
-		get_filename_component(executable "${executable_path}" NAME)
-		add_executable(${executable}-${SB_PACKAGE_VERSION}
-		  ${keyword}
-		  EXCLUDE_FROM_ALL
-		  "${PROJECT_BINARY_DIR}/source/main.c"
-		  "${project_file}"
-		)
-		if("${keyword}" STREQUAL "MACOSX_BUNDLE")
-			# Copy the whole bundle, to avoid trouble with rebuilds
-			add_custom_command(TARGET ${executable}-${SB_PACKAGE_VERSION}
-			  POST_BUILD
-			  COMMAND "${CMAKE_COMMAND}" -E
-			    remove_directory
-			      "${executable}-${SB_PACKAGE_VERSION}.app"
-			  COMMAND "${CMAKE_COMMAND}" -E
-			    copy_directory
-			      "default/${package}/${executable_path}.app"
-			      "${executable}-${SB_PACKAGE_VERSION}.app"
-			  COMMAND "${CMAKE_COMMAND}" -E
-			    create_symlink
-			      "${executable}"
-			      "${executable}-${SB_PACKAGE_VERSION}.app/Contents/MacOS/${executable}-${SB_PACKAGE_VERSION}"
-			  VERBATIM
-			)
+	if(DEFINED SB_PACKAGE_BUILD
+	       OR "${package}" STREQUAL "toolchain-info")
+		if(TARGET ${package}-source)
+			get_property(SOURCE_DIR TARGET ${package}-source PROPERTY SB_SOURCE_DIR)
 		else()
-			# Create a symlink to the actual executable
-			add_custom_command(TARGET ${executable}-${SB_PACKAGE_VERSION}
-			  POST_BUILD
-			  COMMAND "${CMAKE_COMMAND}" -E
-			    create_symlink
-			      "${PROJECT_BINARY_DIR}/default/${package}/${executable_path}"
-			      "${executable}-${SB_PACKAGE_VERSION}"
-			  VERBATIM
-			)
+			set(SOURCE_DIR "${TMP_DIR}/source")
 		endif()
-		add_dependencies(${executable}-${SB_PACKAGE_VERSION} ${package})
+		set(DOWNLOAD_DIR     "${PROJECT_SOURCE_DIR}")
+		_sb_write_config("${config_dir}"
+		  HOST_DIR
+		  DOWNLOAD_DIR
+		  SOURCE_DIR
+		  BINARY_DIR
+		  TMP_DIR
+		  ${SB_PACKAGE_USING} # May use the previous variables
+		)
+		_sb_write_build("${config_dir}")
+		_sb_make_toolchained_build(${package} default-toolchain)
+	
+		# Export executables from default toolchain
+		if (SB_PACKAGE_EXECUTABLES)
+			# Bring keywords in front of executables
+			list(REVERSE SB_PACKAGE_EXECUTABLES)
+		endif()
 		set(keyword "")
-	endforeach()
+		foreach(executable_path ${SB_PACKAGE_EXECUTABLES})
+			if("${executable_path}" STREQUAL "MACOSX_BUNDLE")
+				if(APPLE)
+					set(keyword "${executable_path}")
+				endif()
+				continue()
+			endif()
+	
+			set(project_file "${PROJECT_BINARY_DIR}/source/${package}/CMakeLists.txt")
+			if(NOT EXISTS "${project_file}")
+				set(project_file )
+			endif()
+			get_filename_component(executable "${executable_path}" NAME)
+			add_executable(${executable}-${SB_PACKAGE_VERSION}
+			  ${keyword}
+			  EXCLUDE_FROM_ALL
+			  "${PROJECT_BINARY_DIR}/source/main.c"
+			  "${project_file}"
+			)
+			if("${keyword}" STREQUAL "MACOSX_BUNDLE")
+				# Copy the whole bundle, to avoid trouble with rebuilds
+				add_custom_command(TARGET ${executable}-${SB_PACKAGE_VERSION}
+				  POST_BUILD
+				  COMMAND "${CMAKE_COMMAND}" -E
+					remove_directory
+					  "${executable}-${SB_PACKAGE_VERSION}.app"
+				  COMMAND "${CMAKE_COMMAND}" -E
+					copy_directory
+					  "default/${package}/${executable_path}.app"
+					  "${executable}-${SB_PACKAGE_VERSION}.app"
+				  COMMAND "${CMAKE_COMMAND}" -E
+					create_symlink
+					  "${executable}"
+					  "${executable}-${SB_PACKAGE_VERSION}.app/Contents/MacOS/${executable}-${SB_PACKAGE_VERSION}"
+				  VERBATIM
+				)
+			else()
+				# Create a symlink to the actual executable
+				add_custom_command(TARGET ${executable}-${SB_PACKAGE_VERSION}
+				  POST_BUILD
+				  COMMAND "${CMAKE_COMMAND}" -E
+					create_symlink
+					  "${PROJECT_BINARY_DIR}/default/${package}/${executable_path}"
+					  "${executable}-${SB_PACKAGE_VERSION}"
+				  VERBATIM
+				)
+			endif()
+			add_dependencies(${executable}-${SB_PACKAGE_VERSION} ${package})
+			set(keyword "")
+		endforeach()
+	elseif(DEFINED SB_PACKAGE_DEPENDS)
+		add_custom_target(${package})
+	else()
+		return()
+	endif()
 	
 	# Publish package properties
 	set_property(TARGET ${package} PROPERTY SB_PACKAGE_FILE ${CMAKE_CURRENT_LIST_FILE})
