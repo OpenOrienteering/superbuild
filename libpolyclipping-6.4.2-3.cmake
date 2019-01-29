@@ -74,7 +74,7 @@ superbuild_package(
     COMMAND
       sed -i -e [[ s/LIBRARY DESTINATION/RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}\/bin" LIBRARY DESTINATION/ ]] cpp/CMakeLists.txt
   
-  USING            USE_SYSTEM_POLYCLIPPING patch_version
+  USING            USE_SYSTEM_POLYCLIPPING patch_version version
   BUILD_CONDITION  ${test_system_libpolyclipping}
   BUILD [[
     CONFIGURE_COMMAND
@@ -85,6 +85,8 @@ superbuild_package(
         --no-warn-unused-cli
         # polyclipping uses CMAKE_{INSTALL,STAGING}_PREFIX incorrectly
         -UCMAKE_STAGING_PREFIX
+        # VERSION is needed in the pkgconfig file
+        "-DVERSION=${version}"
     INSTALL_COMMAND
       "${CMAKE_COMMAND}" --build . --target install/strip/fast -- "DESTDIR=${DESTDIR}${INSTALL_DIR}"
     COMMAND
