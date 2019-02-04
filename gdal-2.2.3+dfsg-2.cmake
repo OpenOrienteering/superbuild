@@ -47,8 +47,8 @@ set(test_system_gdal [[
 	if(USE_SYSTEM_GDAL)
 		enable_language(C)
 		find_package(GDAL 2 QUIET)
-		if(GDAL_FOUND
-		   AND NOT GDAL_INCLUDE_DIR MATCHES "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}")
+		string(FIND "${GDAL_INCLUDE_DIR}" "${CMAKE_STAGING_PREFIX}/" staging_prefix_start)
+		if(GDAL_FOUND AND NOT staging_prefix_start EQUAL 0)
 			message(STATUS "Found ${SYSTEM_NAME} gdal: ${GDAL_LIBRARY}")
 			set(BUILD_CONDITION 0)
 		endif()

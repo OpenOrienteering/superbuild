@@ -40,9 +40,8 @@ string(CONFIGURE [[
 		find_package(Qt5Core @version@ CONFIG QUIET)
 		if(Qt5Core_VERSION)
 			find_package(${module} ${Qt5Core_VERSION} CONFIG EXACT REQUIRED)
-			if(${module}_VERSION
-			   AND (NOT ${module}_INCLUDE_DIRS
-			        OR NOT "${module}_INCLUDE_DIRS" MATCHES "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"))
+			string(FIND "${{module}_INCLUDE_DIRS}" "${CMAKE_STAGING_PREFIX}/" staging_prefix_start)
+			if(${module}_VERSION AND NOT staging_prefix_start EQUAL 0)
 				message(STATUS "Found ${SYSTEM_NAME} ${module}: ${${module}_VERSION}")
 				set(BUILD_CONDITION 0)
 			else()

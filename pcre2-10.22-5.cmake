@@ -38,9 +38,9 @@ set(test_system_pcre2 [[
 	if(USE_SYSTEM_PCRE2)
 		enable_language(C)
 		find_library(PCRE2_LIBRARY NAMES pcre QUIET)
-		find_path(PCRE2_INCLUDE_DIR NAMES pcre.h QUIET)
-		if(PCRE2_LIBRARY AND PCRE2_INCLUDE_DIR
-		   AND NOT PCRE2_INCLUDE_DIR MATCHES "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}")
+		find_path(PCRE2_INCLUDE_DIR NAMES pcre2.h QUIET)
+		string(FIND "${PCRE2_INCLUDE_DIR}" "${CMAKE_STAGING_PREFIX}/" staging_prefix_start)
+		if(PCRE2_LIBRARY AND PCRE2_INCLUDE_DIR AND NOT staging_prefix_start EQUAL 0)
 			message(STATUS "Found ${SYSTEM_NAME} pcre2: ${PCRE2_LIBRARY}")
 			set(BUILD_CONDITION 0)
 		endif()

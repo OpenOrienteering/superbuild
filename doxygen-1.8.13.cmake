@@ -35,8 +35,8 @@ option(USE_SYSTEM_DOXYGEN "Use the system DOXYGEN if possible" ON)
 set(test_system_doxygen [[
 	if(USE_SYSTEM_DOXYGEN)
 		find_program(DOXYGEN_EXECUTABLE NAMES doxygen ONLY_CMAKE_FIND_ROOT_PATH QUIET)
-		if(DOXYGEN_EXECUTABLE
-		   AND NOT DOXYGEN_EXECUTABLE MATCHES "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}")
+		string(FIND "${DOXYGEN_EXECUTABLE}" "${CMAKE_STAGING_PREFIX}/" staging_prefix_start)
+		if(DOXYGEN_EXECUTABLE AND NOT staging_prefix_start EQUAL 0)
 			message(STATUS "Found ${SYSTEM_NAME} doxygen: ${DOXYGEN_EXECUTABLE}")
 			set(BUILD_CONDITION 0)
 		endif()

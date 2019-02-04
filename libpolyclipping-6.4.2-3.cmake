@@ -38,8 +38,9 @@ set(test_system_libpolyclipping [[
 	if(USE_SYSTEM_POLYCLIPPING)
 		enable_language(C)
 		find_library(POLYCLIPPING_LIBRARY NAMES polyclipping QUIET)
-		if(POLYCLIPPING_LIBRARY
-		   AND NOT POLYCLIPPING_LIBRARY MATCHES "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}")
+		find_path(POLYCLIPPING_INCLUDE_DIR NAMES clipper.hpp QUIET)
+		string(FIND "${POLYCLIPPING_LIBRARY}" "${CMAKE_STAGING_PREFIX}/" staging_prefix_start)
+		if(POLYCLIPPING_LIBRARY AND POLYCLIPPING_INCLUDE_DIR AND NOT staging_prefix_start EQUAL 0)
 			message(STATUS "Found ${SYSTEM_NAME} libpolyclipping: ${POLYCLIPPING_LIBRARY}")
 			set(BUILD_CONDITION 0)
 		endif()

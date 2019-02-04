@@ -38,8 +38,9 @@ set(test_system_proj [[
 	if(${USE_SYSTEM_PROJ})
 		enable_language(C)
 		find_library(PROJ4_LIBRARY NAMES proj QUIET)
-		if(PROJ4_LIBRARY
-		   AND NOT PROJ4_LIBRARY MATCHES "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}")
+		find_path(PROJ4_INCLUDE_DIR NAMES proj_api.h QUIET)
+		string(FIND "${PROJ4_LIBRARY}" "${CMAKE_STAGING_PREFIX}/" staging_prefix_start)
+		if(PROJ4_LIBRARY AND PROJ4_INCLUDE_DIR AND NOT staging_prefix_start EQUAL 0)
 			message(STATUS "Found ${SYSTEM_NAME} PROJ4: ${PROJ4_LIBRARY}")
 			set(BUILD_CONDITION 0)
 		endif()

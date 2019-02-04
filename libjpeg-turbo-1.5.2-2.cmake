@@ -39,8 +39,8 @@ set(test_system_jpeg [[
 		enable_language(C)
 		find_package(JPEG CONFIG QUIET)
 		find_package(JPEG MODULE QUIET)
-		if(JPEG_FOUND
-		   AND NOT JPEG_INCLUDE_DIR MATCHES "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}")
+		string(FIND "${JPEG_INCLUDE_DIR}" "${CMAKE_STAGING_PREFIX}/" staging_prefix_start)
+		if(JPEG_FOUND AND NOT staging_prefix_start EQUAL 0)
 			message(STATUS "Found ${SYSTEM_NAME} libjpeg: ${JPEG_LIBRARIES}")
 			set(BUILD_CONDITION 0)
 		endif()
