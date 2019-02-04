@@ -106,6 +106,8 @@ superbuild_package(
   VERSION        ${patch_version}
   DEPENDS
     xz-utils-${patch_version}
+  SOURCE
+    xz-utils-${patch_version}
     
   USING            USE_SYSTEM_LZMA patch_version
   BUILD_CONDITION  ${test_system_lzma}
