@@ -1166,7 +1166,8 @@ function(superbuild_package)
 	# Publish package via global properties
 	set_property(GLOBAL APPEND PROPERTY SB_PACKAGES ${package})
 	string(REPLACE "-" "." version ${SB_PACKAGE_VERSION})
-	string(REPLACE "-" "." default_version "${sb_default_${SB_PACKAGE_NAME}}")
+	get_property(default_version GLOBAL PROPERTY SB_DEFAULT_${SB_PACKAGE_NAME})
+	string(REPLACE "-" "." default_version "${default_version}")
 	if(NOT SB_PACKAGE_NO_DEFAULT
 	   AND version VERSION_GREATER default_version)
 		set_property(GLOBAL PROPERTY SB_DEFAULT_${SB_PACKAGE_NAME} ${SB_PACKAGE_VERSION})
