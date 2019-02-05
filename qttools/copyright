@@ -59,9 +59,6 @@ Files: src/designer/src/lib/uilib/abstractformbuilder.cpp
        src/designer/src/uitools/quiloader.cpp
        src/designer/src/uitools/quiloader.h
        src/designer/src/uitools/quiloader_p.h
-       src/qdoc/doc/examples/componentset/ProgressBar.qml
-       src/qdoc/doc/examples/componentset/Switch.qml
-       src/qdoc/doc/examples/componentset/TabWidget.qml
        src/qtpaths/qtpaths.cpp
        src/shared/corecon/ccapi.h
        src/shared/corecon/ccapi_11.h
@@ -72,14 +69,15 @@ Copyright: 2016 Sune Vuorela <sune@kde.org>
            2016-2018 The Qt Company Ltd.
 License: BSD-3-clause
 
-Files: src/assistant/qhelpgenerator/main.cpp
+Files: src/assistant/qcollectiongenerator/main.c
+       src/assistant/qhelpgenerator/main.cpp
        src/kmap2qmap/main.cpp
        src/qev/qev.cpp
        src/qtplugininfo/qtplugininfo.cpp
        src/windeployqt/main.cpp
 Copyright: 2016 Intel Corporation
            2016 Klarälvdalens Datakonsult AB, a KDAB Group company
-           2016 The Qt Company Ltd.
+           2016-2018 The Qt Company Ltd.
 License: GPL-3 with Qt-1.0 exception
 
 Files: src/qdoc/clangcodeparser.cpp
