@@ -1,0 +1,56 @@
+From 9ee43cef819f60275d88120a67449df35c93d500 Mon Sep 17 00:00:00 2001
+From: Kai Pastor <dg0yt@darc.de>
+Date: Tue, 12 Feb 2019 07:16:31 +0100
+Subject: [PATCH] Use system zlib for host tools
+
+Change-Id: I0636340622187028d643cb33d386a26bdac11bcb
+---
+ mkspecs/features/qt_configure.prf | 3 +++
+ src/src.pro                       | 2 +-
+ src/tools/bootstrap/bootstrap.pro | 2 +-
+ 3 files changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/mkspecs/features/qt_configure.prf b/mkspecs/features/qt_configure.prf
+index c45439c3ef..36bcb0ff28 100644
+--- a/mkspecs/features/qt_configure.prf
++++ b/mkspecs/features/qt_configure.prf
+@@ -2170,7 +2170,10 @@ defineTest(qtConfProcessOutput) {
+     for (type, $${currentConfig}.files._KEYS_) {
+         contains(type, ".*Pro") {
+             for (k, $${currentConfig}.output.$${type}.assign._KEYS_): \
++            {
+                 $${currentConfig}.output.$$type += "$$k = $$eval($${currentConfig}.output.$${type}.assign.$$k)"
++                equals(k, "QMAKE_LIBS_ZLIB"): $${currentConfig}.output.$$type += "host_build:qtConfig(system-zlib): $$k = -lz"
++            }
+             for (k, $${currentConfig}.output.$${type}.remove._KEYS_): \
+                 $${currentConfig}.output.$$type += "$$k -= $$eval($${currentConfig}.output.$${type}.remove.$$k)"
+             for (k, $${currentConfig}.output.$${type}.append._KEYS_): \
+diff --git a/src/src.pro b/src/src.pro
+index 1c76a2e46f..7c3113192f 100644
+--- a/src/src.pro
++++ b/src/src.pro
+@@ -148,7 +148,7 @@ src_plugins.target = sub-plugins
+ src_android.subdir = $$PWD/android
+ 
+ # this order is important
+-!qtConfig(system-zlib)|cross_compile {
++!qtConfig(system-zlib) {
+     SUBDIRS += src_qtzlib
+     !qtConfig(system-zlib) {
+         src_3rdparty_libpng.depends += src_corelib
+diff --git a/src/tools/bootstrap/bootstrap.pro b/src/tools/bootstrap/bootstrap.pro
+index 83e44ff9a4..6b1db38486 100644
+--- a/src/tools/bootstrap/bootstrap.pro
++++ b/src/tools/bootstrap/bootstrap.pro
+@@ -135,7 +135,7 @@ macx {
+         ../../corelib/io/qstandardpaths_win.cpp
+ }
+ 
+-!qtConfig(system-zlib)|cross_compile {
++!qtConfig(system-zlib) {
+     include(../../3rdparty/zlib.pri)
+ } else {
+     CONFIG += no_core_dep
+-- 
+2.17.1
+

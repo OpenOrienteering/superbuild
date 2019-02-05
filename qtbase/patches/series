@@ -1,3 +1,2 @@
-QTBUG-71946-mojave-fonts.patch
-QTBUG-72078-qdockwindow.patch
-QTBUG-72101-android-input.patch
+0001-Use-system-zlib-for-host-tools.patch
+QTBUG-4155-mingw-pkgconfig.patch

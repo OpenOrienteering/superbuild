@@ -1,1 +1,2 @@
-QTBUG-72174-assistant-readonly-fix.patch
+0001-windeployqt-Fix-clang-warning-about-switch-statement.patch
+0006-Make-windeployqt-cross-platform-again.patch
