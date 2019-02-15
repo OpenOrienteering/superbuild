@@ -1,0 +1,59 @@
+From 6683e279450ea44f9ec590863f2b7fa0f3b2d03d Mon Sep 17 00:00:00 2001
+From: Kai Pastor <dg0yt@darc.de>
+Date: Thu, 14 Feb 2019 16:53:03 +0100
+Subject: [PATCH 3/6] Link gtest library with GTest:: prefix
+
+GTest::gtest is the imported target supplied by find_package(GTest).
+For the internal build of GTest, this target is created as an alias
+for now: find_package cannot be used because the interal build does
+not get installed, and so a package config file is not available.
+
+(cherry picked from commit 8d73f7c31535f5353f034adc9b8e740ab4d98e02)
+---
+ test/unit/CMakeLists.txt | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/test/unit/CMakeLists.txt b/test/unit/CMakeLists.txt
+index 398d3dd8..fbd2f6d6 100644
+--- a/test/unit/CMakeLists.txt
++++ b/test/unit/CMakeLists.txt
+@@ -59,6 +59,9 @@ set(CMAKE_CXX_FLAGS "${_save_cxx_flags}")
+ unset(_save_c_flags)
+ unset(_save_cxx_flags)
+ 
++# Provide the same target name as find_package(GTest)
++add_library(GTest::gtest ALIAS gtest)
++
+ endif(USE_EXTERNAL_GTEST)
+ 
+ #
+@@ -68,7 +71,7 @@ add_executable(proj_test_unit
+   main.cpp
+   basic_test.cpp)
+ target_link_libraries(proj_test_unit
+-  gtest
++  GTest::gtest
+   ${PROJ_LIBRARIES})
+ add_test(NAME proj_test_unit COMMAND proj_test_unit)
+ 
+@@ -76,7 +79,7 @@ add_executable(proj_errno_string_test
+   main.cpp
+   proj_errno_string_test.cpp)
+ target_link_libraries(proj_errno_string_test
+-  gtest
++  GTest::gtest
+   ${PROJ_LIBRARIES})
+ add_test(NAME proj_errno_string_test COMMAND proj_errno_string_test)
+ 
+@@ -88,7 +91,7 @@ add_executable(pj_phi2_test
+         main.cpp
+         pj_phi2_test.cpp)
+ target_link_libraries(pj_phi2_test
+-        gtest
++        GTest::gtest
+         ${PROJ_LIBRARIES})
+ add_test(NAME pj_phi2_test COMMAND pj_phi2_test)
+ endif()
+-- 
+2.17.1
+

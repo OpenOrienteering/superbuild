@@ -1,0 +1,26 @@
+From 6e24ff0f4764af451e346f56630b5d161a85039d Mon Sep 17 00:00:00 2001
+From: Kai Pastor <dg0yt@darc.de>
+Date: Fri, 15 Feb 2019 13:37:32 +0100
+Subject: [PATCH 5/6] Set PROJ_LIB when running tests
+
+(cherry picked from commit 7f1814b945a0eb64eb3b0d54460c7da135a2c1ea)
+---
+ cmake/ProjTest.cmake | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/cmake/ProjTest.cmake b/cmake/ProjTest.cmake
+index ec56afd2..60e2a78f 100644
+--- a/cmake/ProjTest.cmake
++++ b/cmake/ProjTest.cmake
+@@ -41,5 +41,8 @@ function(proj_add_gie_test TESTNAME TESTCASE)
+               COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${GIE_BIN} 
+                       ${TESTFILE}
+             )
++    file(TO_NATIVE_PATH "${PROJECT_SOURCE_DIR}/nad" proj_lib)
++    set_tests_properties(${TESTNAME}
++                         PROPERTIES ENVIRONMENT "PROJ_LIB=${proj_lib}")
+ 
+ endfunction()
+-- 
+2.17.1
+

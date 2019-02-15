@@ -1,0 +1,52 @@
+From 12aea2e796aabf12ac23b175835a834c054954d2 Mon Sep 17 00:00:00 2001
+From: Kai Pastor <dg0yt@darc.de>
+Date: Thu, 14 Feb 2019 16:52:57 +0100
+Subject: [PATCH 2/6] Use GTest 1.8.1
+
+This fixes issues with MinGW when threads are used.
+
+(cherry picked from commit 5c4247858a90429be98e4645ded7ff4fb830a3b7)
+---
+ test/googletest/CMakeLists.txt.in | 4 ++--
+ test/unit/CMakeLists.txt          | 3 ++-
+ 2 files changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/test/googletest/CMakeLists.txt.in b/test/googletest/CMakeLists.txt.in
+index 38f90ca5..dbe3effe 100644
+--- a/test/googletest/CMakeLists.txt.in
++++ b/test/googletest/CMakeLists.txt.in
+@@ -5,8 +5,8 @@ project(googletest-download NONE)
+ 
+ include(ExternalProject)
+ ExternalProject_Add(googletest
+-  URL https://github.com/google/googletest/archive/release-1.8.0.zip
+-  URL_HASH SHA1=667f873ab7a4d246062565fad32fb6d8e203ee73
++  URL https://github.com/google/googletest/archive/release-1.8.1.zip
++  URL_HASH SHA1=7b41ea3682937069e3ce32cb06619fead505795e
+   DOWNLOAD_NO_PROGRESS ON
+   SOURCE_DIR        "${CMAKE_BINARY_DIR}/googletest-src"
+   BINARY_DIR        "${CMAKE_BINARY_DIR}/googletest-build"
+diff --git a/test/unit/CMakeLists.txt b/test/unit/CMakeLists.txt
+index b8488629..398d3dd8 100644
+--- a/test/unit/CMakeLists.txt
++++ b/test/unit/CMakeLists.txt
+@@ -5,7 +5,7 @@ option(USE_EXTERNAL_GTEST "Compile against external GTest" OFF)
+ if (USE_EXTERNAL_GTEST)
+ 
+ message(STATUS "Using external GTest")
+-find_package(GTest 1.8.0)
++find_package(GTest 1.8.1)
+ 
+ else (USE_EXTERNAL_GTEST)
+ 
+@@ -42,6 +42,7 @@ endif()
+ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+ # Add googletest directly to our build. This defines
+ # the gtest and gtest_main targets.
++option(INSTALL_GTEST "Enable installation of googletest" OFF)
+ add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
+                  ${CMAKE_BINARY_DIR}/googletest-build
+                  EXCLUDE_FROM_ALL)
+-- 
+2.17.1
+

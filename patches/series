@@ -1,0 +1,6 @@
+0001-Allow-building-against-external-GTest-with-CMake.patch
+0002-Use-GTest-1.8.1.patch
+0003-Link-gtest-library-with-GTest-prefix.patch
+0004-Mark-the-external-GTest-package-as-required.patch
+0005-Set-PROJ_LIB-when-running-tests.patch
+0006-autoconf-cmake-build-test-only-if-needed.patch

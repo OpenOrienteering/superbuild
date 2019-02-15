@@ -1,0 +1,26 @@
+From 26b65f789751b3a794954e99e53ad8cd19e28f61 Mon Sep 17 00:00:00 2001
+From: Even Rouault <even.rouault@spatialys.com>
+Date: Thu, 15 Nov 2018 13:26:21 +0100
+Subject: [PATCH 6/6] autoconf / cmake: build test/ only if needed
+
+(cherry picked from commit 90df209f276b17a66112cbb58c040693be14d217)
+---
+ CMakeLists.txt | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index b100e62f..363409a9 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -164,5 +164,6 @@ add_subdirectory(nad)
+ add_subdirectory(src)
+ add_subdirectory(man)
+ add_subdirectory(cmake)
+-add_subdirectory(test)
+-
++if(PROJ_TESTS)
++    add_subdirectory(test)
++endif()
+-- 
+2.17.1
+

@@ -1,0 +1,31 @@
+From 2da396a290b0897f4d2b2a374fd81b333f310cb2 Mon Sep 17 00:00:00 2001
+From: Kai Pastor <dg0yt@darc.de>
+Date: Thu, 14 Feb 2019 16:53:05 +0100
+Subject: [PATCH 4/6] Mark the external GTest package as required
+
+GTest provides a configuration file, so we can disable the module
+mode. If the GTest package cannot be found, this shall be reported
+right here. (Note that while we specify a version, we do not require
+an EXACT match.)
+
+(cherry picked from commit 965f89cc26f76e8ab060219ce3c2c4d5ae9b06ea)
+---
+ test/unit/CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/test/unit/CMakeLists.txt b/test/unit/CMakeLists.txt
+index fbd2f6d6..8f9e7f8a 100644
+--- a/test/unit/CMakeLists.txt
++++ b/test/unit/CMakeLists.txt
+@@ -5,7 +5,7 @@ option(USE_EXTERNAL_GTEST "Compile against external GTest" OFF)
+ if (USE_EXTERNAL_GTEST)
+ 
+ message(STATUS "Using external GTest")
+-find_package(GTest 1.8.1)
++find_package(GTest 1.8.1 CONFIG REQUIRED)
+ 
+ else (USE_EXTERNAL_GTEST)
+ 
+-- 
+2.17.1
+
