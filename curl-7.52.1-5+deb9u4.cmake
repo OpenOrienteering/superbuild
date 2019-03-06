@@ -106,6 +106,8 @@ superbuild_package(
       $<$<STREQUAL:@CMAKE_SYSTEM_NAME@,Darwin>:
         --with-darwinssl
       > # Darwin
+        "CPPFLAGS=-I${CMAKE_FIND_ROOT_PATH}${CMAKE_INSTALL_PREFIX}/include"
+        "LDFLAGS=-L${CMAKE_FIND_ROOT_PATH}${CMAKE_INSTALL_PREFIX}/lib"
     INSTALL_COMMAND
       "$(MAKE)" install "DESTDIR=${DESTDIR}${INSTALL_DIR}"
     COMMAND

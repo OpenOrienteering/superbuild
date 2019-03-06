@@ -198,8 +198,8 @@ superbuild_package(
         --without-python
         --without-xerces
         --without-xml2
-        "CPPFLAGS=-I${CMAKE_STAGING_PREFIX}/include"
-        "LDFLAGS=-L${CMAKE_STAGING_PREFIX}/lib"
+        "CPPFLAGS=-I${CMAKE_FIND_ROOT_PATH}${CMAKE_INSTALL_PREFIX}/include"
+        "LDFLAGS=-L${CMAKE_FIND_ROOT_PATH}${CMAKE_INSTALL_PREFIX}/lib"
         $<$<STREQUAL:@CMAKE_ANDROID_STL_TYPE@,gnustl_shared>:
           "LIBS=-lgnustl_shared"
         >
