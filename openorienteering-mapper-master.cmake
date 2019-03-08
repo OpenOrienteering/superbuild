@@ -83,6 +83,9 @@ superbuild_package(
       "-DCMAKE_DISABLE_FIND_PACKAGE_Qt5Sensors:BOOL=TRUE"
       "-UQt5Sensors_DIR"
     >
+    $<$<BOOL:@CMAKE_CROSSCOMPILING@>:
+      "-DCMAKE_PROGRAM_PATH=@HOST_DIR@/bin"
+    >
     INSTALL_COMMAND
       "${CMAKE_COMMAND}" --build . --target install/fast -- VERBOSE=1
         # Mapper Windows installation layout is weird
