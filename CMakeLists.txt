@@ -924,7 +924,9 @@ function(_sb_make_toolchained_build package toolchain)
 	endif()
 	
 	if(NOT DEFINED ${SYSTEM_NAME}_ENV_PATH)
-		set(${SYSTEM_NAME}_ENV_PATH "${toolchain_dir}/bin:${HOST_DIR}/bin:$ENV{PATH}")
+		# Don't add ${HOST_DIR}/bin,
+		# or find_package may pick host packages when cross compiling.
+		set(${SYSTEM_NAME}_ENV_PATH "${toolchain_dir}/bin:$ENV{PATH}")
 	endif()
 	
 	set(define_env )
