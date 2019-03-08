@@ -97,7 +97,7 @@ jobs:
       set -x
       set -e
       cd $(Build.SourcesDirectory)/build
-      VERBOSE=1 make openorienteering-mapper-git-master$(targetSuffix)
+      VERBOSE=1 make openorienteering-mapper-git-dev$(targetSuffix)
       rm -Rf default/install/tmp
     env:
       LD_LIBRARY_PATH: $(Build.SourcesDirectory)/build/default/install/lib
