@@ -1,0 +1,109 @@
+# This file is part of OpenOrienteering.
+
+# Copyright 2019 Kai Pastor
+#
+# Redistribution and use is allowed according to the terms of the BSD license:
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+# 
+# 1. Redistributions of source code must retain the copyright
+#    notice, this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+# 3. The name of the author may not be used to endorse or promote products 
+#    derived from this software without specific prior written permission.
+# 
+# THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+# IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+# OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+# IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+# NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+# THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+trigger:
+- master
+
+jobs:
+- job: Superbuild
+  timeoutInMinutes: 120
+
+  strategy:
+    matrix:
+      macOS:
+        imageName: 'macos-10.13'
+        cmakeArgs:
+        targetSuffix:
+      Linux-x64:
+        imageName: 'ubuntu-16.04'
+        cmakeArgs:
+        targetSuffix:
+      MinGW-x64:
+        imageName: 'ubuntu-16.04'
+        cmakeArgs: >
+          -DENABLE_x86_64-w64-mingw32=1
+          -Dx86_64-w64-mingw32_INSTALL_DIR=
+          -Dx86_64-w64-mingw32_INSTALL_PREFIX=$(Build.SourcesDirectory)/build/default/install/x86_64-w64-mingw32
+          -Dmingw-w64_FIX_HEADERS=1
+        targetSuffix: '-x86_64-w64-mingw32'
+
+  pool:
+    vmImage: $(imageName)
+
+  steps:
+  - bash: |
+      set -x
+      set -e
+      #
+      case "$(imageName)$(targetSuffix)" in
+        ubuntu-*-x86_64-w64-mingw32)
+          sudo apt-get update
+          sudo apt-get install doxygen g++-mingw-w64-x86-64
+          sed -i -e '/-widget/a -no-xcb' qt-5.*.cmake
+          ;;
+        ubuntu-*)
+          sudo apt-get update
+          sudo apt-get install doxygen
+          sed -i -e '/-widget/a -no-xcb' qt-5.*.cmake
+          ;;
+        macos-*)
+          sudo xcode-select -s /Applications/Xcode_10.1.app/Contents/Developer
+          xcode-select --print-path
+          ;;
+      esac
+      #
+      sed -i -e 's,INSTALL_COMMAND,INSTALL_COMMAND echo Skipping,' \
+        openorienteering-mapper-git.cmake
+    displayName: 'Prepare'
+  - task: CMake@1
+    inputs:
+      workingDirectory: 'build'
+      cmakeArgs: >
+        $(Build.SourcesDirectory)
+        -DCMAKE_BUILD_TYPE=Release
+        -DUSE_SYSTEM_PCRE2=FALSE
+        -DMapper_GIT_QT_VERSION=5.12
+        -DMapper_GIT_LICENSING_PROVIDER=OFF
+        -DMapper_GIT_ENABLE_POSITIONING=ON
+        $(cmakeArgs)
+    displayName: 'Configure'
+  - bash: |
+      set -x
+      set -e
+      cd $(Build.SourcesDirectory)/build
+      VERBOSE=1 make openorienteering-mapper-git-master$(targetSuffix)
+      rm -Rf default/install/tmp
+    env:
+      LD_LIBRARY_PATH: $(Build.SourcesDirectory)/build/default/install/lib
+    timeoutInMinutes: 120
+    displayName: 'Build'
+  - task: PublishPipelineArtifact@0
+    inputs:
+      artifactName: 'superbuild-$(imageName)$(targetSuffix)'
+      targetPath: $(Build.SourcesDirectory)/build/default/install
