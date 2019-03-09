@@ -81,6 +81,7 @@ jobs:
       set -e
       sed -i -e 's,-widgets,-no-xcb -widgets,' qt-5.*.cmake
       sed -i -e 's,INSTALL_COMMAND,INSTALL_COMMAND echo Skipping,' openorienteering-mapper-git.cmake
+      cp ci/num_jobs.cmake .
     displayName: 'Patch'
 
   - task: CMake@1
@@ -88,6 +89,7 @@ jobs:
       workingDirectory: 'build'
       cmakeArgs: >
         $(Build.SourcesDirectory)
+        -G "Unix Makefiles"
         -DCMAKE_BUILD_TYPE=Release
         -DUSE_SYSTEM_PCRE2=FALSE
         -DMapper_GIT_QT_VERSION=5.12
@@ -100,7 +102,7 @@ jobs:
       set -x
       set -e
       cd $(Build.SourcesDirectory)/build
-      make openorienteering-mapper-git-dev$(targetSuffix)
+      make `cat num_jobs` openorienteering-mapper-git-dev$(targetSuffix)
       rm -Rf default/install/tmp
     env:
       CTEST_OUTPUT_ON_FAILURE: 1
