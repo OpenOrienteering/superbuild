@@ -95,7 +95,7 @@ jobs:
         -DCMAKE_BUILD_TYPE=Release
         -DUSE_SYSTEM_PCRE2=FALSE
         -DMapper_GIT_QT_VERSION=5.12
-        -DMapper_GIT_LICENSING_PROVIDER=OFF
+        -DMapper_GIT_LICENSING_PROVIDER=superbuild
         -DMapper_GIT_ENABLE_POSITIONING=ON
         $(cmakeArgs)
     displayName: 'Configure'
