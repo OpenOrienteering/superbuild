@@ -70,6 +70,16 @@ jobs:
         ubuntu-*)
           sudo apt-get update
           sudo apt-get install doxygen graphviz
+          # System libraries, but expected to have superbuild copyright files
+          DEST=$(Build.SourcesDirectory)/build/default/install/share/doc/copyright
+          mkdir -p ${DEST}
+          cp /usr/share/doc/libexpat1/copyright      ${DEST}/expat-$(imageName).txt
+          cp /usr/share/doc/libjpeg-turbo8/copyright ${DEST}/libjpeg-turbo-$(imageName).txt
+          cp /usr/share/doc/liblzma5/copyright       ${DEST}/liblzma-$(imageName).txt
+          cp /usr/share/doc/libpcre3/copyright       ${DEST}/pcre3-$(imageName).txt
+          cp /usr/share/doc/libpng12-0/copyright     ${DEST}/libpng-$(imageName).txt
+          cp /usr/share/doc/libtiff5/copyright       ${DEST}/tiff-$(imageName).txt
+          cp /usr/share/doc/zlib1g/copyright         ${DEST}/zlib-$(imageName).txt
           ;;
         macos-*)
           sudo xcode-select -s /Applications/Xcode_10.1.app/Contents/Developer
