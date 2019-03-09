@@ -119,6 +119,6 @@ superbuild_package(
     INSTALL_COMMAND
       "${CMAKE_COMMAND}" -E copy
         "<SOURCE_DIR>/../xz-utils-patches-${patch_version}/copyright"
-        "${CMAKE_STAGING_PREFIX}/share/doc/copyright/liblzma-${patch_version}.txt"
+        "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/liblzma-${patch_version}.txt"
   ]]
 )
