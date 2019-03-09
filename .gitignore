@@ -1,5 +1,6 @@
 *
 !.gitignore
+!ci
 !CMakeLists.txt
 !COPYING
 !README.md
