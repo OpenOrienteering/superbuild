@@ -38,7 +38,8 @@ jobs:
     matrix:
       macOS:
         imageName: 'macos-10.13'
-        cmakeArgs:
+        cmakeArgs: >
+          -DUSE_SYSTEM_LZMA=OFF
         targetSuffix:
       Linux-x64:
         imageName: 'ubuntu-16.04'
