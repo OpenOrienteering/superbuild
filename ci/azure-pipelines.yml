@@ -60,27 +60,29 @@ jobs:
   - bash: |
       set -x
       set -e
-      #
       case "$(imageName)$(targetSuffix)" in
         ubuntu-*-x86_64-w64-mingw32)
           sudo apt-get update
-          sudo apt-get install doxygen g++-mingw-w64-x86-64
-          sed -i -e '/-widget/a -no-xcb' qt-5.*.cmake
+          sudo apt-get install doxygen graphviz g++-mingw-w64-x86-64
           ;;
         ubuntu-*)
           sudo apt-get update
-          sudo apt-get install doxygen
-          sed -i -e '/-widget/a -no-xcb' qt-5.*.cmake
+          sudo apt-get install doxygen graphviz
           ;;
         macos-*)
           sudo xcode-select -s /Applications/Xcode_10.1.app/Contents/Developer
           xcode-select --print-path
           ;;
       esac
-      #
-      sed -i -e 's,INSTALL_COMMAND,INSTALL_COMMAND echo Skipping,' \
-        openorienteering-mapper-git.cmake
-    displayName: 'Prepare'
+    displayName: 'Prepare build tools'
+
+  - bash: |
+      set -x
+      set -e
+      sed -i -e 's,-widgets,-no-xcb -widgets,' qt-5.*.cmake
+      sed -i -e 's,INSTALL_COMMAND,INSTALL_COMMAND echo Skipping,' openorienteering-mapper-git.cmake
+    displayName: 'Patch'
+
   - task: CMake@1
     inputs:
       workingDirectory: 'build'
@@ -93,17 +95,23 @@ jobs:
         -DMapper_GIT_ENABLE_POSITIONING=ON
         $(cmakeArgs)
     displayName: 'Configure'
+
   - bash: |
       set -x
       set -e
       cd $(Build.SourcesDirectory)/build
-      VERBOSE=1 make openorienteering-mapper-git-dev$(targetSuffix)
+      make openorienteering-mapper-git-dev$(targetSuffix)
       rm -Rf default/install/tmp
     env:
+      CTEST_OUTPUT_ON_FAILURE: 1
+      DYLD_LIBRARY_PATH: $(Build.SourcesDirectory)/build/default/install/lib
       LD_LIBRARY_PATH: $(Build.SourcesDirectory)/build/default/install/lib
+      VERBOSE: $(openorienteering.superbuild.build.verbose)
     timeoutInMinutes: 120
     displayName: 'Build'
+
   - task: PublishPipelineArtifact@0
     inputs:
       artifactName: 'superbuild-$(imageName)$(targetSuffix)'
       targetPath: $(Build.SourcesDirectory)/build/default/install
+
