@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016-2018 Kai Pastor
+# Copyright 2016-2019 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -40,10 +40,19 @@ set(test_system_png [[
 		enable_language(C)
 		find_package(PNG CONFIG QUIET)
 		find_package(PNG MODULE QUIET)
-		if(TARGET PNG::PNG
-		   AND NOT PNG_INCLUDE_DIRS MATCHES "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}")
-			message(STATUS "Found ${SYSTEM_NAME} libpng: ${PNG_LIBRARIES}")
-			set(BUILD_CONDITION 0)
+		if(TARGET PNG::PNG)
+			get_target_property(configurations PNG::PNG IMPORTED_CONFIGURATIONS)
+			if(configurations)
+				list(GET configurations 0 config)
+				get_target_property(png_location PNG::PNG "IMPORTED_LOCATION_${config}")
+			else()
+				get_target_property(png_location PNG::PNG "IMPORTED_LOCATION")
+			endif()
+			string(FIND "${png_location}" "${CMAKE_STAGING_PREFIX}/" staging_prefix_start)
+			if(NOT staging_prefix_start EQUAL 0)
+				message(STATUS "Found ${SYSTEM_NAME} libpng: ${png_location}")
+				set(BUILD_CONDITION 0)
+			endif()
 		endif()
 	endif()
 ]])
@@ -87,11 +96,11 @@ superbuild_package(
       "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
       "-DPNG_STATIC=0"
     INSTALL_COMMAND
-      "${CMAKE_COMMAND}" --build . --target install/strip -- "DESTDIR=${INSTALL_DIR}"
+      "${CMAKE_COMMAND}" --build . --target install/strip/fast
     COMMAND
       "${CMAKE_COMMAND}" -E copy
         "<SOURCE_DIR>/../libpng1.6-patches-${patch_version}/copyright"
-        "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/share/doc/copyright/libpng1.6-${patch_version}.txt"
+        "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/libpng1.6-${patch_version}.txt"
   ]]
 )
 

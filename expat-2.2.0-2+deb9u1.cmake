@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016, 2017 Kai Pastor
+# Copyright 2016-2019 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -38,8 +38,8 @@ set(test_system_expat [[
 	if(USE_SYSTEM_EXPAT)
 		enable_language(C)
 		find_package(EXPAT QUIET)
-		if(EXPAT_FOUND
-		   AND NOT EXPAT_INCLUDE_DIRS MATCHES "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}")
+		string(FIND "${EXPAT_INCLUDE_DIRS}" "${CMAKE_STAGING_PREFIX}/" staging_prefix_start)
+		if(EXPAT_FOUND AND NOT staging_prefix_start EQUAL 0)
 			message(STATUS "Found ${SYSTEM_NAME} expat: ${EXPAT_LIBRARIES}")
 			set(BUILD_CONDITION 0)
 		endif()
@@ -75,16 +75,18 @@ superbuild_package(
     CONFIGURE_COMMAND
       "${SOURCE_DIR}/configure"
         "--prefix=${CMAKE_INSTALL_PREFIX}"
-        $<$<BOOL:${CMAKE_CROSSCOMPILING}>:
+        $<$<BOOL:@CMAKE_CROSSCOMPILING@>:
         --host=${SUPERBUILD_TOOLCHAIN_TRIPLET}
         >
         --enable-shared
         --disable-static
+        "CPPFLAGS=-I${CMAKE_FIND_ROOT_PATH}${CMAKE_INSTALL_PREFIX}/include"
+        "LDFLAGS=-L${CMAKE_FIND_ROOT_PATH}${CMAKE_INSTALL_PREFIX}/lib"
     INSTALL_COMMAND
-      "$(MAKE)" install "DESTDIR=${INSTALL_DIR}"
+      "$(MAKE)" install "DESTDIR=${DESTDIR}${INSTALL_DIR}"
     COMMAND
       "${CMAKE_COMMAND}" -E copy
         "<SOURCE_DIR>/../expat-patches-${patch_version}/copyright"
-        "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/share/doc/copyright/expat-${patch_version}.txt"
+        "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/expat-${patch_version}.txt"
   ]]
 )

@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016, 2017 Kai Pastor
+# Copyright 2016-2019 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -39,8 +39,8 @@ set(test_system_pcre3 [[
 		enable_language(C)
 		find_library(PCRE3_LIBRARY NAMES pcre QUIET)
 		find_path(PCRE3_INCLUDE_DIR NAMES pcre.h QUIET)
-		if(PCRE3_LIBRARY AND PCRE3_INCLUDE_DIR
-		   AND NOT PCRE3_INCLUDE_DIR MATCHES "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}")
+		string(FIND "${PCRE3_INCLUDE_DIR}" "${CMAKE_STAGING_PREFIX}/" staging_prefix_start)
+		if(PCRE3_LIBRARY AND PCRE3_INCLUDE_DIR AND NOT staging_prefix_start EQUAL 0)
 			message(STATUS "Found ${SYSTEM_NAME} pcre3: ${PCRE3_LIBRARY}")
 			set(BUILD_CONDITION 0)
 		endif()
@@ -69,6 +69,8 @@ superbuild_package(
       "${CMAKE_COMMAND}"
         -Dpackage=pcre3-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
+    COMMAND
+      sed -i -e "/INSTALL/ s,DESTINATION man,DESTINATION share/man," CMakeLists.txt
   
   USING            USE_SYSTEM_PCRE3 patch_version
   BUILD_CONDITION  ${test_system_pcre3}
@@ -82,10 +84,10 @@ superbuild_package(
       "-DPCRE_SUPPORT_UTF:BOOL=ON"
       "-DPCRE_SUPPORT_UNICODE_PROPERTIES:BOOL=ON"
     INSTALL_COMMAND
-      "${CMAKE_COMMAND}" --build . --target install/strip -- "DESTDIR=${INSTALL_DIR}"
+      "${CMAKE_COMMAND}" --build . --target install/strip/fast
     COMMAND
       "${CMAKE_COMMAND}" -E copy
         "<SOURCE_DIR>/../pcre3-patches-${patch_version}/copyright"
-        "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/share/doc/copyright/pcre3-${patch_version}.txt"
+        "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/pcre3-${patch_version}.txt"
   ]]
 )

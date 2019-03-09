@@ -60,9 +60,8 @@ string(CONFIGURE [[
 			  NO_CMAKE_SYSTEM_PATH
 			  NO_SYSTEM_ENVIRONMENT_PATH
 			)
-			if(${module}_VERSION
-			   AND (NOT ${module}_INCLUDE_DIRS
-			        OR NOT "${module}_INCLUDE_DIRS" MATCHES "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"))
+			string(FIND "${{module}_INCLUDE_DIRS}" "${CMAKE_STAGING_PREFIX}/" staging_prefix_start)
+			if(${module}_VERSION AND NOT staging_prefix_start EQUAL 0)
 				message(STATUS "Found ${SYSTEM_NAME} ${module}: ${${module}_VERSION}")
 				set(BUILD_CONDITION 0)
 			else()
@@ -82,7 +81,7 @@ set(windows        [[$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>]])
 set(macos          [[$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>]])
 set(android        [[$<BOOL:${ANDROID}>]])
 set(use_sysroot    [[$<NOT:$<AND:$<BOOL:${CMAKE_CROSSCOMPILING}>,$<BOOL:${ANDROID}>>>]])
-set(qmake          [[$<$<BOOL:${CMAKE_CROSSCOMPILING}>:${TOOLCHAIN_DIR}>$<$<NOT:$<BOOL:${CMAKE_CROSSCOMPILING}>>:${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}>/bin/qmake]])
+set(qmake          [[$<$<BOOL:${CMAKE_CROSSCOMPILING}>:${TOOLCHAIN_DIR}>$<$<NOT:$<BOOL:${CMAKE_CROSSCOMPILING}>>:${CMAKE_STAGING_PREFIX}>/bin/qmake]])
 
 
 set(module Qt5Core)
@@ -217,7 +216,7 @@ superbuild_package(
       -no-glib
       -prefix "${CMAKE_INSTALL_PREFIX}"
       -datadir "${CMAKE_INSTALL_PREFIX}/share"
-      -extprefix "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
+      -extprefix "${CMAKE_STAGING_PREFIX}"
       $<${crosscompiling}:
         -no-pkg-config
         -hostprefix "${TOOLCHAIN_DIR}"
@@ -239,8 +238,8 @@ superbuild_package(
           -android-ndk-platform "${ANDROID_PLATFORM}"
         >
       >
-      -I "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/include"
-      -L "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/lib"
+      -I "${CMAKE_STAGING_PREFIX}/include"
+      -L "${CMAKE_STAGING_PREFIX}/lib"
   ]]
 )
 

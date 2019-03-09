@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016-2018 Kai Pastor
+# Copyright 2016-2019 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -42,10 +42,19 @@ set(test_system_tiff [[
 		enable_language(C)
 		find_package(TIFF CONFIG QUIET)
 		find_package(TIFF MODULE QUIET)
-		if(TARGET TIFF::TIFF
-		   AND NOT TIFF_INCLUDE_DIR MATCHES "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}")
-			message(STATUS "Found ${SYSTEM_NAME} tiff: ${TIFF_LIBRARIES}")
-			set(BUILD_CONDITION 0)
+		if(TARGET TIFF::TIFF)
+			get_target_property(configurations TIFF::TIFF IMPORTED_CONFIGURATIONS)
+			if(configurations)
+				list(GET configurations 0 config)
+				get_target_property(tiff_location TIFF::TIFF "IMPORTED_LOCATION_${config}")
+			else()
+				get_target_property(tiff_location TIFF::TIFF "IMPORTED_LOCATION")
+			endif()
+			string(FIND "${tiff_location}" "${CMAKE_STAGING_PREFIX}/" staging_prefix_start)
+			if(NOT staging_prefix_start EQUAL 0)
+				message(STATUS "Found ${SYSTEM_NAME} libtiff: ${tiff_location}")
+				set(BUILD_CONDITION 0)
+			endif()
 		endif()
 	endif()
 ]])
@@ -91,11 +100,13 @@ superbuild_package(
       # default for autoconf/configure controlled builds. In addition, more
       # trouble is pending, http://bugzilla.maptools.org/show_bug.cgi?id=1941.
       "-DUSE_WIN32_FILEIO:BOOL=OFF"
+      # GNUInstallDirs doesn't work with CMAKE_STAGING_PREFIX
+      -UCMAKE_STAGING_PREFIX
     INSTALL_COMMAND
-      "${CMAKE_COMMAND}" --build . --target install/strip -- "DESTDIR=${INSTALL_DIR}"
+      "${CMAKE_COMMAND}" --build . --target install/strip/fast -- "DESTDIR=${DESTDIR}${INSTALL_DIR}"
     COMMAND
       "${CMAKE_COMMAND}" -E copy
         "<SOURCE_DIR>/../tiff-patches-${patch_version}/copyright"
-        "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/share/doc/copyright/tiff-${patch_version}.txt"
+        "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/tiff-${patch_version}.txt"
   ]]
 )

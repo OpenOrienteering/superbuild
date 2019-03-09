@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016, 2017 Kai Pastor
+# Copyright 2016-2019 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -38,8 +38,9 @@ set(test_system_libpolyclipping [[
 	if(USE_SYSTEM_POLYCLIPPING)
 		enable_language(C)
 		find_library(POLYCLIPPING_LIBRARY NAMES polyclipping QUIET)
-		if(POLYCLIPPING_LIBRARY
-		   AND NOT POLYCLIPPING_LIBRARY MATCHES "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}")
+		find_path(POLYCLIPPING_INCLUDE_DIR NAMES clipper.hpp QUIET)
+		string(FIND "${POLYCLIPPING_LIBRARY}" "${CMAKE_STAGING_PREFIX}/" staging_prefix_start)
+		if(POLYCLIPPING_LIBRARY AND POLYCLIPPING_INCLUDE_DIR AND NOT staging_prefix_start EQUAL 0)
 			message(STATUS "Found ${SYSTEM_NAME} libpolyclipping: ${POLYCLIPPING_LIBRARY}")
 			set(BUILD_CONDITION 0)
 		endif()
@@ -73,7 +74,7 @@ superbuild_package(
     COMMAND
       sed -i -e [[ s/LIBRARY DESTINATION/RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}\/bin" LIBRARY DESTINATION/ ]] cpp/CMakeLists.txt
   
-  USING            USE_SYSTEM_POLYCLIPPING patch_version
+  USING            USE_SYSTEM_POLYCLIPPING patch_version version
   BUILD_CONDITION  ${test_system_libpolyclipping}
   BUILD [[
     CONFIGURE_COMMAND
@@ -82,12 +83,15 @@ superbuild_package(
         "-DCMAKE_BUILD_TYPE:STRING=$<CONFIG>"
         "-DBUILD_SHARED_LIBS:BOOL=ON" # install fails for static lib
         --no-warn-unused-cli
-    # polyclipping uses CMAKE_INSTALL_PREFIX incorrectly
+        # polyclipping uses CMAKE_{INSTALL,STAGING}_PREFIX incorrectly
+        -UCMAKE_STAGING_PREFIX
+        # VERSION is needed in the pkgconfig file
+        "-DVERSION=${version}"
     INSTALL_COMMAND
-      "$(MAKE)" install "DESTDIR=${INSTALL_DIR}"
+      "${CMAKE_COMMAND}" --build . --target install/strip/fast -- "DESTDIR=${DESTDIR}${INSTALL_DIR}"
     COMMAND
       "${CMAKE_COMMAND}" -E copy
         "<SOURCE_DIR>/../libpolyclipping-patches-${patch_version}/copyright"
-        "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/share/doc/copyright/libpolyclipping-${patch_version}.txt"
+        "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/libpolyclipping-${patch_version}.txt"
   ]]
 )

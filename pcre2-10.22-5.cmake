@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016-2018 Kai Pastor
+# Copyright 2016-2019 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -38,9 +38,9 @@ set(test_system_pcre2 [[
 	if(USE_SYSTEM_PCRE2)
 		enable_language(C)
 		find_library(PCRE2_LIBRARY NAMES pcre QUIET)
-		find_path(PCRE2_INCLUDE_DIR NAMES pcre.h QUIET)
-		if(PCRE2_LIBRARY AND PCRE2_INCLUDE_DIR
-		   AND NOT PCRE2_INCLUDE_DIR MATCHES "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}")
+		find_path(PCRE2_INCLUDE_DIR NAMES pcre2.h QUIET)
+		string(FIND "${PCRE2_INCLUDE_DIR}" "${CMAKE_STAGING_PREFIX}/" staging_prefix_start)
+		if(PCRE2_LIBRARY AND PCRE2_INCLUDE_DIR AND NOT staging_prefix_start EQUAL 0)
 			message(STATUS "Found ${SYSTEM_NAME} pcre2: ${PCRE2_LIBRARY}")
 			set(BUILD_CONDITION 0)
 		endif()
@@ -70,6 +70,8 @@ superbuild_package(
       gunzip -c "${PROJECT_SOURCE_DIR}/pcre2_${patch_version}.diff.gz" > "pcre2_${patch_version}.diff"
     COMMAND
       patch -N -p1 < "pcre2_${patch_version}.diff"
+    COMMAND
+      sed -i -e "/INSTALL/ s,DESTINATION man,DESTINATION share/man," CMakeLists.txt
   
   USING            USE_SYSTEM_PCRE2 patch_version
   BUILD_CONDITION  ${test_system_pcre2}
@@ -84,10 +86,10 @@ superbuild_package(
       "-DPCRE_SUPPORT_UTF:BOOL=ON"
       "-DPCRE_SUPPORT_UNICODE_PROPERTIES:BOOL=ON"
     INSTALL_COMMAND
-      "${CMAKE_COMMAND}" --build . --target install/strip -- "DESTDIR=${INSTALL_DIR}"
+      "${CMAKE_COMMAND}" --build . --target install/strip/fast
     COMMAND
       "${CMAKE_COMMAND}" -E copy
         "<SOURCE_DIR>/../pcre2-${patch_version}/debian/copyright"
-        "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/share/doc/copyright/pcre2-${patch_version}.txt"
+        "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/pcre2-${patch_version}.txt"
   ]]
 )

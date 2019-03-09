@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016-2018 Kai Pastor
+# Copyright 2016-2019 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -47,8 +47,8 @@ set(test_system_gdal [[
 	if(USE_SYSTEM_GDAL)
 		enable_language(C)
 		find_package(GDAL 2 QUIET)
-		if(GDAL_FOUND
-		   AND NOT GDAL_INCLUDE_DIR MATCHES "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}")
+		string(FIND "${GDAL_INCLUDE_DIR}" "${CMAKE_STAGING_PREFIX}/" staging_prefix_start)
+		if(GDAL_FOUND AND NOT staging_prefix_start EQUAL 0)
 			message(STATUS "Found ${SYSTEM_NAME} gdal: ${GDAL_LIBRARY}")
 			set(BUILD_CONDITION 0)
 		endif()
@@ -143,11 +143,11 @@ superbuild_package(
       ${copy_dir} "${SOURCE_DIR}/" "${BINARY_DIR}"
     COMMAND
       # Insert another library name if needed (MinGW)
-      sed -i -e "/ PROJ_LIB=/ s,-lproj[-_0-9]*,-l$${}{PROJ4_LIB}," "${BINARY_DIR}/configure"
+      sed -i -e "/ PROJ_LIB=/ s,-lproj[-_0-9]*,-l${PROJ4_LIB}," "${BINARY_DIR}/configure"
     COMMAND
       # Remove duplicate -lproj
       sed -i -e "/LIBS=/ s,-lproj ,," "${BINARY_DIR}/configure"
-    $<$<BOOL:${ANDROID}>:
+    $<$<BOOL:@ANDROID@>:
     COMMAND
       # Fix .so versioning
       sed -i -e "/ -avoid-version/! s,^LD.*=.*LIBTOOL_LINK.*,& -avoid-version," "${BINARY_DIR}/GDALmake.opt.in"
@@ -164,7 +164,7 @@ superbuild_package(
     COMMAND
       "${BINARY_DIR}/configure"
         "--prefix=${CMAKE_INSTALL_PREFIX}"
-        $<$<BOOL:${CMAKE_CROSSCOMPILING}>:
+        $<$<BOOL:@CMAKE_CROSSCOMPILING@>:
           --host=${SUPERBUILD_TOOLCHAIN_TRIPLET}
         >
         --disable-static
@@ -175,15 +175,15 @@ superbuild_package(
         --with-liblzma
         --with-pcre
         --with-static-proj4
-        "--with-curl=$${}{CURL_CONFIG}"
-        "--with-expat=$${}{EXPAT_DIR}"
-        "--with-jpeg=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
-        "--with-libtiff=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
-        $<$<NOT:$<BOOL:${ANDROID}>>:
-          "--with-libz=$${}{LIBZ_DIR}"
+        "--with-curl=${CURL_CONFIG}"
+        "--with-expat=${EXPAT_DIR}"
+        "--with-jpeg=${CMAKE_STAGING_PREFIX}"
+        "--with-libtiff=${CMAKE_STAGING_PREFIX}"
+        $<$<NOT:$<BOOL:@ANDROID@>>:
+          "--with-libz=${LIBZ_DIR}"
         >
-        "--with-png=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
-        "--with-sqlite3=$${}{SQLITE3_DIR}"
+        "--with-png=${CMAKE_STAGING_PREFIX}"
+        "--with-sqlite3=${SQLITE3_DIR}"
         --without-geos
         --without-grib
         --without-java
@@ -198,25 +198,25 @@ superbuild_package(
         --without-python
         --without-xerces
         --without-xml2
-        "CPPFLAGS=-I${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/include"
-        "LDFLAGS=-L${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/lib"
-        $<$<STREQUAL:${CMAKE_ANDROID_STL_TYPE},gnustl_shared>:
+        "CPPFLAGS=-I${CMAKE_FIND_ROOT_PATH}${CMAKE_INSTALL_PREFIX}/include"
+        "LDFLAGS=-L${CMAKE_FIND_ROOT_PATH}${CMAKE_INSTALL_PREFIX}/lib"
+        $<$<STREQUAL:@CMAKE_ANDROID_STL_TYPE@,gnustl_shared>:
           "LIBS=-lgnustl_shared"
         >
         "PKG_CONFIG="
     BUILD_COMMAND
-      "$(MAKE)" USER_DEFS=-Wno-format   # no missing-sentinel warnings
-    $<$<BOOL:${WIN32}>:
+      "$(MAKE)"
+    $<$<BOOL:@WIN32@>:
     COMMAND
       # Verify that libgdal is linked to libproj
-      "$<$<BOOL:${CMAKE_CROSSCOMPILING}>:${SYSTEM_NAME}->objdump" -x .libs/libgdal-20.dll
+      "$<$<BOOL:@CMAKE_CROSSCOMPILING@>:${SYSTEM_NAME}->objdump" -x .libs/libgdal-20.dll
         | grep "DLL Name: libproj"
     >
     INSTALL_COMMAND
-      "$(MAKE)" install "DESTDIR=${INSTALL_DIR}"
+      "$(MAKE)" install "DESTDIR=${DESTDIR}${INSTALL_DIR}"
     COMMAND
       "${CMAKE_COMMAND}" -E copy
         "<SOURCE_DIR>/../gdal-patches-${patch_version}/copyright"
-        "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/share/doc/copyright/gdal-${patch_version}.txt"
+        "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/gdal-${patch_version}.txt"
   ]]
 )

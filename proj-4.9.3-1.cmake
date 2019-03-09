@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016, 2017 Kai Pastor
+# Copyright 2016-2019 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -38,8 +38,9 @@ set(test_system_proj [[
 	if(${USE_SYSTEM_PROJ})
 		enable_language(C)
 		find_library(PROJ4_LIBRARY NAMES proj QUIET)
-		if(PROJ4_LIBRARY
-		   AND NOT PROJ4_LIBRARY MATCHES "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}")
+		find_path(PROJ4_INCLUDE_DIR NAMES proj_api.h QUIET)
+		string(FIND "${PROJ4_LIBRARY}" "${CMAKE_STAGING_PREFIX}/" staging_prefix_start)
+		if(PROJ4_LIBRARY AND PROJ4_INCLUDE_DIR AND NOT staging_prefix_start EQUAL 0)
 			message(STATUS "Found ${SYSTEM_NAME} PROJ4: ${PROJ4_LIBRARY}")
 			set(BUILD_CONDITION 0)
 		endif()
@@ -87,10 +88,10 @@ superbuild_package(
       -DPROJ_DOC_SUBDIR=share/doc/proj
       -DPROJ_INCLUDE_SUBDIR=include
     INSTALL_COMMAND
-      "${CMAKE_COMMAND}" --build . --target install/strip -- "DESTDIR=${INSTALL_DIR}"
+      "${CMAKE_COMMAND}" --build . --target install/strip/fast
     COMMAND
       "${CMAKE_COMMAND}" -E copy
         "<SOURCE_DIR>/../proj-patches-${patch_version}/copyright"
-        "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/share/doc/copyright/proj-${patch_version}.txt"
+        "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/proj-${patch_version}.txt"
   ]]
 )

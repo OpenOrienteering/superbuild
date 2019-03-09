@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016, 2017 Kai Pastor
+# Copyright 2016-2019 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -39,8 +39,8 @@ set(test_system_jpeg [[
 		enable_language(C)
 		find_package(JPEG CONFIG QUIET)
 		find_package(JPEG MODULE QUIET)
-		if(JPEG_FOUND
-		   AND NOT JPEG_INCLUDE_DIR MATCHES "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}")
+		string(FIND "${JPEG_INCLUDE_DIR}" "${CMAKE_STAGING_PREFIX}/" staging_prefix_start)
+		if(JPEG_FOUND AND NOT staging_prefix_start EQUAL 0)
 			message(STATUS "Found ${SYSTEM_NAME} libjpeg: ${JPEG_LIBRARIES}")
 			set(BUILD_CONDITION 0)
 		endif()
@@ -89,15 +89,16 @@ superbuild_package(
   BUILD_CONDITION  ${test_system_jpeg}
   BUILD [[
     CONFIGURE_COMMAND
+      "${CMAKE_COMMAND}" -E env
       "${SOURCE_DIR}/configure"
         "--prefix=${CMAKE_INSTALL_PREFIX}"
-        $<$<BOOL:${CMAKE_CROSSCOMPILING}>:
+        $<$<BOOL:@CMAKE_CROSSCOMPILING@>:
           --host=${SUPERBUILD_TOOLCHAIN_TRIPLET}
         >
-        $<$<NOT:$<BOOL:${ANDROID}>>:
+        $<$<NOT:$<BOOL:@ANDROID@>>:
         --disable-static
         --enable-shared
-        >$<$<BOOL:${ANDROID}>:
+        >$<$<BOOL:@ANDROID@>:
         # Static only. There may be an interfering libjeg.so on the device.
         --enable-static
         --disable-shared
@@ -105,18 +106,20 @@ superbuild_package(
         >
         --disable-silent-rules
         --without-12bit
-        $<$<NOT:$<STREQUAL:${NASM_EXECUTABLE},NASM_EXECUTABLE-NOTFOUND>>:
+        $<$<NOT:$<STREQUAL:@NASM_EXECUTABLE@,NASM_EXECUTABLE-NOTFOUND>>:
         "NASM=${NASM_EXECUTABLE}"
-        >$<$<STREQUAL:${NASM_EXECUTABLE},NASM_EXECUTABLE-NOTFOUND>:
+        >$<$<STREQUAL:@NASM_EXECUTABLE@,NASM_EXECUTABLE-NOTFOUND>:
         --without-simd
         >
-        "CFLAGS=$${}{CMAKE_C_FLAGS} $${}{CMAKE_C_FLAGS_$<UPPER_CASE:$<CONFIG>>}"
+        "CPPFLAGS=-I${CMAKE_FIND_ROOT_PATH}${CMAKE_INSTALL_PREFIX}/include"
+        "CFLAGS=${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_$<UPPER_CASE:$<CONFIG>>}"
+        "LDFLAGS=-L${CMAKE_FIND_ROOT_PATH}${CMAKE_INSTALL_PREFIX}/lib"
     INSTALL_COMMAND
-      "$(MAKE)" install "DESTDIR=${INSTALL_DIR}"
+      "$(MAKE)" install "DESTDIR=${DESTDIR}${INSTALL_DIR}"
     COMMAND
       "${CMAKE_COMMAND}" -E copy
         "<SOURCE_DIR>/../libjpeg-turbo-patches-${patch_version}/copyright"
-        "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/share/doc/copyright/libjpeg-turbo-${patch_version}.txt"
+        "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/libjpeg-turbo-${patch_version}.txt"
   ]]
 )
 

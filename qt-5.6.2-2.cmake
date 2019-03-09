@@ -40,9 +40,8 @@ string(CONFIGURE [[
 		find_package(Qt5Core @version@ CONFIG QUIET)
 		if(Qt5Core_VERSION)
 			find_package(${module} ${Qt5Core_VERSION} CONFIG EXACT REQUIRED)
-			if(${module}_VERSION
-			   AND (NOT ${module}_INCLUDE_DIRS
-			        OR NOT "${module}_INCLUDE_DIRS" MATCHES "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"))
+			string(FIND "${{module}_INCLUDE_DIRS}" "${CMAKE_STAGING_PREFIX}/" staging_prefix_start)
+			if(${module}_VERSION AND NOT staging_prefix_start EQUAL 0)
 				message(STATUS "Found ${SYSTEM_NAME} ${module}: ${${module}_VERSION}")
 				set(BUILD_CONDITION 0)
 			else()
@@ -75,8 +74,8 @@ string(CONFIGURE [[
 		  "/${pattern}/ i\n"
 		  "/${pattern}/ i # Begin of changes from superbuild\n"
 		  ${qmake_conf_changes}
-		  "/${pattern}/ i ${qmake}_INCDIR *= \"${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/include\"\n"
-		  "/${pattern}/ i ${qmake}_LIBDIR *= \"${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/lib\"\n"
+		  "/${pattern}/ i ${qmake}_INCDIR *= \"${CMAKE_STAGING_PREFIX}/include\"\n"
+		  "/${pattern}/ i ${qmake}_LIBDIR *= \"${CMAKE_STAGING_PREFIX}/lib\"\n"
 		  "/${pattern}/ i # End of changes from superbuild\n"
 		  "/${pattern}/ i\n"
 		)
@@ -91,7 +90,7 @@ set(windows        [[$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>]])
 set(macos          [[$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>]])
 set(android        [[$<BOOL:${ANDROID}>]])
 set(use_sysroot    [[$<NOT:$<AND:$<BOOL:${CMAKE_CROSSCOMPILING}>,$<BOOL:${ANDROID}>>>]])
-set(qmake          [[$<$<BOOL:${CMAKE_CROSSCOMPILING}>:${TOOLCHAIN_DIR}>$<$<NOT:$<BOOL:${CMAKE_CROSSCOMPILING}>>:${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}>/bin/qmake]])
+set(qmake          [[$<$<BOOL:${CMAKE_CROSSCOMPILING}>:${TOOLCHAIN_DIR}>$<$<NOT:$<BOOL:${CMAKE_CROSSCOMPILING}>>:${CMAKE_STAGING_PREFIX}>/bin/qmake]])
 
 
 set(module Qt5Core)
@@ -112,7 +111,7 @@ superbuild_package(
     BUILD_COMMAND     ""
     INSTALL_COMMAND
       "${CMAKE_COMMAND}"
-        "-DINSTALL_DIR=${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/share/doc/copyright"
+        "-DINSTALL_DIR=${CMAKE_STAGING_PREFIX}/share/doc/copyright"
         -P "<SOURCE_DIR>/cmake_install.cmake"
   ]]
 )
@@ -239,7 +238,7 @@ superbuild_package(
       -no-audio-backend
       -prefix "${CMAKE_INSTALL_PREFIX}"
       -datadir "${CMAKE_INSTALL_PREFIX}/share"
-      -extprefix "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
+      -extprefix "${CMAKE_STAGING_PREFIX}"
       $<${crosscompiling}:
         -no-pkg-config
         -hostprefix "${TOOLCHAIN_DIR}"
@@ -254,8 +253,8 @@ superbuild_package(
           -android-sdk   "${ANDROID_SDK_ROOT}"
         >
       >$<$<NOT:${crosscompiling}>:
-        -I "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/include"
-        -L "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/lib"
+        -I "${CMAKE_STAGING_PREFIX}/include"
+        -L "${CMAKE_STAGING_PREFIX}/lib"
       >
   ]]
 )

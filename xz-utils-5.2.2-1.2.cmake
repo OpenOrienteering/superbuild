@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016, 2017 Kai Pastor
+# Copyright 2016-2019 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -42,8 +42,8 @@ set(test_system_lzma [[
 		enable_language(C)
 		find_package(LibLZMA CONFIG QUIET)
 		find_package(LibLZMA MODULE QUIET)
-		if(LIBLZMA_FOUND
-		   AND NOT LIBLZMA_INCLUDE_DIRS MATCHES "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}")
+		string(FIND "${LIBLZMA_INCLUDE_DIRS}" "${CMAKE_STAGING_PREFIX}/" staging_prefix_start)
+		if(LIBLZMA_FOUND AND NOT staging_prefix_start EQUAL 0)
 			message(STATUS "Found ${SYSTEM_NAME} LibLZMA (xz-utils): ${LIBLZMA_LIBRARIES}")
 			set(BUILD_CONDITION 0)
 		endif()
@@ -86,18 +86,20 @@ superbuild_package(
     CONFIGURE_COMMAND
       "${SOURCE_DIR}/configure"
         "--prefix=${CMAKE_INSTALL_PREFIX}"
-        $<$<BOOL:${CMAKE_CROSSCOMPILING}>:
+        $<$<BOOL:@CMAKE_CROSSCOMPILING@>:
           --host=${SUPERBUILD_TOOLCHAIN_TRIPLET}
         >
         --disable-static
         --enable-shared
         --disable-lzma-links
+        "CPPFLAGS=-I${CMAKE_FIND_ROOT_PATH}${CMAKE_INSTALL_PREFIX}/include"
+        "LDFLAGS=-L${CMAKE_FIND_ROOT_PATH}${CMAKE_INSTALL_PREFIX}/lib"
     INSTALL_COMMAND
-      "$(MAKE)" install "DESTDIR=${INSTALL_DIR}"
+      "$(MAKE)" install "DESTDIR=${DESTDIR}${INSTALL_DIR}"
     COMMAND
       "${CMAKE_COMMAND}" -E copy
         "<SOURCE_DIR>/../xz-utils-patches-${patch_version}/copyright"
-        "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/share/doc/copyright/xz-utils-${patch_version}.txt"
+        "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/xz-utils-${patch_version}.txt"
   ]]
 )
 
@@ -105,6 +107,8 @@ superbuild_package(
   NAME           liblzma
   VERSION        ${patch_version}
   DEPENDS
+    xz-utils-${patch_version}
+  SOURCE
     xz-utils-${patch_version}
     
   USING            USE_SYSTEM_LZMA patch_version
@@ -115,6 +119,6 @@ superbuild_package(
     INSTALL_COMMAND
       "${CMAKE_COMMAND}" -E copy
         "<SOURCE_DIR>/../xz-utils-patches-${patch_version}/copyright"
-        "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/share/doc/copyright/liblzma-${patch_version}.txt"
+        "${CMAKE_STAGING_PREFIX}/share/doc/copyright/liblzma-${patch_version}.txt"
   ]]
 )

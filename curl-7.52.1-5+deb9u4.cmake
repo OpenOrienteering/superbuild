@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2017, 2018 Kai Pastor
+# Copyright 2017-2019 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -40,8 +40,8 @@ set(test_system_curl [[
 		enable_language(C)
 		find_package(CURL CONFIG QUIET)
 		find_package(CURL MODULE QUIET)
-		if(CURL_FOUND
-		   AND NOT CURL_INCLUDE_DIRS MATCHES "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}")
+		string(FIND "${CURL_INCLUDE_DIRS}" "${CMAKE_STAGING_PREFIX}/" staging_prefix_start)
+		if(CURL_FOUND AND NOT staging_prefix_start EQUAL 0)
 			message(STATUS "Found ${SYSTEM_NAME} curl: ${CURL_LIBRARIES}")
 			set(BUILD_CONDITION 0)
 		endif()
@@ -78,7 +78,7 @@ superbuild_package(
     CONFIGURE_COMMAND
       "${SOURCE_DIR}/configure"
         "--prefix=${CMAKE_INSTALL_PREFIX}"
-        $<$<BOOL:${CMAKE_CROSSCOMPILING}>:
+        $<$<BOOL:@CMAKE_CROSSCOMPILING@>:
         --host=${SUPERBUILD_TOOLCHAIN_TRIPLET}
         >
         --disable-silent-rules
@@ -100,17 +100,19 @@ superbuild_package(
         --disable-gopher
         --disable-manual
         --enable-ipv6
-      $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>:
+      $<$<STREQUAL:@CMAKE_SYSTEM_NAME@,Windows>:
         --with-winssl
       > # Windows
-      $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>:
+      $<$<STREQUAL:@CMAKE_SYSTEM_NAME@,Darwin>:
         --with-darwinssl
       > # Darwin
+        "CPPFLAGS=-I${CMAKE_FIND_ROOT_PATH}${CMAKE_INSTALL_PREFIX}/include"
+        "LDFLAGS=-L${CMAKE_FIND_ROOT_PATH}${CMAKE_INSTALL_PREFIX}/lib"
     INSTALL_COMMAND
-      "$(MAKE)" install "DESTDIR=${INSTALL_DIR}"
+      "$(MAKE)" install "DESTDIR=${DESTDIR}${INSTALL_DIR}"
     COMMAND
       "${CMAKE_COMMAND}" -E copy
         "<SOURCE_DIR>/../curl-patches-${patch_version}/copyright"
-        "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}/share/doc/copyright/curl-${patch_version}.txt"
+        "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/curl-${patch_version}.txt"
   ]]
 )
