@@ -80,11 +80,14 @@ superbuild_package(
         --disable-static
         --enable-shared
         --enable-threadsafe
-        "CPPFLAGS=-I${CMAKE_FIND_ROOT_PATH}${CMAKE_INSTALL_PREFIX}/include -DSQLITE_ENABLE_COLUMN_METADATA"
-        "LDFLAGS=-L${CMAKE_FIND_ROOT_PATH}${CMAKE_INSTALL_PREFIX}/lib"
+        "CPPFLAGS=${SUPERBUILD_CPPFLAGS} -DSQLITE_ENABLE_COLUMN_METADATA"
+        "CFLAGS=${SUPERBUILD_CFLAGS}"
+        "LDFLAGS=${SUPERBUILD_LDFLAGS}"
+        $<$<BOOL:@ANDROID@>:
+          "CC=${STANDALONE_C_COMPILER}"
         $<$<STREQUAL:@ANDROID_PLATFORM@,android-18>:
           "LIBS=-lcompiler_rt-extras"
-        >
+        >>
     INSTALL_COMMAND
       "$(MAKE)" install "DESTDIR=${DESTDIR}${INSTALL_DIR}"
     COMMAND

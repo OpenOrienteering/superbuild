@@ -106,8 +106,12 @@ superbuild_package(
       $<$<STREQUAL:@CMAKE_SYSTEM_NAME@,Darwin>:
         --with-darwinssl
       > # Darwin
-        "CPPFLAGS=-I${CMAKE_FIND_ROOT_PATH}${CMAKE_INSTALL_PREFIX}/include"
-        "LDFLAGS=-L${CMAKE_FIND_ROOT_PATH}${CMAKE_INSTALL_PREFIX}/lib"
+        "CPPFLAGS=${SUPERBUILD_CPPFLAGS}"
+        "CFLAGS=${SUPERBUILD_CFLAGS}"
+        "LDFLAGS=${SUPERBUILD_LDFLAGS}"
+        $<$<BOOL:@ANDROID@>:
+          "CC=${STANDALONE_C_COMPILER}"
+        >
     INSTALL_COMMAND
       "$(MAKE)" install "DESTDIR=${DESTDIR}${INSTALL_DIR}"
     COMMAND

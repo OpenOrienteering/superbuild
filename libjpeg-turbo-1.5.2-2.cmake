@@ -89,7 +89,6 @@ superbuild_package(
   BUILD_CONDITION  ${test_system_jpeg}
   BUILD [[
     CONFIGURE_COMMAND
-      "${CMAKE_COMMAND}" -E env
       "${SOURCE_DIR}/configure"
         "--prefix=${CMAKE_INSTALL_PREFIX}"
         $<$<BOOL:@CMAKE_CROSSCOMPILING@>:
@@ -111,9 +110,12 @@ superbuild_package(
         >$<$<STREQUAL:@NASM_EXECUTABLE@,NASM_EXECUTABLE-NOTFOUND>:
         --without-simd
         >
-        "CPPFLAGS=-I${CMAKE_FIND_ROOT_PATH}${CMAKE_INSTALL_PREFIX}/include"
-        "CFLAGS=${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_$<UPPER_CASE:$<CONFIG>>}"
-        "LDFLAGS=-L${CMAKE_FIND_ROOT_PATH}${CMAKE_INSTALL_PREFIX}/lib"
+        "CPPFLAGS=${SUPERBUILD_CPPFLAGS}"
+        "CFLAGS=${SUPERBUILD_CFLAGS}"
+        "LDFLAGS=${SUPERBUILD_LDFLAGS}"
+        $<$<BOOL:@ANDROID@>:
+          "CC=${STANDALONE_C_COMPILER}"
+        >
     INSTALL_COMMAND
       "$(MAKE)" install "DESTDIR=${DESTDIR}${INSTALL_DIR}"
     COMMAND
