@@ -155,6 +155,9 @@ superbuild_package(
       # Android NDK STL quirk
       sed -i -e "/__sun__/ s,#if .*,#if 1," "${BINARY_DIR}/ogr/ogrsf_frmts/cad/libopencad/dwg/r2000.cpp"
                                             "${BINARY_DIR}/ogr/ogrsf_frmts/cad/libopencad/cadheader.cpp"
+    COMMAND
+      # Android NDK locale quirk
+      sed -i -e "s,locale.h,locale_not_implemented.h," "${BINARY_DIR}/configure"
     >
     $<$<NOT:$<CONFIG:Debug>>:
     COMMAND
@@ -202,10 +205,12 @@ superbuild_package(
         "CFLAGS=$<JOIN:$<TARGET_PROPERTY:Superbuild::C,INTERFACE_COMPILE_OPTIONS>, >"
         "CXXFLAGS=$<JOIN:$<TARGET_PROPERTY:Superbuild::CXX,INTERFACE_COMPILE_OPTIONS>, >"
         "LDFLAGS=$<JOIN:$<TARGET_PROPERTY:Superbuild::C,INTERFACE_LINK_LIBRARIES>, >"
-        $<$<STREQUAL:@CMAKE_ANDROID_STL_TYPE@,gnustl_shared>:
-          "LIBS=-lgnustl_shared"
-        >
         "PKG_CONFIG="
+        $<$<BOOL:@ANDROID@>:
+          "CC=${STANDALONE_C_COMPILER}"
+          "CXX=${STANDALONE_CXX_COMPILER}"
+          "LIBS=-l@CMAKE_ANDROID_STL_TYPE@"
+        >
     BUILD_COMMAND
       "$(MAKE)"
     $<$<BOOL:@WIN32@>:
