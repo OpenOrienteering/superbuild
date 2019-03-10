@@ -29,6 +29,7 @@
 
 trigger:
 - master
+- topic/*
 
 jobs:
 - job: Superbuild
