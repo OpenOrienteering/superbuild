@@ -233,6 +233,13 @@ superbuild_package(
       -L "${CMAKE_STAGING_PREFIX}/lib"
     INSTALL_COMMAND
       "$(MAKE)" install INSTALL_ROOT=${DESTDIR}
+    $<@android@:
+      # androiddeployqt QTBUG-73141
+    COMMAND
+      "${CMAKE_COMMAND}" -E create_symlink
+        "${CMAKE_STAGING_PREFIX}/lib/qt5/plugins"
+        "${CMAKE_STAGING_PREFIX}/plugins"
+    >
     COMMAND
       "${CMAKE_COMMAND}" -E copy
         "<SOURCE_DIR>/../qt-${short_version}-openorienteering-${qtbase_version}/qtbase/copyright"
