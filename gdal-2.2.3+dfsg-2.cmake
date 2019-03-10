@@ -198,8 +198,10 @@ superbuild_package(
         --without-python
         --without-xerces
         --without-xml2
-        "CPPFLAGS=-I${CMAKE_FIND_ROOT_PATH}${CMAKE_INSTALL_PREFIX}/include"
-        "LDFLAGS=-L${CMAKE_FIND_ROOT_PATH}${CMAKE_INSTALL_PREFIX}/lib"
+        "CPPFLAGS=-D$<JOIN:$<TARGET_PROPERTY:Superbuild::C,INTERFACE_COMPILE_DEFINITIONS>, -D> -I$<JOIN:$<TARGET_PROPERTY:Superbuild::C,INTERFACE_INCLUDE_DIRECTORIES>, -I>"
+        "CFLAGS=$<JOIN:$<TARGET_PROPERTY:Superbuild::C,INTERFACE_COMPILE_OPTIONS>, >"
+        "CXXFLAGS=$<JOIN:$<TARGET_PROPERTY:Superbuild::CXX,INTERFACE_COMPILE_OPTIONS>, >"
+        "LDFLAGS=$<JOIN:$<TARGET_PROPERTY:Superbuild::C,INTERFACE_LINK_LIBRARIES>, >"
         $<$<STREQUAL:@CMAKE_ANDROID_STL_TYPE@,gnustl_shared>:
           "LIBS=-lgnustl_shared"
         >

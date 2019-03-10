@@ -80,8 +80,9 @@ superbuild_package(
         --disable-static
         --enable-shared
         --enable-threadsafe
-        "CPPFLAGS=-I${CMAKE_FIND_ROOT_PATH}${CMAKE_INSTALL_PREFIX}/include -DSQLITE_ENABLE_COLUMN_METADATA"
-        "LDFLAGS=-L${CMAKE_FIND_ROOT_PATH}${CMAKE_INSTALL_PREFIX}/lib"
+        "CPPFLAGS=-D$<JOIN:$<TARGET_PROPERTY:Superbuild::C,INTERFACE_COMPILE_DEFINITIONS>, -D> -I$<JOIN:$<TARGET_PROPERTY:Superbuild::C,INTERFACE_INCLUDE_DIRECTORIES>, -I> -DSQLITE_ENABLE_COLUMN_METADATA"
+        "CFLAGS=$<JOIN:$<TARGET_PROPERTY:Superbuild::C,INTERFACE_COMPILE_OPTIONS>, >"
+        "LDFLAGS=$<JOIN:$<TARGET_PROPERTY:Superbuild::C,INTERFACE_LINK_LIBRARIES>, >"
         $<$<STREQUAL:@ANDROID_PLATFORM@,android-18>:
           "LIBS=-lcompiler_rt-extras"
         >

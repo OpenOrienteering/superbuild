@@ -243,6 +243,32 @@ function(sb_test_build_condition)
 ]] "${SB_PACKAGE_BUILD_CONDITION}" [[
 	set(BUILD_CONDITION ${BUILD_CONDITION} PARENT_SCOPE)
 endfunction()
+
+# Publish some properties to a target, for use in generator expressions
+set(include_directories )
+set(link_flags )
+foreach(dir ${CMAKE_FIND_ROOT_PATH} "")
+	if(include_directories AND NOT dir)
+		break()
+	endif()
+	list(APPEND include_directories "${dir}${CMAKE_INSTALL_PREFIX}/include")
+	list(APPEND link_flags "-L${dir}${CMAKE_INSTALL_PREFIX}/lib")
+endforeach()
+list(REMOVE_DUPLICATES include_directories)
+list(REMOVE_DUPLICATES link_flags)
+
+add_library(Superbuild::C INTERFACE IMPORTED)
+target_compile_definitions(Superbuild::C INTERFACE OPENORIENTEERING_SUPERBUILD)
+target_include_directories(Superbuild::C INTERFACE ${include_directories})
+target_compile_options(Superbuild::C INTERFACE ${CMAKE_C_FLAGS} \${CMAKE_C_FLAGS_$<UPPER_CASE:$<CONFIG>>})
+target_link_libraries(Superbuild::C INTERFACE ${link_flags})
+
+add_library(Superbuild::CXX INTERFACE IMPORTED)
+target_compile_definitions(Superbuild::CXX INTERFACE OPENORIENTEERING_SUPERBUILD)
+target_include_directories(Superbuild::CXX INTERFACE ${include_directories})
+target_compile_options(Superbuild::CXX INTERFACE ${CMAKE_CXX_FLAGS} \${CMAKE_CXX_FLAGS_$<UPPER_CASE:$<CONFIG>>})
+target_link_libraries(Superbuild::CXX INTERFACE ${link_flags})
+
 ]])
 	_sb_write_if_different("${dir}/${package}-config.cmake" ${output})
 endfunction()
