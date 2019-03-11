@@ -32,8 +32,40 @@ trigger:
 - topic/*
 
 jobs:
+- job: Source
+
+  pool:
+    vmImage: 'ubuntu-16.04'
+
+  steps:
+  - task: CMake@1
+    inputs:
+      workingDirectory: $(Build.SourcesDirectory)/../build
+      cmakeArgs: >
+        $(Build.SourcesDirectory)
+        -G "Unix Makefiles"
+    displayName: 'Configure'
+
+  - bash: |
+      set -x
+      set -e
+      cd $(Build.SourcesDirectory)/../build
+      make help | sort | grep -- '-source' | grep -v -- '-git' | \
+        while read DOTS TARGET; do
+          make "${TARGET}"
+        done
+    env:
+      VERBOSE: $(openorienteering.superbuild.source.verbose)
+    displayName: 'Download'
+
+  - task: PublishPipelineArtifact@0
+    inputs:
+      artifactName: 'superbuild-source'
+      targetPath: $(Build.SourcesDirectory)
+
 - job: Superbuild
   timeoutInMinutes: 120
+  dependsOn: Source
 
   strategy:
     matrix:
@@ -60,6 +92,11 @@ jobs:
     vmImage: $(imageName)
 
   steps:
+  - task: DownloadPipelineArtifact@0
+    inputs:
+      artifactName: 'superbuild-source'
+      targetPath: $(Build.SourcesDirectory)
+
   - bash: |
       set -x
       set -e
