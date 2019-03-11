@@ -60,6 +60,10 @@ foreach(abi ${supported_abis})
 	option(ENABLE_${system_name_${abi}} "Enable the ${system_name_${abi}} toolchain" 0)
 	if(ENABLE_${system_name_${abi}})
 		list(APPEND enabled_abis ${abi})
+		set(${system_name_${abi}}_INSTALL_PREFIX "/usr" CACHE STRING
+		  "Installation prefix for the Android ${abi} toolchain"
+		)
+		mark_as_advanced(${system_name_${abi}}_INSTALL_PREFIX)
 	endif()
 endforeach()
 if(NOT enabled_abis)
@@ -315,13 +319,6 @@ foreach(abi ${enabled_abis})
 		set(${system_name}_INSTALL_PREFIX "/usr")
 	endif()
 	
-	# Absolute paths may help with some packages, or with debugging.
-	option(${system_name}_ABSOLUTE_INSTALL_PREFIX "Use an absolute host path for CMAKE_INSTALL_PREFIX" 0)
-	if(${system_name}_ABSOLUTE_INSTALL_PREFIX)
-		set(${system_name}_INSTALL_PREFIX "${install_dir}")
-		set(install_dir "")
-	endif()
-	
 	if(NOT DEFINED ${system_name}_FIND_ROOT_PATH)
 		set(${system_name}_FIND_ROOT_PATH [[${INSTALL_DIR}]])
 	endif()
@@ -339,6 +336,8 @@ set(CMAKE_INSTALL_PREFIX   "]] "${${system_name}_INSTALL_PREFIX}" [["
     CACHE PATH             "Run-time install path prefix, prepended onto install directories")
 set(CMAKE_STAGING_PREFIX   "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
     CACHE PATH             "Install-time install path prefix, prepended onto install directories")
+set(CMAKE_FIND_ROOT_PATH   "]] "${${system_name}_FIND_ROOT_PATH}" [[")
+set(CMAKE_FIND_NO_INSTALL_PREFIX TRUE)
 
 set(ANDROID_SDK_ROOT       "]] "${ANDROID_SDK_ROOT}" [[")
 set(ANDROID_NDK_ROOT       "]] "${ANDROID_NDK_ROOT}" [[")
@@ -346,9 +345,11 @@ set(ANDROID_ABI            "]] ${abi} [[")
 set(ANDROID_NATIVE_API_LEVEL "]] ${ANDROID_API} [[")
 set(ANDROID_STL            "c++_shared")
 set(ANDROID_TOOLCHAIN      "clang")
-set(CMAKE_FIND_ROOT_PATH   "]] "${${system_name}_FIND_ROOT_PATH}" [[")
 include(]] "${ANDROID_NDK_ROOT}" [[/build/cmake/android.toolchain.cmake)
+
+# Handle ANDROID_SYSTEM_LIBRARY_PATH via CMAKE_FIND_ROOT_PATH
 list(APPEND CMAKE_FIND_ROOT_PATH "${ANDROID_SYSTEM_LIBRARY_PATH}")
+string(REPLACE "${ANDROID_SYSTEM_LIBRARY_PATH}" "" CMAKE_SYSTEM_LIBRARY_PATH "${CMAKE_SYSTEM_LIBRARY_PATH}")
 
 set(STANDALONE_C_COMPILER   "]] "${toolchain_dir}" [[/bin/${SYSTEM_NAME}-clang")
 set(STANDALONE_CXX_COMPILER "]] "${toolchain_dir}" [[/bin/${SYSTEM_NAME}-clang++")
