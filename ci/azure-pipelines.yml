@@ -152,7 +152,9 @@ jobs:
       set -x
       set -e
       cd $(Build.SourcesDirectory)/build
-      make `cat num_jobs` openorienteering-mapper-git-dev$(targetSuffix)
+      make `cat num_jobs` \
+        toolchain-info$(targetSuffix) \
+        openorienteering-mapper-git-dev$(targetSuffix)
       rm -Rf default/install/tmp
     env:
       CTEST_OUTPUT_ON_FAILURE: 1
