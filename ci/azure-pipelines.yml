@@ -82,8 +82,8 @@ jobs:
         imageName: 'ubuntu-16.04'
         cmakeArgs: >
           -DENABLE_x86_64-w64-mingw32=1
-          -Dx86_64-w64-mingw32_INSTALL_DIR=
-          -Dx86_64-w64-mingw32_INSTALL_PREFIX=$(Build.SourcesDirectory)/build/default/install/x86_64-w64-mingw32
+          -Dx86_64-w64-mingw32_INSTALL_DIR=$(Build.SourcesDirectory)/build/default/install/x86_64-w64-mingw32
+          -Dx86_64-w64-mingw32_INSTALL_PREFIX=/usr
           -Dx86_64-w64-mingw32_TOOLCHAIN_DIR=$(Build.SourcesDirectory)/build/default/install/x86_64-w64-mingw32/toolchain
           -Dmingw-w64_FIX_HEADERS=1
         targetSuffix: '-x86_64-w64-mingw32'
