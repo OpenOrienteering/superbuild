@@ -130,7 +130,7 @@ jobs:
       set -x
       set -e
       sed -i -e 's,-widgets,-no-xcb -widgets,' qt-5.*.cmake
-      sed -i -e 's,INSTALL_COMMAND,INSTALL_COMMAND echo Skipping,' openorienteering-mapper-git.cmake
+      sed -i -e 's, install/fast, package/fast,;/DESTDIR=/d' openorienteering-mapper-git.cmake
       cp ci/num_jobs.cmake .
     displayName: 'Patch'
 
