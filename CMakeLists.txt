@@ -37,6 +37,10 @@ set(documentation
   COPYING
   README.md
 )
+set(ci
+  ci/azure-pipelines.yml
+  ci/num_jobs.cmake
+)
 
 set(SUPERBUILD_HANDLE_ENV "" CACHE STRING
   "Additional environment variables to be passed to packages."
@@ -1243,13 +1247,16 @@ function(superbuild_package)
 endfunction()
 
 
-# For convenience, make existing documentation visible to IDEs
-foreach(file ${documentation})
+# For convenience, make documentation and ci visible to IDEs. However, we want
+# to allow minimal distribution (CMakeLists.txt + some-package.cmake), so these
+# files must remain optional.
+foreach(file ${ci} ${documentation})
 	if(NOT EXISTS ${PROJECT_SOURCE_DIR}/${file})
 		set_source_files_properties(${file} PROPERTIES GENERATED 1)
 	endif()
 endforeach()
 add_custom_target(doc SOURCES ${documentation})
+add_custom_target(CI SOURCES ${ci})
 
 # ExternalPackage < 3.8.0 has bug with UPDATE_DISCONNECTED
 if(NOT CMAKE_VERSION VERSION_LESS 3.8.0)
