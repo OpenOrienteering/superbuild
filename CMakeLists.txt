@@ -37,6 +37,10 @@ set(documentation
   COPYING
   README.md
 )
+set(ci
+  ci/azure-pipelines.yml
+  ci/num_jobs.cmake
+)
 
 set(SUPERBUILD_HANDLE_ENV "" CACHE STRING
   "Additional environment variables to be passed to packages."
@@ -243,6 +247,68 @@ function(sb_test_build_condition)
 ]] "${SB_PACKAGE_BUILD_CONDITION}" [[
 	set(BUILD_CONDITION ${BUILD_CONDITION} PARENT_SCOPE)
 endfunction()
+
+# Publish some properties to a target, for use in generator expressions.
+# This approximately reproduces the processing order of cmake's
+# find_file and find_library.
+set(SUPERBUILD_CPPFLAGS " ")
+macro(check_include_dir subdir)
+	foreach(path ${CMAKE_FIND_ROOT_PATH} "")
+		string(REGEX REPLACE "//*" "/" include_dir "${path}${subdir}")
+		string(REGEX REPLACE "/\$" ""  include_dir "${include_dir}")
+		if(EXISTS "${include_dir}"
+		   AND (path OR NOT CMAKE_FIND_ROOT_PATH)
+		   AND NOT "${SUPERBUILD_CPPFLAGS}" MATCHES " -I${include_dir} ")
+			set(SUPERBUILD_CPPFLAGS "${SUPERBUILD_CPPFLAGS}-I${include_dir} ")
+		endif()
+	endforeach()
+endmacro()
+
+set(SUPERBUILD_LDFLAGS " ")
+macro(check_lib_dir subdir)
+	foreach(path ${CMAKE_FIND_ROOT_PATH} "")
+		string(REGEX REPLACE "//*" "/" lib_dir "${path}${subdir}")
+		string(REGEX REPLACE "/\$" ""  lib_dir "${lib_dir}")
+		if(EXISTS "${lib_dir}"
+		   AND (path OR NOT CMAKE_FIND_ROOT_PATH)
+		   AND NOT "${SUPERBUILD_LDFLAGS}" MATCHES " -L${lib_dir} ")
+			set(SUPERBUILD_LDFLAGS "${SUPERBUILD_LDFLAGS}-L${lib_dir} ")
+		endif()
+	endforeach()
+endmacro()
+
+foreach(subdir ${CMAKE_PREFIX_PATH})
+	check_include_dir("${subdir}/include/${CMAKE_LIBRARY_ARCHITECTURE}")
+	check_include_dir("${subdir}/include")
+	check_lib_dir("${subdir}/lib")
+endforeach()
+foreach(subdir ${CMAKE_INCLUDE_PATH})
+	check_include_dir("${subdir}")
+endforeach()
+foreach(subdir ${CMAKE_LIBRARY_PATH})
+	check_lib_dir("${subdir}")
+endforeach()
+
+foreach(subdir ${CMAKE_SYSTEM_PREFIX_PATH})
+	check_include_dir("${subdir}/include/${CMAKE_LIBRARY_ARCHITECTURE}")
+	check_include_dir("${subdir}/include")
+	check_lib_dir("${subdir}/lib")
+endforeach()
+foreach(subdir ${CMAKE_SYSTEM_INCLUDE_PATH})
+	check_include_dir("${subdir}")
+endforeach()
+foreach(subdir ${CMAKE_SYSTEM_LIBRARY_PATH})
+	check_lib_dir("${subdir}")
+endforeach()
+
+set(SUPERBUILD_CFLAGS "${CMAKE_C_FLAGS}")
+set(SUPERBUILD_CXXFLAGS "${CMAKE_CXX_FLAGS}")
+if(CMAKE_BUILD_TYPE AND NOT CMAKE_NOT_USING_CONFIG_FLAGS)
+	string(TOUPPER "${CMAKE_BUILD_TYPE}" config)
+	set(SUPERBUILD_CFLAGS "${SUPERBUILD_CFLAGS} ${CMAKE_C_FLAGS_${config}}")
+	set(SUPERBUILD_CXXFLAGS "${SUPERBUILD_CXXFLAGS} ${CMAKE_CXX_FLAGS_${config}}")
+endif()
+
 ]])
 	_sb_write_if_different("${dir}/${package}-config.cmake" ${output})
 endfunction()
@@ -277,7 +343,7 @@ print_toolchain_info()
 write_toolchain_info(\\\"\\\${BINARY_DIR}/info.txt\\\")
 \")
 else()
-	set(LANGUAGES      NONE)
+	set(LANGUAGES      \"C CXX\") # TODO: Provide configuration
 	set(TOOLCHAIN_INFO )
 endif()
 
@@ -559,6 +625,14 @@ set(toolchain_info_var_languages  "Variables for languages"
   CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES
   CMAKE_INTERNAL_PLATFORM_ABI
   CMAKE_RC_COMPILER
+)
+
+list(APPEND toolchain_info_groups toolchain_info_var_configure)
+set(toolchain_info_var_configure "Variables for traditional `configure`"
+  SUPERBUILD_CPPFLAGS
+  SUPERBUILD_CFLAGS
+  SUPERBUILD_CXXFLAGS
+  SUPERBUILD_LDFLAGS
 )
 
 list(APPEND toolchain_info_groups toolchain_info_var_superbuild)
@@ -1173,13 +1247,16 @@ function(superbuild_package)
 endfunction()
 
 
-# For convenience, make existing documentation visible to IDEs
-foreach(file ${documentation})
+# For convenience, make documentation and ci visible to IDEs. However, we want
+# to allow minimal distribution (CMakeLists.txt + some-package.cmake), so these
+# files must remain optional.
+foreach(file ${ci} ${documentation})
 	if(NOT EXISTS ${PROJECT_SOURCE_DIR}/${file})
 		set_source_files_properties(${file} PROPERTIES GENERATED 1)
 	endif()
 endforeach()
 add_custom_target(doc SOURCES ${documentation})
+add_custom_target(CI SOURCES ${ci})
 
 # ExternalPackage < 3.8.0 has bug with UPDATE_DISCONNECTED
 if(NOT CMAKE_VERSION VERSION_LESS 3.8.0)

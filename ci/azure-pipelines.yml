@@ -82,11 +82,19 @@ jobs:
         imageName: 'ubuntu-16.04'
         cmakeArgs: >
           -DENABLE_x86_64-w64-mingw32=1
-          -Dx86_64-w64-mingw32_INSTALL_DIR=
-          -Dx86_64-w64-mingw32_INSTALL_PREFIX=$(Build.SourcesDirectory)/build/default/install/x86_64-w64-mingw32
+          -Dx86_64-w64-mingw32_INSTALL_DIR=$(Build.SourcesDirectory)/build/default/install/x86_64-w64-mingw32
+          -Dx86_64-w64-mingw32_INSTALL_PREFIX=/usr
           -Dx86_64-w64-mingw32_TOOLCHAIN_DIR=$(Build.SourcesDirectory)/build/default/install/x86_64-w64-mingw32/toolchain
           -Dmingw-w64_FIX_HEADERS=1
         targetSuffix: '-x86_64-w64-mingw32'
+      Android-armv7:
+        imageName: 'macos-10.13'
+        cmakeArgs: >
+          -DENABLE_arm-linux-androideabi=1
+          -Darm-linux-androideabi_INSTALL_DIR=$(Build.SourcesDirectory)/build/default/install/arm-linux-androideabi
+          -Darm-linux-androideabi_INSTALL_PREFIX=/usr
+          -Darm-linux-androideabi_TOOLCHAIN_DIR=$(Build.SourcesDirectory)/build/default/install/arm-linux-androideabi/toolchain
+        targetSuffix: '-arm-linux-androideabi'
 
   pool:
     vmImage: $(imageName)
@@ -130,7 +138,7 @@ jobs:
       set -x
       set -e
       sed -i -e 's,-widgets,-no-xcb -widgets,' qt-5.*.cmake
-      sed -i -e 's,INSTALL_COMMAND,INSTALL_COMMAND echo Skipping,' openorienteering-mapper-git.cmake
+      sed -i -e 's, install/fast, package/fast,;/DESTDIR=/d' openorienteering-mapper-git.cmake
       cp ci/num_jobs.cmake .
     displayName: 'Patch'
 
@@ -152,7 +160,9 @@ jobs:
       set -x
       set -e
       cd $(Build.SourcesDirectory)/build
-      make `cat num_jobs` openorienteering-mapper-git-dev$(targetSuffix)
+      make `cat num_jobs` \
+        toolchain-info$(targetSuffix) \
+        openorienteering-mapper-git-dev$(targetSuffix)
       rm -Rf default/install/tmp
     env:
       CTEST_OUTPUT_ON_FAILURE: 1
