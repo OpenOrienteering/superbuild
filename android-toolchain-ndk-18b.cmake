@@ -374,18 +374,26 @@ set(CMAKE_VERBOSE_MAKEFILE ON  CACHE BOOL "Enable verbose output from Makefile b
 	string(REPLACE "x86_64-linux-android" "x86_64" toolchain_name "${system_name}")
 	
 	set(make_toolchain_sh [[
+set -x
+set -e
 INSTALL_DIR=$1
-rm -Rf "${INSTALL_DIR}.tmp"
-mkdir "${INSTALL_DIR}.tmp"
-test -d "${INSTALL_DIR}/build" && mv "${INSTALL_DIR}/build" "${INSTALL_DIR}.tmp/"
-test -d "${INSTALL_DIR}/build.tmp" && mv "${INSTALL_DIR}/build.tmp" "${INSTALL_DIR}.tmp/"
+
+test -d "${INSTALL_DIR}.saved" && rm -Rf "${INSTALL_DIR}.saved"
+mv "${INSTALL_DIR}" "${INSTALL_DIR}.saved"
+
 bash "]] ${ANDROID_NDK_ROOT} [[/build/tools/make-standalone-toolchain.sh" \
   "--toolchain=]] ${toolchain_name} [[-4.9" \
   "--stl=libcxx" \
   "--platform=android-]] ${ANDROID_API} [[" \
   "--install-dir=${INSTALL_DIR}" \
   "--force"
-"]] ${CMAKE_COMMAND} [[" -E copy_directory "${INSTALL_DIR}.tmp" "${INSTALL_DIR}"
+
+test -d "${INSTALL_DIR}.new" && rm -Rf "${INSTALL_DIR}.new"
+mv "${INSTALL_DIR}" "${INSTALL_DIR}.new"
+
+mv "${INSTALL_DIR}.saved" "${INSTALL_DIR}"
+"]] ${CMAKE_COMMAND} [[" -E copy_directory "${INSTALL_DIR}.new" "${INSTALL_DIR}"
+rm -Rf "${INSTALL_DIR}.new"
 ]]
 	)
 	
