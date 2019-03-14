@@ -44,6 +44,13 @@ jobs:
       cmakeArgs: >
         $(Build.SourcesDirectory)
         -G "Unix Makefiles"
+        -DSUPERBUILD_DISABLE_DEPENDENCIES=TRUE
+        -DENABLE_x86_64-w64-mingw32=1
+        -Dx86_64-w64-mingw32-gcc_EXECUTABLE=not-needed
+        -Dx86_64-w64-mingw32-g++_EXECUTABLE=not-needed
+        -Dx86_64-w64-mingw32-windres_EXECUTABLE=not-needed
+        -DENABLE_arm-linux-androideabi=1
+        -DANDROID_BUILD_LIBCXX=1
     displayName: 'Configure'
 
   - bash: |
@@ -51,9 +58,11 @@ jobs:
       set -e
       cd $(Build.SourcesDirectory)/../build
       make help | sort | grep -- '-source' | grep -v -- '-git' | \
+        grep -v android-sdk | grep -v android-ndk | grep -v -- '-toolchain-ndk-' | \
         while read DOTS TARGET; do
           make "${TARGET}"
         done
+      rm -Rf $(Build.SourcesDirectory)/android-ndk-*
     env:
       VERBOSE: $(openorienteering.superbuild.source.verbose)
     displayName: 'Download'
