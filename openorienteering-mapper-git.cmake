@@ -99,6 +99,8 @@ foreach(git_tag ${Mapper_GIT_TAGS})
 	        # Mapper Windows installation layout is weird
 	        "DESTDIR=${DESTDIR}${INSTALL_DIR}$<$<BOOL:@WIN32@>:/OpenOrienteering>"
 	  $<$<NOT:$<BOOL:@CMAKE_CROSSCOMPILING@>>:
+	    TEST_COMMAND
+	      "${CMAKE_CTEST_COMMAND}" -T Test --no-compress-output
 	    TEST_BEFORE_INSTALL 1
 	  >
 	  ]]
