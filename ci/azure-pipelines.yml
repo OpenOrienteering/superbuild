@@ -121,11 +121,11 @@ jobs:
       case "$(imageName)$(targetSuffix)" in
         ubuntu-*-x86_64-w64-mingw32)
           sudo apt-get update
-          sudo apt-get install doxygen graphviz g++-mingw-w64-x86-64
+          sudo apt-get install doxygen graphviz python-lxml g++-mingw-w64-x86-64
           ;;
         ubuntu-*)
           sudo apt-get update
-          sudo apt-get install doxygen graphviz
+          sudo apt-get install doxygen graphviz python-lxml
           # System libraries, but expected to have superbuild copyright files
           DEST=$(Build.SourcesDirectory)/build/default/install/share/doc/copyright
           mkdir -p ${DEST}
@@ -140,6 +140,7 @@ jobs:
         macos-*)
           sudo xcode-select -s /Applications/Xcode_10.1.app/Contents/Developer
           xcode-select --print-path
+          pip install lxml
           ;;
       esac
     displayName: 'Prepare build tools'
@@ -174,6 +175,19 @@ jobs:
         toolchain-info$(targetSuffix) \
         openorienteering-mapper-git-dev$(targetSuffix)
       rm -Rf default/install/tmp
+      #
+      cd $(Build.SourcesDirectory)
+      mkdir testResults
+      TARGET=`echo default$(targetSuffix) | sed -e 's,default-,,'`
+      for I in build/${TARGET}/*/Testing; do
+        if [ -f "${I}/TAG" ]; then
+          python ci/ctest_to_junit.py "${I%/Testing}"
+          for J in ${I}/*/jUnit.xml; do
+            cp $J testResults/`echo ${J#build/} | sed -e 's,/Testing,,;s,/jUnit,,;s,/,_,g'`
+          done
+          echo "##vso[task.setVariable variable=testResults]build/${TARGET}"
+        fi
+      done
     env:
       CTEST_OUTPUT_ON_FAILURE: 1
       DYLD_LIBRARY_PATH: $(Build.SourcesDirectory)/build/default/install/lib
@@ -182,8 +196,15 @@ jobs:
     timeoutInMinutes: 120
     displayName: 'Build'
 
+  - task: PublishTestResults@2
+    displayName: 'Publish test results'
+    inputs:
+      testRunner: 'jUnit'
+      testResultsFiles: '*.xml'
+      searchFolder: '$(Build.SourcesDirectory)/testResults'
+    condition: variables.testResults
+
   - task: PublishPipelineArtifact@0
     inputs:
       artifactName: 'superbuild-$(imageName)$(targetSuffix)'
       targetPath: $(Build.SourcesDirectory)/build/default/install
-
