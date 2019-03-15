@@ -171,7 +171,6 @@ if(NOT ANDROID_NDK_ROOT)
 		  SOURCE
 		    DOWNLOAD_NAME android-platform-bionic_${ANDROID_NDK_VERSION}.tar.gz
 		    URL           https://android.googlesource.com/platform/bionic/+archive/${ANDROID_NDK_VERSION}.tar.gz
-		    URL_HASH      SHA256=db46104c62163ab26eb329d57033f1751b4462f7c5cb08d4db6cd29f4896430d
 		    DOWNLOAD_NO_EXTRACT 1
 		)
 		
@@ -181,7 +180,6 @@ if(NOT ANDROID_NDK_ROOT)
 		  SOURCE
 		    DOWNLOAD_NAME android-platform-external-libcxx_${ANDROID_NDK_VERSION}.tar.gz
 		    URL           https://android.googlesource.com/platform/external/libcxx/+archive/${ANDROID_NDK_VERSION}.tar.gz
-		    URL_HASH      SHA256=9fa177c7ec269710bc028b3d457c8f16f945dc70bd1bb54a5479f70dfab090d9
 		    DOWNLOAD_NO_EXTRACT 1
 		)
 	
@@ -191,7 +189,6 @@ if(NOT ANDROID_NDK_ROOT)
 		  SOURCE
 		    DOWNLOAD_NAME android-platform-external-libcxxabi_${ANDROID_NDK_VERSION}.tar.gz
 		    URL           https://android.googlesource.com/platform/external/libcxxabi/+archive/${ANDROID_NDK_VERSION}.tar.gz
-		    URL_HASH      SHA256=d57fa39dbb9efed9881e1079cedc3de6d66f386736773b1601a8be62a3baae4b
 		    DOWNLOAD_NO_EXTRACT 1
 		)
 	
@@ -201,7 +198,6 @@ if(NOT ANDROID_NDK_ROOT)
 		  SOURCE
 		    DOWNLOAD_NAME android-platform-external-libunwind_llvm_${ANDROID_NDK_VERSION}.tar.gz
 		    URL           https://android.googlesource.com/platform/external/libunwind_llvm/+archive/${ANDROID_NDK_VERSION}.tar.gz
-		    URL_HASH      SHA256=8a1d2130d4ca572433f6b3cb146518ad36f6f87584ea5e111dcb1d7860b9c670
 		    DOWNLOAD_NO_EXTRACT 1
 		)
 	
