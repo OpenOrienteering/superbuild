@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 # Copyright: 2016-2017 Dmitry Shachnev <mitya57@debian.org>
-#            2018 Kai Pastor
+#            2018-2019 Kai Pastor
 # License: LGPL-3 or GPL-2+
 #
 # License: LGPL-3
@@ -255,13 +255,14 @@ def read_patterns(paragraphs):
 
 
 # Find the known "Files paragraphs" for a filename
-def find_pattern(known_patterns, filename, license):
+def find_pattern(known_patterns, filename, license, authors):
+    is_default_authorship = len(authors) == 1 and authors[0][2] == default_authors[0][2]
     matching_info = None
     matching_pattern = None
     for info in known_patterns:
         pattern = next(filter(lambda p: p.regex.fullmatch(filename), info.patterns), None)
         if pattern:
-            if info.license == license:
+            if info.license == license and (pattern.path != '*' or is_default_authorship):
                 matching_info = info
                 matching_pattern = pattern
             else:
@@ -279,7 +280,7 @@ def read_input(root_directory, known_patterns):
         license, authors = parse_file(filename)
         if license is None:
             continue
-        (matching_info, matching_pattern) = find_pattern(known_patterns, filename, license)
+        (matching_info, matching_pattern) = find_pattern(known_patterns, filename, license, authors)
         if matching_info:
             matching_info.add_authors(authors)
             matching_pattern.count += 1
@@ -417,7 +418,9 @@ def write_output(known_patterns, data, attribution, output_file):
             for pattern in filter(lambda p: p.count > 0 or copyright_info.debian_copyright, copyright_info.patterns):
                 copyright_info.files.append(pattern.path)
             if not copyright_info.files:
-                continue
+                if copyright_info.patterns[0].path != '*':
+                    continue
+                copyright_info.files.append('*')
             output_file.write('\n')
             output_file.write(format_list('Files: ', sorted(copyright_info.files)) + '\n')
             if copyright_info.files == ['debian/*']:
