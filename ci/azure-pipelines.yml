@@ -65,12 +65,13 @@ jobs:
       rm -Rf $(Build.SourcesDirectory)/android-ndk-*
     env:
       VERBOSE: $(openorienteering.superbuild.source.verbose)
-    displayName: 'Download'
+    displayName: 'Download sources'
 
   - task: PublishPipelineArtifact@0
     inputs:
       artifactName: 'superbuild-source'
       targetPath: $(Build.SourcesDirectory)
+    displayName: 'Publish source artifact'
 
 - job: Superbuild
   timeoutInMinutes: 120
@@ -114,6 +115,7 @@ jobs:
     inputs:
       artifactName: 'superbuild-source'
       targetPath: $(Build.SourcesDirectory)
+    displayName: 'Download source artifact'
 
   - bash: |
       set -x
@@ -196,15 +198,16 @@ jobs:
     displayName: 'Build'
 
   - task: PublishTestResults@2
-    displayName: 'Publish test results'
     inputs:
       testRunner: 'jUnit'
       testResultsFiles: '*.xml'
       searchFolder: '$(Build.SourcesDirectory)/testResults'
     condition: variables.testResults
+    displayName: 'Publish test results'
 
   - task: PublishPipelineArtifact@0
     inputs:
       artifactName: 'superbuild-$(imageName)$(targetSuffix)'
       targetPath: $(Build.SourcesDirectory)/build/default/install
     condition: and(succeeded(), in(variables.createArtifacts, '1', 'on', 'true', 'yes'))
+    displayName: 'Publish binary artifacts'
