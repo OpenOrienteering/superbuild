@@ -186,6 +186,8 @@ jobs:
           echo "##vso[task.setVariable variable=testResults]build/${TARGET}"
         fi
       done
+      #
+      echo "##vso[task.setVariable variable=createArtifacts]$(openorienteering.superbuild.createArtifacts)"
     env:
       CTEST_OUTPUT_ON_FAILURE: 1
       DYLD_LIBRARY_PATH: $(Build.SourcesDirectory)/build/default/install/lib
@@ -205,3 +207,4 @@ jobs:
     inputs:
       artifactName: 'superbuild-$(imageName)$(targetSuffix)'
       targetPath: $(Build.SourcesDirectory)/build/default/install
+    condition: and(succeeded(), in(variables.createArtifacts, '1', 'on', 'true', 'yes'))
