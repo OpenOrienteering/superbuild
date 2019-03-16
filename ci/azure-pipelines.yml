@@ -171,7 +171,7 @@ jobs:
       cd $(Build.SourcesDirectory)/build
       make `cat num_jobs` \
         toolchain-info$(targetSuffix) \
-        openorienteering-mapper-git-dev$(targetSuffix)
+        $(openorienteering.superbuild.target)$(targetSuffix)
       rm -Rf default/install/tmp
       #
       cd $(Build.SourcesDirectory)
@@ -190,7 +190,6 @@ jobs:
       CTEST_OUTPUT_ON_FAILURE: 1
       DYLD_LIBRARY_PATH: $(Build.SourcesDirectory)/build/default/install/lib
       LD_LIBRARY_PATH: $(Build.SourcesDirectory)/build/default/install/lib
-      VERBOSE: $(openorienteering.superbuild.build.verbose)
     timeoutInMinutes: 120
     displayName: 'Build'
 
