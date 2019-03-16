@@ -119,13 +119,12 @@ jobs:
       set -x
       set -e
       case "$(imageName)$(targetSuffix)" in
-        ubuntu-*-x86_64-w64-mingw32)
-          sudo apt-get update
-          sudo apt-get install doxygen graphviz python-lxml g++-mingw-w64-x86-64
-          ;;
         ubuntu-*)
           sudo apt-get update
-          sudo apt-get install doxygen graphviz python-lxml
+          sudo apt-get install \
+            doxygen graphviz python-lxml \
+            g++-mingw-w64-x86-64 \
+            '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxrender-dev libxi-dev
           # System libraries, but expected to have superbuild copyright files
           DEST=$(Build.SourcesDirectory)/build/default/install/share/doc/copyright
           mkdir -p ${DEST}
@@ -148,7 +147,6 @@ jobs:
   - bash: |
       set -x
       set -e
-      sed -i -e 's,-widgets,-no-xcb -widgets,' qt-5.*.cmake
       sed -i -e 's, install/fast, package/fast,;/DESTDIR=/d' openorienteering-mapper-git.cmake
       cp ci/num_jobs.cmake .
     displayName: 'Patch'
