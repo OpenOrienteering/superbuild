@@ -14,21 +14,28 @@ Source: https://download.qt.io/archive/qt/*/submodules/
 # Filepath patterns
 
 Files: *
-Copyright: 2016 Alex Char.
-           2016 Ivan Komissarov <ABBAPOH@gmail.com>
-           2016 Petroules Corporation.
-           2016-2018 The Qt Company Ltd.
+Copyright: 2016-2018 The Qt Company Ltd.
 License: LGPL-3 or GPL-2
 
-# Per-file overrides
-
-Files: config.tests/jasper/jasper.cpp
-       config.tests/libmng/libmng.cpp
-       config.tests/libtiff/libtiff.cpp
-       config.tests/libwebp/libwebp.cpp
+Files: config.tests/*
 Copyright: 2016 Petroules Corporation.
            2016 The Qt Company Ltd.
 License: GPL-3 with Qt-1.0 exception
+
+Files: src/plugins/imageformats/dds/*
+Copyright: 2016 Ivan Komissarov <ABBAPOH@gmail.com>
+           2016 The Qt Company Ltd.
+License: LGPL-3 or GPL-2
+
+Files: src/plugins/imageformats/icns/*
+Copyright: 2016 Alex Char.
+           2016 The Qt Company Ltd.
+License: LGPL-3 or GPL-2
+
+Files: src/plugins/imageformats/jp2/*
+Copyright: 2016 Petroules Corporation.
+           2016 The Qt Company Ltd.
+License: LGPL-3 or GPL-2
 
 # Qt 3rd-party attribution
 

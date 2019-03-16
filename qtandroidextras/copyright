@@ -14,8 +14,13 @@ Source: https://download.qt.io/archive/qt/*/submodules/
 # Filepath patterns
 
 Files: *
+Copyright: 2016-2018 The Qt Company Ltd.
+License: LGPL-3 or GPL-2
+
+Files: src/androidextras/android/*
+       src/jar/src/org/qtproject/qt5/android/extras/*
 Copyright: 2017 BogDan Vatra
-           2016-2018 The Qt Company Ltd.
+           2016 The Qt Company Ltd.
 License: LGPL-3 or GPL-2
 
 ## END AUTO GENERATED BLOCK

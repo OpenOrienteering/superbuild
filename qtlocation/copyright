@@ -14,29 +14,51 @@ Source: https://download.qt.io/archive/qt/*/submodules/
 # Filepath patterns
 
 Files: *
+Copyright: 2015-2018 The Qt Company Ltd.
+License: LGPL-3 or GPL-2
+
+Files: src/plugins/geoservices/esri/*
+Copyright: 2013-2018 Esri <contracts@esri.com>
+License: LGPL-3 or GPL-2
+
+Files: src/plugins/geoservices/itemsoverlay/*
+Copyright: 2014 Canonical, Ltd.
+           2017 The Qt Company Ltd.
+License: LGPL-3 or GPL-2
+
+Files: src/plugins/geoservices/mapbox/*
 Copyright: 2016 Aaron McCarthy <mccarthy.aaron@gmail.com>
-           2018 Denis Shienkov <denis.shienkov@gmail.com>
-           2013-2018 Esri <contracts@esri.com>
-           2016 Jolla Ltd, author: Aaron McCarthy <aaron.mccarthy@jollamobile.com>
-           2016 Jolla Ltd.
+           2014 Canonical, Ltd.
            2017 Mapbox, Inc.
-           2016-2018 The Qt Company Ltd.
+           2016 The Qt Company Ltd.
            2016 Vlad Seryakov <vseryakov@gmail.com>
 License: LGPL-3 or GPL-2
 
-Files: src/location/*
-       src/plugins/geoservices/itemsoverlay/*
-       src/plugins/geoservices/mapboxgl/*
-       src/plugins/geoservices/nokia/*
-       src/plugins/position/winrt/*
-Copyright: 2013-2014 Aaron McCarthy <mccarthy.aaron@gmail.com>
-           2014 Appello Systems AB.
-           2014 Canonical, Ltd.
-           2014 Jolla Ltd, author: <gunnar.sletta@jollamobile.com>
-           2015 Jolla Ltd.
-           2017 Mapbox, Inc.
-           2015-2018 The Qt Company Ltd.
-License: LGPL-3
+Files: src/plugins/geoservices/mapboxgl/*
+Copyright: 2017 Mapbox, Inc.
+           2017 The Qt Company Ltd.
+License: LGPL-3 or GPL-2
+
+Files: src/plugins/geoservices/nokia/*
+Copyright: 2014 Appello Systems AB.
+           2015-2016 The Qt Company Ltd.
+License: LGPL-3 or GPL-2
+
+Files: src/plugins/geoservices/osm/*
+Copyright: 2016 Aaron McCarthy <mccarthy.aaron@gmail.com>
+           2016 The Qt Company Ltd.
+License: LGPL-3 or GPL-2
+
+Files: src/plugins/position/geoclue/*
+Copyright: 2016 Aaron McCarthy <mccarthy.aaron@gmail.com>
+           2016 Jolla Ltd, author: Aaron McCarthy <aaron.mccarthy@jollamobile.com>
+           2016 Jolla Ltd.
+           2016 The Qt Company Ltd.
+License: LGPL-3 or GPL-2
+
+Files: src/plugins/position/geoclue2/*
+Copyright: 2018 Denis Shienkov <denis.shienkov@gmail.com>
+License: LGPL-3 or GPL-2
 
 # Per-file overrides
 
@@ -49,28 +71,23 @@ Files: config.tests/gypsy/main.cpp
 Copyright: 2016 The Qt Company Ltd.
 License: GPL-3 with Qt-1.0 exception
 
-Files: src/imports/location/location.cpp
-       src/imports/locationlabs/locationlabs.cpp
-       src/plugins/geoservices/mapbox/qgeofiletilecachemapbox.cpp
-       src/plugins/geoservices/mapbox/qgeofiletilecachemapbox.h
-       src/plugins/geoservices/mapbox/qgeomapreplymapbox.cpp
-       src/plugins/geoservices/mapbox/qgeomapreplymapbox.h
-       src/plugins/geoservices/mapbox/qgeoserviceproviderpluginmapbox.cpp
-       src/plugins/geoservices/mapbox/qgeoserviceproviderpluginmapbox.h
-       src/plugins/geoservices/mapbox/qgeotiledmappingmanagerenginemapbox.cpp
-       src/plugins/geoservices/mapbox/qgeotiledmappingmanagerenginemapbox.h
-       src/plugins/geoservices/mapbox/qgeotilefetchermapbox.cpp
-       src/plugins/geoservices/mapbox/qgeotilefetchermapbox.h
-       src/plugins/geoservices/osm/qgeofiletilecacheosm.cpp
-       src/plugins/geoservices/osm/qgeofiletilecacheosm.h
-       src/plugins/geoservices/osm/qgeotileproviderosm.cpp
-       src/plugins/geoservices/osm/qgeotileproviderosm.h
-Copyright: 2014 Canonical, Ltd.
-           2015-2018 The Qt Company Ltd.
-License: LGPL-3
-
-Files: src/location/qlocationglobal_p.h
-Copyright: 2016 The Qt Company Ltd.
+Files: src/location/declarativemaps/qdeclarativegeomapcopyrightsnotice.cpp
+       src/location/declarativemaps/qdeclarativegeomapcopyrightsnotice_p.h
+       src/location/declarativemaps/qdeclarativegeomapitemview.cpp
+       src/location/declarativemaps/qdeclarativegeomapitemview_p.h
+       src/location/declarativeplaces/qdeclarativesupportedcategoriesmodel.cpp
+       src/location/maps/qgeotiledmapscene.cpp
+       src/location/places/qplaceproposedsearchresult.cpp
+       src/location/places/qplaceproposedsearchresult.h
+       src/location/places/qplaceproposedsearchresult_p.h
+       src/positioning/qlocationutils.cpp
+       src/positioning/qnmeapositioninfosource.cpp
+       src/positioningquick/qdeclarativeposition.cpp
+       src/positioningquick/qdeclarativeposition_p.h
+Copyright: 2013-2014 Aaron McCarthy <mccarthy.aaron@gmail.com>
+           2014 Jolla Ltd, author: <gunnar.sletta@jollamobile.com>
+           2015-2016 Jolla Ltd.
+           2015-2016 The Qt Company Ltd.
 License: LGPL-3 or GPL-2
 
 # Qt 3rd-party attribution

@@ -14,68 +14,184 @@ Source: https://download.qt.io/archive/qt/*/submodules/
 # Filepath patterns
 
 Files: *
-Copyright: 2013 Aleix Pol Gonzalez <aleixpol@kde.org>
-           2015-2016 Alex Trotsenko <alex1973tr@gmail.com>
-           2011-2014 BlackBerry Limited (formerly Research In Motion)
-           2012-2018 BogDan Vatra
-           2016 Borgar Ovsthus
-           2014-2016 Canonical, Ltd.
-           2012 Collabora Ltd, author <robin.burchell@collabora.co.uk>
-           2012-2013 David Faure
-           2016 Dmitry Shachnev <mitya57@gmail.com>
-           2014 Drew Parsons <dparsons@emerall.com>
-           2012-2016 Giuseppe D'Angelo <dangelog@gmail.com>
-           2014 Governikus GmbH & Co. KG
-           2015 Green Hills Software
-           2013 Imagination Technologies Limited, www.imgtec.com
-           2015-2019 Intel Corporation
-           2013-2014 Ivan Komissarov <ABBAPOH@gmail.com>
-           2012-2014 Jeremy Lainé <jeremy.laine@m4x.org>
-           2013-2014 John Layt <jlayt@kde.org>
-           2016 Jolla Ltd, author: <gunnar.sletta@jollamobile.com>
-           2014 Keith Gardner <kreios4004@gmail.com>
-           2011-2018 Klarälvdalens Datakonsult AB, a KDAB Group company
-           2013-2015 Konstantin Ritt
-           2016 LG Electronics Ltd, author: mikko.levonmaa@lge.com
-           2013 Laszlo Papp <lpapp@kde.org>
-           2009 Marco Martin <notmart@gmail.com>
-           2014 Martin Graesslin <mgraesslin@kde.org>
-           2015 Mikkel Krautz <mikkel@krautz.dk>
-           2015-2016 Oleksandr Tymoshenko <gonzo@bluezbox.com>
-           2012-2016 Olivier Goffart <ogoffart@woboq.com>
-           2016 Pelagicore AG
-           2014 Petroules Corporation.
-           2015-2017 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
-           2016-2017 QNX Software Systems. All rights reserved.
-           2017-2018 Red Hat, Inc
-           2011-2016 Richard J. Moore <rich@kde.org>
-           2014 Robin Burchell <robin.burchell@viroteck.net>
-           2013 Ruslan Nigmatullin <euroelessar@yandex.ru>
-           2013-2014 Samuel Gaist <samuel.gaist@edeltech.ch>
-           2013 Teo Mrnjavac <teo@kde.org>
-           2016-2019 The Qt Company Ltd.
-           2011 Thiago Macieira <thiago@kde.org>
-           2014-2016 by Southwest Research Institute (R)
-           2015 ownCloud Inc
+Copyright: 2016-2019 The Qt Company Ltd.
 License: LGPL-3 or GPL-2
 
 Files: qmake/*
-       src/tools/*
-       util/*
-Copyright: 2016-2018 Intel Corporation
-           2013-2014 Klarälvdalens Datakonsult AB, a KDAB Group company
-           2013-2016 Olivier Goffart <ogoffart@woboq.com>
-           2017 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+Copyright: 2016 Intel Corporation
+           2016 The Qt Company Ltd.
+License: GPL-3 with Qt-1.0 exception
+
+Files: src/corelib/*
+Copyright: 2013 Aleix Pol Gonzalez <aleixpol@kde.org>
+           2015 Alex Trotsenko <alex1973tr@gmail.com>
+           2013 BlackBerry Limited (formerly Research In Motion)
+           2012 Collabora Ltd, author <robin.burchell@collabora.co.uk>
+           2012-2013 David Faure
+           2014 Drew Parsons <dparsons@emerall.com>
+           2012-2016 Giuseppe D'Angelo <dangelog@gmail.com>
+           2013 Imagination Technologies Limited, www.imgtec.com
+           2015-2019 Intel Corporation
+           2014 Ivan Komissarov <ABBAPOH@gmail.com>
+           2013 John Layt <jlayt@kde.org>
+           2014 Keith Gardner <kreios4004@gmail.com>
+           2011-2018 Klarälvdalens Datakonsult AB, a KDAB Group company
+           2015 Konstantin Ritt
+           2013 Laszlo Papp <lpapp@kde.org>
+           2012-2016 Olivier Goffart <ogoffart@woboq.com>
+           2014 Petroules Corporation.
+           2013 Richard J. Moore <rich@kde.org>
+           2013 Ruslan Nigmatullin <euroelessar@yandex.ru>
+           2013-2014 Samuel Gaist <samuel.gaist@edeltech.ch>
            2016-2018 The Qt Company Ltd.
+           2011 Thiago Macieira <thiago@kde.org>
+           2014-2016 by Southwest Research Institute (R)
+License: LGPL-3 or GPL-2
+
+Files: src/dbus/*
+Copyright: 2016 Intel Corporation
+           2016 The Qt Company Ltd.
+License: LGPL-3 or GPL-2
+
+Files: src/gui/*
+Copyright: 2013 Imagination Technologies Limited, www.imgtec.com
+           2016 Intel Corporation
+           2014 John Layt <jlayt@kde.org>
+           2012-2017 Klarälvdalens Datakonsult AB, a KDAB Group company
+           2013 Konstantin Ritt
+           2014 Martin Graesslin <mgraesslin@kde.org>
+           2015 Olivier Goffart <ogoffart@woboq.com>
+           2013 Samuel Gaist <samuel.gaist@edeltech.ch>
+           2013 Teo Mrnjavac <teo@kde.org>
+           2016-2018 The Qt Company Ltd.
+License: LGPL-3 or GPL-2
+
+Files: src/network/*
+Copyright: 2016 Alex Trotsenko <alex1973tr@gmail.com>
+           2014 BlackBerry Limited (formerly Research In Motion)
+           2012 Collabora Ltd, author <robin.burchell@collabora.co.uk>
+           2014 Governikus GmbH & Co. KG
+           2015-2017 Intel Corporation
+           2012-2014 Jeremy Lainé <jeremy.laine@m4x.org>
+           2015 Mikkel Krautz <mikkel@krautz.dk>
+           2011-2016 Richard J. Moore <rich@kde.org>
+           2016-2018 The Qt Company Ltd.
+           2015 ownCloud Inc
+License: LGPL-3 or GPL-2
+
+Files: src/platformheaders/*
+Copyright: 2016 LG Electronics Ltd, author: mikko.levonmaa@lge.com
+           2016-2017 The Qt Company Ltd.
+License: LGPL-3 or GPL-2
+
+Files: src/platformsupport/*
+Copyright: 2016 Dmitry Shachnev <mitya57@gmail.com>
+           2016 Jolla Ltd, author: <gunnar.sletta@jollamobile.com>
+           2009 Marco Martin <notmart@gmail.com>
+           2013 Samuel Gaist <samuel.gaist@edeltech.ch>
+           2016-2017 The Qt Company Ltd.
+License: LGPL-3 or GPL-2
+
+Files: src/plugins/*
+Copyright: 2014-2016 Canonical, Ltd.
+           2012-2015 Klarälvdalens Datakonsult AB, a KDAB Group company
+           2015-2016 Oleksandr Tymoshenko <gonzo@bluezbox.com>
+           2017-2018 Red Hat, Inc
+           2014 Robin Burchell <robin.burchell@viroteck.net>
+           2013 Samuel Gaist <samuel.gaist@edeltech.ch>
+           2013 Teo Mrnjavac <teo@kde.org>
+           2016-2019 The Qt Company Ltd.
+License: LGPL-3 or GPL-2
+
+Files: src/testlib/*
+Copyright: 2016 Borgar Ovsthus
+           2016 Intel Corporation
+           2017 Klarälvdalens Datakonsult AB, a KDAB Group company
+           2016-2018 The Qt Company Ltd.
+License: LGPL-3 or GPL-2
+
+Files: src/tools/*
+Copyright: 2016-2017 The Qt Company Ltd.
+License: GPL-3 with Qt-1.0 exception
+
+Files: src/tools/moc/*
+Copyright: 2016-2018 Intel Corporation
+           2013-2016 Olivier Goffart <ogoffart@woboq.com>
+           2016 The Qt Company Ltd.
 License: GPL-3 with Qt-1.0 exception
 
 Files: src/tools/tracegen/*
 Copyright: 2017 Klarälvdalens Datakonsult AB, a KDAB Group company
 License: LGPL-3 or GPL-2
 
+Files: src/widgets/*
+Copyright: 2014 BlackBerry Limited (formerly Research In Motion)
+           2016 Intel Corporation
+           2013 Ivan Komissarov <ABBAPOH@gmail.com>
+           2015 Klarälvdalens Datakonsult AB, a KDAB Group company
+           2015 Olivier Goffart <ogoffart@woboq.com>
+           2013 Samuel Gaist <samuel.gaist@edeltech.ch>
+           2016-2018 The Qt Company Ltd.
+License: LGPL-3 or GPL-2
+
+Files: src/xml/*
+Copyright: 2016 Intel Corporation
+           2016 The Qt Company Ltd.
+License: LGPL-3 or GPL-2
+
+Files: util/*
+Copyright: 2017 Intel Corporation
+           2013-2014 Klarälvdalens Datakonsult AB, a KDAB Group company
+           2017 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+           2016-2018 The Qt Company Ltd.
+License: GPL-3 with Qt-1.0 exception
+
+Files: mkspecs/common/android/*
+       src/android/jar/src/org/qtproject/qt5/android/*
+       src/plugins/bearer/android/*
+       src/plugins/platforms/android/*
+       src/plugins/styles/android/*
+Copyright: 2012-2018 BogDan Vatra
+           2012 Collabora Ltd, author <robin.burchell@collabora.co.uk>
+           2016 Olivier Goffart <ogoffart@woboq.com>
+           2016-2018 The Qt Company Ltd.
+License: LGPL-3 or GPL-2
+
+Files: src/platformheaders/eglfsfunctions/*
+       src/platformsupport/edid/*
+       src/platformsupport/kmsconvenience/*
+       src/plugins/platforms/eglfs/*
+Copyright: 2016 Pelagicore AG
+           2015-2017 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+           2016-2017 The Qt Company Ltd.
+License: LGPL-3 or GPL-2
+
+Files: mkspecs/common/integrity/*
+       mkspecs/integrity*
+       src/platformsupport/input/integrityhid/*
+       src/plugins/platforms/integrity/*
+Copyright: 2015 Green Hills Software
+           2017 The Qt Company Ltd.
+License: LGPL-3 or GPL-2
+
+Files: mkspecs/common/qnx/*
+       mkspecs/qnx*
+       src/plugins/platforms/qnx/*
+Copyright: 2011-2014 BlackBerry Limited (formerly Research In Motion)
+           2016-2017 QNX Software Systems. All rights reserved.
+License: LGPL-3 or GPL-2
+
 Files: src/plugins/platforms/wasm/*
 Copyright: 2018 The Qt Company Ltd.
 License: GPL-3
+
+Files: src/plugins/platforms/cocoa/qcocoaprintdevice.*
+       src/plugins/printsupport/*
+       src/printsupport/*
+Copyright: 2016 Intel Corporation
+           2014 John Layt <jlayt@kde.org>
+           2016-2018 The Qt Company Ltd.
+License: LGPL-3 or GPL-2
 
 # Per-file overrides
 
@@ -97,8 +213,19 @@ Copyright: 2016 Intel Corporation
            2016-2018 The Qt Company Ltd.
 License: GPL-3 with Qt-1.0 exception
 
-Files: src/tools/qfloat16-tables/gen_qfloat16_tables.cpp
-Copyright: 2016 by Southwest Research Institute (R)
+Files: bin/syncqt.pl
+       config.tests/arch/arch.cpp
+       config.tests/avx512/avx512.cpp
+       config.tests/x86_simd/main.cpp
+       mkspecs/features/data/unix/findclasslist.pl
+       mkspecs/haiku-g++/qplatformdefs.h
+       src/3rdparty/pcre2/import_from_pcre2_tarball.sh
+       src/opengl/qtopenglglobal.h
+       src/tools/qfloat16-tables/gen_qfloat16_tables.cpp
+Copyright: 2016-2017 Intel Corporation
+           2014-2016 Klarälvdalens Datakonsult AB, a KDAB Group company
+           2016 The Qt Company Ltd.
+           2016 by Southwest Research Institute (R)
 License: LGPL-3 or GPL-2
 
 Files: util/x86simdgen/generate.pl

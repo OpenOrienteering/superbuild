@@ -14,12 +14,51 @@ Source: https://download.qt.io/archive/qt/*/submodules/
 # Filepath patterns
 
 Files: *
-Copyright: 2016 Alexander Volkov <a.volkov@rusbitech.ru>
-           2016 BlackBerry Limited (formerly Research In Motion)
+Copyright: 2016-2018 The Qt Company Ltd.
+License: LGPL-3 or GPL-2
+
+Files: src/imports/sensors/*
+Copyright: 2016 BlackBerry Limited (formerly Research In Motion)
+           2016 Canonical, Ltd.
+           2016 The Qt Company Ltd.
+License: LGPL-3 or GPL-2
+
+Files: src/plugins/sensorgestures/qtsensors/*
+Copyright: 2016 Lorn Potter
+           2016 The Qt Company Ltd.
+License: LGPL-3 or GPL-2
+
+Files: src/plugins/sensors/android/*
+Copyright: 2016 BlackBerry Limited (formerly Research In Motion)
            2016 BogDan Vatra
-           2016-2017 Canonical, Ltd.
-           2016-2017 Lorn Potter
-           2016-2018 The Qt Company Ltd.
+           2016 The Qt Company Ltd.
+License: LGPL-3 or GPL-2
+
+Files: src/plugins/sensors/iio-sensor-proxy/*
+Copyright: 2016 Alexander Volkov <a.volkov@rusbitech.ru>
+           2016 The Qt Company Ltd.
+License: LGPL-3 or GPL-2
+
+Files: src/plugins/sensors/ios/*
+Copyright: 2016 Lorn Potter
+           2016 The Qt Company Ltd.
+License: LGPL-3 or GPL-2
+
+Files: src/plugins/sensors/sensorfw/*
+Copyright: 2016 Canonical, Ltd.
+           2016 The Qt Company Ltd.
+License: LGPL-3 or GPL-2
+
+Files: src/plugins/sensors/sensortag/*
+Copyright: 2016-2017 Canonical, Ltd.
+           2017 Lorn Potter
+           2017 The Qt Company Ltd.
+License: LGPL-3 or GPL-2
+
+Files: src/sensors/*
+Copyright: 2016 BlackBerry Limited (formerly Research In Motion)
+           2016 Canonical, Ltd.
+           2016 The Qt Company Ltd.
 License: LGPL-3 or GPL-2
 
 ## END AUTO GENERATED BLOCK
