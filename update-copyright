@@ -68,7 +68,7 @@ licenses_map = {
     'GPL': 'GPL-3',
     'GPL-EXCEPT': 'GPL-3 with Qt-1.0 exception',
     'LGPL': 'LGPL-3 or GPL-2',
-    'LGPL3': 'LGPL-3',
+    'LGPL3': 'LGPL-3 or GPL-2', # Legacy, used in Qt Location
     'MIT': 'MIT',
 }
 
