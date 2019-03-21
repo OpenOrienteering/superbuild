@@ -39,7 +39,7 @@ superbuild_package(
   DEPENDS
     gdal-2.2.3+dfsg-2
     libpolyclipping-6.4.2-3
-    proj-4.9.3-1
+    proj
     qtandroidextras-${qt_version}
     qtbase-${qt_version}
     qtimageformats-${qt_version}
@@ -66,6 +66,7 @@ superbuild_package(
     CMAKE_ARGS
       "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
       "-UCMAKE_STAGING_PREFIX"
+      "-DCMAKE_CXX_FLAGS=-DACCEPT_USE_OF_DEPRECATED_PROJ_API_H"
       "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
       "-DBUILD_SHARED_LIBS=0"
       "-DMapper_AUTORUN_SYSTEM_TESTS=0"
