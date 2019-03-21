@@ -201,7 +201,7 @@ superbuild_package(
         --without-python
         --without-xerces
         --without-xml2
-        "CPPFLAGS=${SUPERBUILD_CPPFLAGS}"
+        "CPPFLAGS=${SUPERBUILD_CPPFLAGS} -DACCEPT_USE_OF_DEPRECATED_PROJ_API_H"
         "CFLAGS=${SUPERBUILD_CFLAGS}"
         "CXXFLAGS=${SUPERBUILD_CXXFLAGS}"
         "LDFLAGS=${SUPERBUILD_LDFLAGS}"
