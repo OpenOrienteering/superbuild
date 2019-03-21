@@ -29,17 +29,11 @@
 
 # https://tracker.debian.org/pkg/gdal
 
-set(version        2.2.3+dfsg)
-set(download_hash  SHA256=3f99d84541ec6f174da137166c1002b50ed138dde51d05180ad5c8dd49721057)
-set(patch_version  ${version}-2)
-set(patch_hash     SHA256=a545f89efa6815eb5d529f2114e9a04a4ba61df233752541369cee92009fc9c0)
-set(patch_base_url ${SUPERBUILD_DEBIAN_BASE_URL_2018_02})
-
-if(APPLE)
-	set(copy_dir cp -aR)
-else()
-	set(copy_dir cp -auT)
-endif()
+set(version        2.4.1+dfsg)
+set(download_hash  SHA256=9c3c3a4b6940e78f65a52e0aa31a8e0e3b2c1cacd209e9397d74a262ad969909)
+set(patch_version  ${version}-1)
+set(patch_hash     SHA256=152477e4ad03d0483414bb55fa5c0cb0e314456426275acedf18745092eab56e)
+set(base_url       https://snapshot.debian.org/archive/debian/20190322T212047Z/pool/main/g/gdal)
 
 option(USE_SYSTEM_GDAL "Use the system GDAL if possible" ON)
 
@@ -77,35 +71,16 @@ set(test_system_gdal [[
 			message(FATAL_ERROR "Could not find sqlite3.h")
 		endif()
 		get_filename_component(SQLITE3_DIR "${SQLITE3_INCLUDE_DIR}" DIRECTORY CACHE)
-		
-		if(WIN32)
-			# The PROJ4 DLL from the superbuild is named like libproj_4_9.dll,
-			# but GDAL expects a name like libproj-0.dll
-			# (exactly this name when loading the lib at runtime).
-			# Try hard to link the correct library, at build time.
-			find_package(PROJ4 CONFIG QUIET)
-			if(NOT TARGET proj)
-				message(FATAL_ERROR "Could not find PROJ4")
-			endif()
-			get_target_property(proj4_configurations proj IMPORTED_CONFIGURATIONS)
-			list(GET proj4_configurations 0 config)
-			get_target_property(proj4_lib proj IMPORTED_IMPLIB_${config})
-			get_filename_component(proj4_lib "${proj4_lib}" NAME)
-			get_filename_component(proj4_lib "${proj4_lib}" NAME_WE)
-			string(REPLACE "libproj" "proj" proj4_lib "${proj4_lib}")
-		else()
-			set(proj4_lib proj)
-		endif()
-		set(PROJ4_LIB "${proj4_lib}" CACHE STRING "internal" FORCE)
 	endif(BUILD_CONDITION)
 ]])
+
 
 superbuild_package(
   NAME           gdal-patches
   VERSION        ${patch_version}
   
   SOURCE
-    URL            ${patch_base_url}/pool/main/g/gdal/gdal_${patch_version}.debian.tar.xz
+    URL            ${base_url}/gdal_${patch_version}~exp1.debian.tar.xz
     URL_HASH       ${patch_hash}
 )
   
@@ -127,44 +102,22 @@ superbuild_package(
     zlib
   
   SOURCE
-    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2018_02}/pool/main/g/gdal/gdal_${version}.orig.tar.xz
+    URL            ${base_url}/gdal_${version}.orig.tar.xz
     URL_HASH       ${download_hash}
     PATCH_COMMAND
       "${CMAKE_COMMAND}"
         -Dpackage=gdal-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
   
-  USING            USE_SYSTEM_GDAL copy_dir patch_version
+  USING            USE_SYSTEM_GDAL patch_version
   BUILD_CONDITION  ${test_system_gdal}
   BUILD [[
-    CONFIGURE_COMMAND
+    # Cannot do out-of-source build of gdal
+    UPDATE_COMMAND
       "${CMAKE_COMMAND}" -E make_directory "${BINARY_DIR}"
     COMMAND
-      ${copy_dir} "${SOURCE_DIR}/" "${BINARY_DIR}"
-    COMMAND
-      # Insert another library name if needed (MinGW)
-      sed -i -e "/ PROJ_LIB=/ s,-lproj[-_0-9]*,-l${PROJ4_LIB}," "${BINARY_DIR}/configure"
-    COMMAND
-      # Remove duplicate -lproj
-      sed -i -e "/LIBS=/ s,-lproj ,," "${BINARY_DIR}/configure"
-    $<$<BOOL:@ANDROID@>:
-    COMMAND
-      # Fix .so versioning
-      sed -i -e "/ -avoid-version/! s,^LD.*=.*LIBTOOL_LINK.*,& -avoid-version," "${BINARY_DIR}/GDALmake.opt.in"
-    COMMAND
-      # Android NDK STL quirk
-      sed -i -e "/__sun__/ s,#if .*,#if 1," "${BINARY_DIR}/ogr/ogrsf_frmts/cad/libopencad/dwg/r2000.cpp"
-                                            "${BINARY_DIR}/ogr/ogrsf_frmts/cad/libopencad/cadheader.cpp"
-    COMMAND
-      # Android NDK locale quirk
-      sed -i -e "s,locale.h,locale_not_implemented.h," "${BINARY_DIR}/configure"
-    >
-    $<$<NOT:$<CONFIG:Debug>>:
-    COMMAND
-      # Strip library
-      sed -i -e "/ -s/! s,^INSTALL_LIB.*=.*LIBTOOL_INSTALL.*,& -s," "${BINARY_DIR}/GDALmake.opt.in"
-    >
-    COMMAND
+      "${CMAKE_COMMAND}" -E copy_directory "${SOURCE_DIR}" "${BINARY_DIR}"
+    CONFIGURE_COMMAND
       "${BINARY_DIR}/configure"
         "--prefix=${CMAKE_INSTALL_PREFIX}"
         $<$<BOOL:@CMAKE_CROSSCOMPILING@>:
@@ -177,7 +130,6 @@ superbuild_package(
         --without-threads
         --with-liblzma
         --with-pcre
-        --with-static-proj4
         "--with-curl=${CURL_CONFIG}"
         "--with-expat=${EXPAT_DIR}"
         "--with-jpeg=${CMAKE_STAGING_PREFIX}"
@@ -186,6 +138,7 @@ superbuild_package(
           "--with-libz=${LIBZ_DIR}"
         >
         "--with-png=${CMAKE_STAGING_PREFIX}"
+        "--with-proj=${CMAKE_STAGING_PREFIX}"
         "--with-sqlite3=${SQLITE3_DIR}"
         --without-geos
         --without-grib
@@ -197,11 +150,10 @@ superbuild_package(
         --without-pcraster
         --without-perl
         --without-pg
-        --without-php
         --without-python
         --without-xerces
         --without-xml2
-        "CPPFLAGS=${SUPERBUILD_CPPFLAGS} -DACCEPT_USE_OF_DEPRECATED_PROJ_API_H"
+        "CPPFLAGS=${SUPERBUILD_CPPFLAGS}"
         "CFLAGS=${SUPERBUILD_CFLAGS}"
         "CXXFLAGS=${SUPERBUILD_CXXFLAGS}"
         "LDFLAGS=${SUPERBUILD_LDFLAGS}"
@@ -209,16 +161,9 @@ superbuild_package(
         $<$<BOOL:@ANDROID@>:
           "CC=${STANDALONE_C_COMPILER}"
           "CXX=${STANDALONE_CXX_COMPILER}"
-          "LIBS=-l${CMAKE_ANDROID_STL_TYPE}"
         >
     BUILD_COMMAND
       "$(MAKE)"
-    $<$<BOOL:@WIN32@>:
-    COMMAND
-      # Verify that libgdal is linked to libproj
-      "$<$<BOOL:@CMAKE_CROSSCOMPILING@>:${SYSTEM_NAME}->objdump" -x .libs/libgdal-20.dll
-        | grep "DLL Name: libproj"
-    >
     INSTALL_COMMAND
       "$(MAKE)" install "DESTDIR=${DESTDIR}${INSTALL_DIR}"
     COMMAND
