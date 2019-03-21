@@ -37,7 +37,7 @@ superbuild_package(
   NAME           openorienteering-mapper
   VERSION        ${version}
   DEPENDS
-    gdal-2.2.3+dfsg-2
+    gdal
     libpolyclipping-6.4.2-3
     proj
     qtandroidextras-${qt_version}
