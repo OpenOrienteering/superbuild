@@ -52,7 +52,7 @@ set(download_pcre2_diff_cmake "${PROJECT_BINARY_DIR}/download-pcre2_${patch_vers
 file(WRITE "${download_pcre2_diff_cmake}" "
 file(DOWNLOAD
   \"${SUPERBUILD_DEBIAN_BASE_URL_2018_02}/pool/main/p/pcre2/pcre2_${patch_version}.diff.gz\"
-  \"${PROJECT_SOURCE_DIR}/pcre2_${patch_version}.diff.gz\"
+  \"${SUPERBUILD_DOWNLOAD_DIR}/pcre2_${patch_version}.diff.gz\"
   EXPECTED_HASH ${patch_hash}
 )")
 
@@ -67,7 +67,7 @@ superbuild_package(
     PATCH_COMMAND
       "${CMAKE_COMMAND}" -P "${download_pcre2_diff_cmake}"
     COMMAND
-      gunzip -c "${PROJECT_SOURCE_DIR}/pcre2_${patch_version}.diff.gz" > "pcre2_${patch_version}.diff"
+      gunzip -c "${SUPERBUILD_DOWNLOAD_DIR}/pcre2_${patch_version}.diff.gz" > "pcre2_${patch_version}.diff"
     COMMAND
       patch -N -p1 < "pcre2_${patch_version}.diff"
     COMMAND

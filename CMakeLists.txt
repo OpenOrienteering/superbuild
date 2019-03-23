@@ -42,6 +42,10 @@ set(ci
   ci/num_jobs.cmake
 )
 
+set(SUPERBUILD_DOWNLOAD_DIR "${PROJECT_SOURCE_DIR}" CACHE PATH
+  "Directory path where to put and find downloads"
+)
+
 set(SUPERBUILD_HANDLE_ENV "" CACHE STRING
   "Additional environment variables to be passed to packages."
 )
@@ -917,7 +921,7 @@ function(_sb_make_source package)
 	else()
 		# SB_PACKAGE_SOURCE contains options for ExternalProject source steps.
 		ExternalProject_Add(${package}-source
-		  DOWNLOAD_DIR "${PROJECT_SOURCE_DIR}"
+		  DOWNLOAD_DIR "${SUPERBUILD_DOWNLOAD_DIR}"
 		  SOURCE_DIR   "${SOURCE_DIR}"
 		  TMP_DIR      "${TMP_DIR}"
 		  STAMP_DIR    "${TMP_DIR}/stamp"
@@ -1155,7 +1159,7 @@ function(superbuild_package)
 		else()
 			set(SOURCE_DIR "${TMP_DIR}/source")
 		endif()
-		set(DOWNLOAD_DIR     "${PROJECT_SOURCE_DIR}")
+		set(DOWNLOAD_DIR     "${SUPERBUILD_DOWNLOAD_DIR}")
 		_sb_write_config("${config_dir}"
 		  HOST_DIR
 		  DOWNLOAD_DIR
