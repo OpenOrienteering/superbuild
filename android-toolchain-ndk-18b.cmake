@@ -215,22 +215,22 @@ if(NOT ANDROID_NDK_ROOT)
 		      "${CMAKE_COMMAND}" -E make_directory "<SOURCE_DIR>/bionic"
 		    COMMAND
 		      "${CMAKE_COMMAND}" -E chdir "<SOURCE_DIR>/bionic"
-		        "${CMAKE_COMMAND}" -E tar xvzf "${PROJECT_SOURCE_DIR}/android-platform-bionic_${ANDROID_NDK_VERSION}.tar.gz"
+		        "${CMAKE_COMMAND}" -E tar xvzf "${SUPERBUILD_DOWNLOAD_DIR}/android-platform-bionic_${ANDROID_NDK_VERSION}.tar.gz"
 		    COMMAND
 		      "${CMAKE_COMMAND}" -E make_directory "<SOURCE_DIR>/external/libcxx"
 		    COMMAND
 		      "${CMAKE_COMMAND}" -E chdir "<SOURCE_DIR>/external/libcxx"
-		        "${CMAKE_COMMAND}" -E tar xvzf "${PROJECT_SOURCE_DIR}/android-platform-external-libcxx_${ANDROID_NDK_VERSION}.tar.gz"
+		        "${CMAKE_COMMAND}" -E tar xvzf "${SUPERBUILD_DOWNLOAD_DIR}/android-platform-external-libcxx_${ANDROID_NDK_VERSION}.tar.gz"
 		    COMMAND
 		      "${CMAKE_COMMAND}" -E make_directory "<SOURCE_DIR>/external/libcxxabi"
 		    COMMAND
 		      "${CMAKE_COMMAND}" -E chdir "<SOURCE_DIR>/external/libcxxabi"
-		        "${CMAKE_COMMAND}" -E tar xvzf "${PROJECT_SOURCE_DIR}/android-platform-external-libcxxabi_${ANDROID_NDK_VERSION}.tar.gz"
+		        "${CMAKE_COMMAND}" -E tar xvzf "${SUPERBUILD_DOWNLOAD_DIR}/android-platform-external-libcxxabi_${ANDROID_NDK_VERSION}.tar.gz"
 		    COMMAND
 		      "${CMAKE_COMMAND}" -E make_directory "<SOURCE_DIR>/external/libunwind_llvm"
 		    COMMAND
 		      "${CMAKE_COMMAND}" -E chdir "<SOURCE_DIR>/external/libunwind_llvm"
-		        "${CMAKE_COMMAND}" -E tar xvzf "${PROJECT_SOURCE_DIR}/android-platform-external-libunwind_llvm_${ANDROID_NDK_VERSION}.tar.gz"
+		        "${CMAKE_COMMAND}" -E tar xvzf "${SUPERBUILD_DOWNLOAD_DIR}/android-platform-external-libunwind_llvm_${ANDROID_NDK_VERSION}.tar.gz"
 		    COMMAND
 		      "${CMAKE_COMMAND}" -E create_symlink "<SOURCE_DIR>/../android-${ANDROID_NDK_VERSION}" "android-${ANDROID_NDK_VERSION}"
 		    COMMAND
