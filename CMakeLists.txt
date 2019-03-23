@@ -27,9 +27,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-cmake_minimum_required(VERSION 3.2)
-cmake_policy(SET CMP0001 NEW)
-cmake_policy(SET CMP0053 NEW)
+cmake_minimum_required(VERSION 3.3)
 
 project(Superbuild C)
 
@@ -319,8 +317,7 @@ function(_sb_write_generator)
 	set(output
 "# Created by ${CMAKE_CURRENT_LIST_FILE}
 
-cmake_minimum_required(VERSION 3.1)
-cmake_policy(SET CMP0053 NEW)
+cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
 
 if(NOT SYSTEM_NAME OR NOT PACKAGE)
 	message(FATAL_ERROR \"SYSTEM_NAME and PACKAGE must be given\")
@@ -377,8 +374,7 @@ function(_sb_write_build dir)
 # Instance created by @CMAKE_CURRENT_LIST_FILE@
 #   for system @SYSTEM_NAME@
 
-cmake_minimum_required(VERSION 3.1)
-cmake_policy(SET CMP0053 NEW)
+cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
 
 message(STATUS \"Configuring @PACKAGE@ for system @SYSTEM_NAME@\")
 
