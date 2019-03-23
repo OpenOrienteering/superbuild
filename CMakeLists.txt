@@ -289,7 +289,7 @@ foreach(subdir ${CMAKE_LIBRARY_PATH})
 	check_lib_dir("${subdir}")
 endforeach()
 
-foreach(subdir ${CMAKE_SYSTEM_PREFIX_PATH})
+foreach(subdir ${CMAKE_INSTALL_PREFIX} ${CMAKE_SYSTEM_PREFIX_PATH})
 	check_include_dir("${subdir}/include/${CMAKE_LIBRARY_ARCHITECTURE}")
 	check_include_dir("${subdir}/include")
 	check_lib_dir("${subdir}/lib")
