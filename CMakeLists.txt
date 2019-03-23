@@ -256,7 +256,8 @@ macro(check_include_dir subdir)
 		string(REGEX REPLACE "/\$" ""  include_dir "${include_dir}")
 		if(EXISTS "${include_dir}"
 		   AND (path OR NOT CMAKE_FIND_ROOT_PATH)
-		   AND NOT "${SUPERBUILD_CPPFLAGS}" MATCHES " -I${include_dir} ")
+		   AND NOT "${SUPERBUILD_CPPFLAGS}" MATCHES " -I${include_dir} "
+		   AND NOT include_dir IN_LIST CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES)
 			set(SUPERBUILD_CPPFLAGS "${SUPERBUILD_CPPFLAGS}-I${include_dir} ")
 		endif()
 	endforeach()
@@ -269,7 +270,8 @@ macro(check_lib_dir subdir)
 		string(REGEX REPLACE "/\$" ""  lib_dir "${lib_dir}")
 		if(EXISTS "${lib_dir}"
 		   AND (path OR NOT CMAKE_FIND_ROOT_PATH)
-		   AND NOT "${SUPERBUILD_LDFLAGS}" MATCHES " -L${lib_dir} ")
+		   AND NOT "${SUPERBUILD_LDFLAGS}" MATCHES " -L${lib_dir} "
+		   AND NOT lib_dir IN_LIST CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES)
 			set(SUPERBUILD_LDFLAGS "${SUPERBUILD_LDFLAGS}-L${lib_dir} ")
 		endif()
 	endforeach()
