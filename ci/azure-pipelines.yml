@@ -38,12 +38,21 @@ jobs:
     vmImage: 'ubuntu-16.04'
 
   steps:
+  - task: DownloadPipelineArtifact@0
+    inputs:
+      pipelineId: $(openorienteering.superbuild.pipelineId)
+      artifactName: 'superbuild-source'
+      targetPath: $(Build.SourcesDirectory)/download
+    displayName: 'Download previous source artifact'
+    condition: variables.openorienteering.superbuild.pipelineId
+
   - task: CMake@1
     inputs:
-      workingDirectory: $(Build.SourcesDirectory)/../build
+      workingDirectory: $(Build.SourcesDirectory)/build
       cmakeArgs: >
         $(Build.SourcesDirectory)
         -G "Unix Makefiles"
+        -DSUPERBUILD_DOWNLOAD_DIR=$(Build.SourcesDirectory)/download
         -DSUPERBUILD_DISABLE_DEPENDENCIES=TRUE
         -DENABLE_x86_64-w64-mingw32=1
         -Dx86_64-w64-mingw32-gcc_EXECUTABLE=not-needed
@@ -56,22 +65,21 @@ jobs:
   - bash: |
       set -x
       set -e
-      cd $(Build.SourcesDirectory)/../build
+      cd $(Build.SourcesDirectory)/build
       make help | sort | grep -- '-source' | grep -v -- '-git' | \
         grep -v android-sdk | grep -v android-ndk | grep -v -- '-toolchain-ndk-' | \
         while read DOTS TARGET; do
           make "${TARGET}"
         done
-      rm -Rf $(Build.SourcesDirectory)/android-ndk-*
-    env:
-      VERBOSE: $(openorienteering.superbuild.source.verbose)
+      rm -Rf $(Build.SourcesDirectory)/download/android-ndk-*
     displayName: 'Download sources'
 
   - task: PublishPipelineArtifact@0
     inputs:
       artifactName: 'superbuild-source'
-      targetPath: $(Build.SourcesDirectory)
+      targetPath: $(Build.SourcesDirectory)/download
     displayName: 'Publish source artifact'
+
 
 - job: Superbuild
   timeoutInMinutes: 120
@@ -114,7 +122,7 @@ jobs:
   - task: DownloadPipelineArtifact@0
     inputs:
       artifactName: 'superbuild-source'
-      targetPath: $(Build.SourcesDirectory)
+      targetPath: $(Build.SourcesDirectory)/download
     displayName: 'Download source artifact'
 
   - bash: |
@@ -160,6 +168,7 @@ jobs:
         $(Build.SourcesDirectory)
         -G "Unix Makefiles"
         -DCMAKE_BUILD_TYPE=Release
+        -DSUPERBUILD_DOWNLOAD_DIR=$(Build.SourcesDirectory)/download
         -DUSE_SYSTEM_PCRE2=FALSE
         -DMapper_GIT_QT_VERSION=5.12
         -DMapper_GIT_LICENSING_PROVIDER=superbuild
