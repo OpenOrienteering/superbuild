@@ -315,6 +315,10 @@ foreach(abi ${enabled_abis})
 	sb_toolchain_dir(toolchain_dir ${system_name})
 	sb_install_dir(install_dir ${system_name})
 	
+	if(NOT DEFINED ${system_name}_ENV_PATH)
+		set(${system_name}_ENV_PATH "${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${sdk_host}-x86_64/bin:${toolchain_dir}/bin:$ENV{PATH}" PARENT_SCOPE)
+	endif()
+	
 	if(NOT DEFINED ${system_name}_INSTALL_PREFIX)
 		set(${system_name}_INSTALL_PREFIX "/usr")
 	endif()
