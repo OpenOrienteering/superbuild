@@ -315,6 +315,10 @@ foreach(abi ${enabled_abis})
 	sb_toolchain_dir(toolchain_dir ${system_name})
 	sb_install_dir(install_dir ${system_name})
 	
+	if(NOT DEFINED ${system_name}_ENV_PATH)
+		set(${system_name}_ENV_PATH "${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${sdk_host}-x86_64/bin:${toolchain_dir}/bin:$ENV{PATH}" PARENT_SCOPE)
+	endif()
+	
 	if(NOT DEFINED ${system_name}_INSTALL_PREFIX)
 		set(${system_name}_INSTALL_PREFIX "/usr")
 	endif()
@@ -336,7 +340,6 @@ set(CMAKE_INSTALL_PREFIX   "]] "${${system_name}_INSTALL_PREFIX}" [["
     CACHE PATH             "Run-time install path prefix, prepended onto install directories")
 set(CMAKE_STAGING_PREFIX   "${INSTALL_DIR}${CMAKE_INSTALL_PREFIX}"
     CACHE PATH             "Install-time install path prefix, prepended onto install directories")
-set(CMAKE_FIND_ROOT_PATH   "]] "${${system_name}_FIND_ROOT_PATH}" [[")
 set(CMAKE_FIND_NO_INSTALL_PREFIX TRUE)
 
 set(ANDROID_SDK_ROOT       "]] "${ANDROID_SDK_ROOT}" [[")
@@ -347,9 +350,14 @@ set(ANDROID_STL            "c++_shared")
 set(ANDROID_TOOLCHAIN      "clang")
 include(]] "${ANDROID_NDK_ROOT}" [[/build/cmake/android.toolchain.cmake)
 
-# Handle ANDROID_SYSTEM_LIBRARY_PATH via CMAKE_FIND_ROOT_PATH
-list(APPEND CMAKE_FIND_ROOT_PATH "${ANDROID_SYSTEM_LIBRARY_PATH}")
-string(REPLACE "${ANDROID_SYSTEM_LIBRARY_PATH}" "" CMAKE_SYSTEM_LIBRARY_PATH "${CMAKE_SYSTEM_LIBRARY_PATH}")
+# Get rid of NDK root in CMAKE_FIND_ROOT_PATH
+set(CMAKE_FIND_ROOT_PATH   "]] "${${system_name}_FIND_ROOT_PATH}" [[")
+if(ANDROID_ABI MATCHES "arm")
+    list(APPEND CMAKE_FIND_ROOT_PATH "${ANDROID_NDK_ROOT}/platforms/android-${ANDROID_NATIVE_API_LEVEL}/arch-arm")
+elseif(ANDROID_ABI MATCHES "x86")
+    list(APPEND CMAKE_FIND_ROOT_PATH "${ANDROID_NDK_ROOT}/platforms/android-${ANDROID_NATIVE_API_LEVEL}/arch-x86")
+endif()
+set(CMAKE_SYSTEM_LIBRARY_PATH "/usr/lib/${SYSTEM_NAME}")
 
 set(STANDALONE_C_COMPILER   "]] "${toolchain_dir}" [[/bin/${SYSTEM_NAME}-clang")
 set(STANDALONE_CXX_COMPILER "]] "${toolchain_dir}" [[/bin/${SYSTEM_NAME}-clang++")
@@ -359,7 +367,6 @@ set(ANDROID_KEYSTORE_ALIAS  "]] "${ANDROID_KEYSTORE_ALIAS}" [[")
 set(EXPRESSION_BOOL_SIGN   "$<AND:$<OR:$<CONFIG:Release>,$<CONFIG:RelWithDebInfo>>,$<BOOL:${ANDROID_KEYSTORE_URL}>,$<BOOL:${ANDROID_KEYSTORE_ALIAS}>>")
 
 set(USE_SYSTEM_ZLIB        ON)
-set(ZLIB_LIBRARY           "${ANDROID_SYSTEM_LIBRARY_PATH}/usr/lib/libz.so")
 
 set(CMAKE_RULE_MESSAGES    OFF CACHE BOOL "Whether to report a message for each make rule")
 set(CMAKE_TARGET_MESSAGES  OFF CACHE BOOL "Whether to report a message for each target")

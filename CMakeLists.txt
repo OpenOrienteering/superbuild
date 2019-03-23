@@ -27,9 +27,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-cmake_minimum_required(VERSION 3.2)
-cmake_policy(SET CMP0001 NEW)
-cmake_policy(SET CMP0053 NEW)
+cmake_minimum_required(VERSION 3.3)
 
 project(Superbuild C)
 
@@ -262,7 +260,8 @@ macro(check_include_dir subdir)
 		string(REGEX REPLACE "/\$" ""  include_dir "${include_dir}")
 		if(EXISTS "${include_dir}"
 		   AND (path OR NOT CMAKE_FIND_ROOT_PATH)
-		   AND NOT "${SUPERBUILD_CPPFLAGS}" MATCHES " -I${include_dir} ")
+		   AND NOT "${SUPERBUILD_CPPFLAGS}" MATCHES " -I${include_dir} "
+		   AND NOT include_dir IN_LIST CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES)
 			set(SUPERBUILD_CPPFLAGS "${SUPERBUILD_CPPFLAGS}-I${include_dir} ")
 		endif()
 	endforeach()
@@ -275,7 +274,8 @@ macro(check_lib_dir subdir)
 		string(REGEX REPLACE "/\$" ""  lib_dir "${lib_dir}")
 		if(EXISTS "${lib_dir}"
 		   AND (path OR NOT CMAKE_FIND_ROOT_PATH)
-		   AND NOT "${SUPERBUILD_LDFLAGS}" MATCHES " -L${lib_dir} ")
+		   AND NOT "${SUPERBUILD_LDFLAGS}" MATCHES " -L${lib_dir} "
+		   AND NOT lib_dir IN_LIST CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES)
 			set(SUPERBUILD_LDFLAGS "${SUPERBUILD_LDFLAGS}-L${lib_dir} ")
 		endif()
 	endforeach()
@@ -293,7 +293,7 @@ foreach(subdir ${CMAKE_LIBRARY_PATH})
 	check_lib_dir("${subdir}")
 endforeach()
 
-foreach(subdir ${CMAKE_SYSTEM_PREFIX_PATH})
+foreach(subdir ${CMAKE_INSTALL_PREFIX} ${CMAKE_SYSTEM_PREFIX_PATH})
 	check_include_dir("${subdir}/include/${CMAKE_LIBRARY_ARCHITECTURE}")
 	check_include_dir("${subdir}/include")
 	check_lib_dir("${subdir}/lib")
@@ -323,8 +323,7 @@ function(_sb_write_generator)
 	set(output
 "# Created by ${CMAKE_CURRENT_LIST_FILE}
 
-cmake_minimum_required(VERSION 3.1)
-cmake_policy(SET CMP0053 NEW)
+cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
 
 if(NOT SYSTEM_NAME OR NOT PACKAGE)
 	message(FATAL_ERROR \"SYSTEM_NAME and PACKAGE must be given\")
@@ -381,8 +380,7 @@ function(_sb_write_build dir)
 # Instance created by @CMAKE_CURRENT_LIST_FILE@
 #   for system @SYSTEM_NAME@
 
-cmake_minimum_required(VERSION 3.1)
-cmake_policy(SET CMP0053 NEW)
+cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
 
 message(STATUS \"Configuring @PACKAGE@ for system @SYSTEM_NAME@\")
 
@@ -1273,7 +1271,7 @@ _sb_create_default_toolchain()
 _sb_create_host_toolchain()
 _sb_write_generator()
 _sb_write_debian_patch_script()
-_sb_create_toolchain_info()
 _sb_read_packages()
+_sb_create_toolchain_info() # after package reading, affected by toolchains
 _sb_resolve_dependencies()
 _sb_handle_toolchains()
