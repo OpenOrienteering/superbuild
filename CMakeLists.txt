@@ -1265,7 +1265,7 @@ _sb_create_default_toolchain()
 _sb_create_host_toolchain()
 _sb_write_generator()
 _sb_write_debian_patch_script()
-_sb_create_toolchain_info()
 _sb_read_packages()
+_sb_create_toolchain_info() # after package reading, affected by toolchains
 _sb_resolve_dependencies()
 _sb_handle_toolchains()
