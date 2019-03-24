@@ -135,6 +135,7 @@ jobs:
             doxygen graphviz python-lxml \
             g++-mingw-w64-x86-64 \
             '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxrender-dev libxi-dev
+          sudo update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
           # System libraries, but expected to have superbuild copyright files
           DEST=$(Build.SourcesDirectory)/build/default/install/share/doc/copyright
           mkdir -p ${DEST}
@@ -144,6 +145,7 @@ jobs:
           cp /usr/share/doc/libpcre3/copyright       ${DEST}/pcre3-$(imageName).txt
           cp /usr/share/doc/libpng12-0/copyright     ${DEST}/libpng-$(imageName).txt
           cp /usr/share/doc/libtiff5/copyright       ${DEST}/tiff-$(imageName).txt
+          cp /usr/share/doc/mingw-w64-x86-64-dev/copyright  ${DEST}/mingw-w64-x86-64-$(imageName).txt
           cp /usr/share/doc/zlib1g/copyright         ${DEST}/zlib-$(imageName).txt
           ;;
         macos-*)
