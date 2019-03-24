@@ -127,7 +127,7 @@ superbuild_package(
         --enable-shared
         --with-hide-internal-symbols
         --with-rename-internal-libtiff-symbols
-        --without-threads
+        --with-threads
         --with-liblzma
         --with-pcre
         "--with-curl=${CURL_CONFIG}"
