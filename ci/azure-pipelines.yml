@@ -187,16 +187,14 @@ jobs:
         $(openorienteering.superbuild.target)$(targetSuffix)
       rm -Rf default/install/tmp
       #
-      cd $(Build.SourcesDirectory)
-      mkdir testResults
-      TARGET=`echo default$(targetSuffix) | sed -e 's,default-,,'`
-      for I in build/${TARGET}/*/Testing; do
-        if [ -f "${I}/TAG" ]; then
-          python ci/ctest_to_junit.py "${I%/Testing}"
-          for J in ${I}/*/jUnit.xml; do
-            cp $J testResults/`echo ${J#build/} | sed -e 's,/Testing,,;s,/jUnit,,;s,/,_,g'`
-          done
-          echo "##vso[task.setVariable variable=testResults]build/${TARGET}"
+      TEST_RESULTS="$(Build.SourcesDirectory)/testResults"
+      cd $(Build.SourcesDirectory)/build/default
+      for I in */Testing/*/Test.xml; do
+        if test -f "${I}"; then
+          DIR=`echo ${I%/Test.xml} | sed -e 's,/Testing/,_,g'`
+          mkdir -p "${TEST_RESULTS}/${DIR}"
+          cp "$I" "${TEST_RESULTS}/${DIR}/"
+          echo "##vso[task.setVariable variable=testResults]${TEST_RESULTS}"
         fi
       done
       #
@@ -210,9 +208,11 @@ jobs:
 
   - task: PublishTestResults@2
     inputs:
-      testRunner: 'jUnit'
-      testResultsFiles: '*.xml'
-      searchFolder: '$(Build.SourcesDirectory)/testResults'
+      testResultsFormat: 'cTest'
+      testResultsFiles: '*/Test.xml'
+      searchFolder: '$(testResults)'
+      testRunTitle: '$(imageName)$(targetSuffix)'
+      buildPlatform: '$(imageName)'
     condition: variables.testResults
     displayName: 'Publish test results'
 
