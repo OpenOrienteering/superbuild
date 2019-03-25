@@ -44,7 +44,7 @@ jobs:
       artifactName: 'superbuild-source'
       targetPath: $(Build.SourcesDirectory)/download
     displayName: 'Download previous source artifact'
-    condition: variables.openorienteering.superbuild.pipelineId
+    condition: variables['openorienteering.superbuild.pipelineId']
 
   - task: CMake@1
     inputs:
@@ -228,12 +228,12 @@ jobs:
       searchFolder: '$(testResults)'
       testRunTitle: '$(imageName)$(targetSuffix)'
       buildPlatform: '$(imageName)'
-    condition: variables.testResults
+    condition: variables['testResults']
     displayName: 'Publish test results'
 
   - task: PublishPipelineArtifact@0
     inputs:
       artifactName: 'superbuild-$(imageName)$(targetSuffix)'
       targetPath: $(Build.SourcesDirectory)/build/default/install
-    condition: and(succeeded(), in(variables.createArtifacts, '1', 'on', 'true', 'yes'))
+    condition: and(succeeded(), in(variables['createArtifacts'], '1', 'on', 'true', 'yes'))
     displayName: 'Publish binary artifacts'
