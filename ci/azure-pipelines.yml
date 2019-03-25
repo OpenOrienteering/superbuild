@@ -186,16 +186,20 @@ jobs:
       rm -Rf default/install/tmp
       #
       TEST_RESULTS="$(Build.SourcesDirectory)/testResults"
+      rm -Rf "${TEST_RESULTS}"
       cd $(Build.SourcesDirectory)/build/default
       for I in */Testing/*/Test.xml; do
         if test -f "${I}"; then
           DIR=`echo ${I%/Test.xml} | sed -e 's,/Testing/,_,g'`
           mkdir -p "${TEST_RESULTS}/${DIR}"
           cp "$I" "${TEST_RESULTS}/${DIR}/"
-          echo "##vso[task.setVariable variable=testResults]${TEST_RESULTS}"
         fi
       done
       #
+      set +x # Tracing the echo line may overwrite the desired effect.
+      if test -d "${TEST_RESULTS}"; then
+        echo "##vso[task.setVariable variable=testResults]${TEST_RESULTS}"
+      fi
       echo "##vso[task.setVariable variable=createArtifacts]$(openorienteering.superbuild.createArtifacts)"
     env:
       CTEST_OUTPUT_ON_FAILURE: 1
