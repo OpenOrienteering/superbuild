@@ -82,6 +82,8 @@ jobs:
           esac
         done
     displayName: 'Download sources'
+    env:
+      VERBOSE: ''
 
   - task: PublishPipelineArtifact@0
     inputs:
