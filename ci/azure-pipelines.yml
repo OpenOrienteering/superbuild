@@ -66,12 +66,21 @@ jobs:
       set -x
       set -e
       cd $(Build.SourcesDirectory)/build
-      make help | sort | grep -- '-source' | grep -v -- '-git' | \
-        grep -v android-sdk | grep -v android-ndk | grep -v -- '-toolchain-ndk-' | \
+      make help | \
+        grep -- '-source' | \
+        sort | \
         while read DOTS TARGET; do
-          make "${TARGET}"
+          case "${TARGET}" in
+            *-git-*)           continue ;;
+            *-toolchain-ndk-*) continue ;;
+            android-libcxx-*)  continue ;;
+            android-ndk-*)     continue ;;
+            android-sdk-*)     continue ;;
+            openorienteering*) continue ;;
+            qt*-5.6.*)         continue ;;
+            *)                 make "${TARGET}" ;;
+          esac
         done
-      rm -Rf $(Build.SourcesDirectory)/download/android-ndk-*
     displayName: 'Download sources'
 
   - task: PublishPipelineArtifact@0
