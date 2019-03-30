@@ -36,7 +36,11 @@ set(patch_hash        SHA256=e7772890f3b4ea42adf05f2cdbb3759d53670b6bb9bf60a7dcd
 option(USE_SYSTEM_SQLITE3 "Use the system sqlite if possible" ON)
 
 set(test_system_sqlite3 [[
-	if(USE_SYSTEM_SQLITE3)
+	if(APPLE AND USE_SYSTEM_SQLITE3)
+		# System sqlite doesn't provide all required features for GDAL
+		message(WARNING "Ignoring system sqlite for macOS")
+		set(BUILD_CONDITION 1)
+	elseif(USE_SYSTEM_SQLITE3)
 		enable_language(C)
 		find_library(SQLITE3_LIBRARY NAMES sqlite3 QUIET)
 		find_path(SQLITE3_INCLUDE_DIR NAMES sqlite3.h QUIET)
