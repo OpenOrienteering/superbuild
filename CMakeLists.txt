@@ -735,6 +735,15 @@ set(CMAKE_RULE_MESSAGES    OFF CACHE BOOL "Whether to report a message for each 
 set(CMAKE_TARGET_MESSAGES  OFF CACHE BOOL "Whether to report a message for each target")
 set(CMAKE_VERBOSE_MAKEFILE ON  CACHE BOOL "Enable verbose output from Makefile builds")
 ]])
+	if(APPLE)
+		list(APPEND toolchain_content [[
+list(APPEND CMAKE_SYSTEM_IGNORE_PATH
+  /usr/X11R6/bin
+  /usr/X11R6/include
+  /usr/X11R6/lib
+)
+]])
+	endif()
 	if(CMAKE_TOOLCHAIN_FILE)
 		set(toolchain_content "include(\"${CMAKE_TOOLCHAIN_FILE}\")\n")
 	endif()
