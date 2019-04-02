@@ -81,6 +81,8 @@ jobs:
             *)                 make "${TARGET}" ;;
           esac
         done
+      cd $(Build.SourcesDirectory)/download
+      sha256sum android-platform-*.tar.gz > android-platform.sums
     displayName: 'Download sources'
     env:
       VERBOSE: ''
