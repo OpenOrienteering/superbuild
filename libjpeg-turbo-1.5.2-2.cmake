@@ -83,7 +83,8 @@ superbuild_package(
       "${CMAKE_COMMAND}"
         -Dpackage=libjpeg-turbo-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
-  
+    COMMAND
+      sed -e "/^PKG_PROG_PKG_CONFIG/d" -i -- configure
   
   USING            USE_SYSTEM_LIBJPEG NASM_EXECUTABLE patch_version
   BUILD_CONDITION  ${test_system_jpeg}
