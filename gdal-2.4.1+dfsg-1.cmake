@@ -113,11 +113,11 @@ superbuild_package(
   BUILD_CONDITION  ${test_system_gdal}
   BUILD [[
     # Cannot do out-of-source build of gdal
-    UPDATE_COMMAND
+    CONFIGURE_COMMAND
       "${CMAKE_COMMAND}" -E make_directory "${BINARY_DIR}"
     COMMAND
       "${CMAKE_COMMAND}" -E copy_directory "${SOURCE_DIR}" "${BINARY_DIR}"
-    CONFIGURE_COMMAND
+    COMMAND
       "${BINARY_DIR}/configure"
         "--prefix=${CMAKE_INSTALL_PREFIX}"
         $<$<BOOL:@CMAKE_CROSSCOMPILING@>:
