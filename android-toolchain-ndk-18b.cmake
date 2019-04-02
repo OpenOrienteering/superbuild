@@ -164,6 +164,15 @@ if(NOT ANDROID_NDK_ROOT)
 	# For GPL compliance, allow building libc++ from source.
 	option(ANDROID_BUILD_LIBCXX OFF "Rebuild libc++ for Android from source")
 	if(ANDROID_BUILD_LIBCXX)
+		if(EXISTS "${SUPERBUILD_DOWNLOAD_DIR}/android-platform.sums")
+			message(STATUS "Using android-platform.sums")
+			file(STRINGS "${SUPERBUILD_DOWNLOAD_DIR}/android-platform.sums" sums)
+			foreach(string IN LISTS sums)
+				if(string MATCHES "^([0-9a-f]*)  *(android-platform-[-_.0-9a-z]*).tar.gz")
+					set(${CMAKE_MATCH_2}_hash URL_HASH SHA256=${CMAKE_MATCH_1})
+				endif()
+			endforeach()
+		endif()
 		# For commit IDs cf. git tags or NDK's prebuilt/linux-x86_64/repo.prop
 		superbuild_package(
 		  NAME         android-platform-bionic
@@ -171,6 +180,7 @@ if(NOT ANDROID_NDK_ROOT)
 		  SOURCE
 		    DOWNLOAD_NAME android-platform-bionic_${ANDROID_NDK_VERSION}.tar.gz
 		    URL           https://android.googlesource.com/platform/bionic/+archive/${ANDROID_NDK_VERSION}.tar.gz
+		    ${android-platform-bionic_${ANDROID_NDK_VERSION}_hash}
 		    DOWNLOAD_NO_EXTRACT 1
 		)
 		
@@ -180,6 +190,7 @@ if(NOT ANDROID_NDK_ROOT)
 		  SOURCE
 		    DOWNLOAD_NAME android-platform-external-libcxx_${ANDROID_NDK_VERSION}.tar.gz
 		    URL           https://android.googlesource.com/platform/external/libcxx/+archive/${ANDROID_NDK_VERSION}.tar.gz
+		    ${android-platform-external-libcxx_${ANDROID_NDK_VERSION}_hash}
 		    DOWNLOAD_NO_EXTRACT 1
 		)
 	
@@ -189,6 +200,7 @@ if(NOT ANDROID_NDK_ROOT)
 		  SOURCE
 		    DOWNLOAD_NAME android-platform-external-libcxxabi_${ANDROID_NDK_VERSION}.tar.gz
 		    URL           https://android.googlesource.com/platform/external/libcxxabi/+archive/${ANDROID_NDK_VERSION}.tar.gz
+		    ${android-platform-external-libcxxabi_${ANDROID_NDK_VERSION}_hash}
 		    DOWNLOAD_NO_EXTRACT 1
 		)
 	
@@ -198,6 +210,7 @@ if(NOT ANDROID_NDK_ROOT)
 		  SOURCE
 		    DOWNLOAD_NAME android-platform-external-libunwind_llvm_${ANDROID_NDK_VERSION}.tar.gz
 		    URL           https://android.googlesource.com/platform/external/libunwind_llvm/+archive/${ANDROID_NDK_VERSION}.tar.gz
+		    ${android-platform-external-libunwind_llvm_${ANDROID_NDK_VERSION}_hash}
 		    DOWNLOAD_NO_EXTRACT 1
 		)
 	
@@ -215,22 +228,22 @@ if(NOT ANDROID_NDK_ROOT)
 		      "${CMAKE_COMMAND}" -E make_directory "<SOURCE_DIR>/bionic"
 		    COMMAND
 		      "${CMAKE_COMMAND}" -E chdir "<SOURCE_DIR>/bionic"
-		        "${CMAKE_COMMAND}" -E tar xvzf "${SUPERBUILD_DOWNLOAD_DIR}/android-platform-bionic_${ANDROID_NDK_VERSION}.tar.gz"
+		        "${CMAKE_COMMAND}" -E tar xvf "${SUPERBUILD_DOWNLOAD_DIR}/android-platform-bionic_${ANDROID_NDK_VERSION}.tar.gz"
 		    COMMAND
 		      "${CMAKE_COMMAND}" -E make_directory "<SOURCE_DIR>/external/libcxx"
 		    COMMAND
 		      "${CMAKE_COMMAND}" -E chdir "<SOURCE_DIR>/external/libcxx"
-		        "${CMAKE_COMMAND}" -E tar xvzf "${SUPERBUILD_DOWNLOAD_DIR}/android-platform-external-libcxx_${ANDROID_NDK_VERSION}.tar.gz"
+		        "${CMAKE_COMMAND}" -E tar xvf "${SUPERBUILD_DOWNLOAD_DIR}/android-platform-external-libcxx_${ANDROID_NDK_VERSION}.tar.gz"
 		    COMMAND
 		      "${CMAKE_COMMAND}" -E make_directory "<SOURCE_DIR>/external/libcxxabi"
 		    COMMAND
 		      "${CMAKE_COMMAND}" -E chdir "<SOURCE_DIR>/external/libcxxabi"
-		        "${CMAKE_COMMAND}" -E tar xvzf "${SUPERBUILD_DOWNLOAD_DIR}/android-platform-external-libcxxabi_${ANDROID_NDK_VERSION}.tar.gz"
+		        "${CMAKE_COMMAND}" -E tar xvf "${SUPERBUILD_DOWNLOAD_DIR}/android-platform-external-libcxxabi_${ANDROID_NDK_VERSION}.tar.gz"
 		    COMMAND
 		      "${CMAKE_COMMAND}" -E make_directory "<SOURCE_DIR>/external/libunwind_llvm"
 		    COMMAND
 		      "${CMAKE_COMMAND}" -E chdir "<SOURCE_DIR>/external/libunwind_llvm"
-		        "${CMAKE_COMMAND}" -E tar xvzf "${SUPERBUILD_DOWNLOAD_DIR}/android-platform-external-libunwind_llvm_${ANDROID_NDK_VERSION}.tar.gz"
+		        "${CMAKE_COMMAND}" -E tar xvf "${SUPERBUILD_DOWNLOAD_DIR}/android-platform-external-libunwind_llvm_${ANDROID_NDK_VERSION}.tar.gz"
 		    COMMAND
 		      "${CMAKE_COMMAND}" -E create_symlink "<SOURCE_DIR>/../android-${ANDROID_NDK_VERSION}" "android-${ANDROID_NDK_VERSION}"
 		    COMMAND
