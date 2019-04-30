@@ -2506,6 +2506,8 @@ License: MIT (tinycbor)
 Files: src/3rdparty/wintab/*
 Copyright: 1991-1998 by LCS/Telegraphics.
 License: public-domain
+ The text and information contained in this file may be freely used,
+ copied, or distributed without compensation or licensing restrictions.
 
 Files: src/corelib/codecs/qbig5codec.cpp
 Copyright: 2000  Ming-Che Chuang
