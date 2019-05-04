@@ -173,12 +173,6 @@ jobs:
       esac
     displayName: 'Prepare build tools'
 
-  - bash: |
-      set -x
-      set -e
-      sed -i -e 's, install/fast, package/fast,;/DESTDIR=/d' openorienteering-mapper-git.cmake
-    displayName: 'Patch'
-
   - task: CMake@1
     inputs:
       workingDirectory: 'build'
@@ -191,6 +185,7 @@ jobs:
         -DMapper_GIT_QT_VERSION=5.12
         -DMapper_GIT_LICENSING_PROVIDER=superbuild
         -DMapper_GIT_ENABLE_POSITIONING=ON
+        -DMapper_GIT_ENABLE_INSTALL=OFF
         $(cmakeArgs)
     displayName: 'Configure'
 
