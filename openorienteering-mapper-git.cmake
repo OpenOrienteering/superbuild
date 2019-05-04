@@ -38,6 +38,7 @@ set(Mapper_GIT_LICENSING_PROVIDER "superbuild" CACHE STRING "Mapper (git): Provi
 set(Mapper_GIT_QT_VERSION 5.12 CACHE STRING "Mapper (git): Qt version")
 option(Mapper_GIT_ENABLE_POSITIONING "Mapper: Enable positioning" OFF)
 option(Mapper_GIT_MANUAL_PDF "Mapper (git): Provide the manual as PDF file (needs pdflatex)" OFF)
+set(Mapper_GIT_GDAL_DATA_DIR "NOTFOUND" CACHE STRING "Mapper (git): GDAL data directory")
 
 foreach(git_tag ${Mapper_GIT_TAGS})
 	string(MAKE_C_IDENTIFIER "git-${git_tag}" version)
@@ -69,6 +70,7 @@ foreach(git_tag ${Mapper_GIT_TAGS})
 	                   Mapper_GIT_LICENSING_PROVIDER
 	                   Mapper_GIT_ENABLE_POSITIONING
 	                   Mapper_GIT_MANUAL_PDF
+	                   Mapper_GIT_GDAL_DATA_DIR
 	  BUILD [[
 	    CMAKE_ARGS
 	      "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
@@ -81,6 +83,7 @@ foreach(git_tag ${Mapper_GIT_TAGS})
 	      "-DMapper_BUILD_PACKAGE=1"
 	      "-DMapper_VERSION_DISPLAY=${version}"
 	      "-DMapper_MANUAL_PDF=$<BOOL:@Mapper_GIT_MANUAL_PDF@>"
+	      "-DGDAL_DATA_DIR=${Mapper_GIT_GDAL_DATA_DIR}"
 	    $<$<BOOL:@ANDROID@>:
 	      "-DCMAKE_DISABLE_FIND_PACKAGE_Qt5PrintSupport=TRUE"
 	      "-DKEYSTORE_URL=${ANDROID_KEYSTORE_URL}"
