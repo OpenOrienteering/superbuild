@@ -39,6 +39,7 @@ set(Mapper_GIT_QT_VERSION 5.12 CACHE STRING "Mapper (git): Qt version")
 option(Mapper_GIT_ENABLE_POSITIONING "Mapper: Enable positioning" OFF)
 option(Mapper_GIT_MANUAL_PDF "Mapper (git): Provide the manual as PDF file (needs pdflatex)" OFF)
 set(Mapper_GIT_GDAL_DATA_DIR "NOTFOUND" CACHE STRING "Mapper (git): GDAL data directory")
+option(Mapper_GIT_ENABLE_INSTALL "Mapper (git): Enable installation step" ON)
 
 foreach(git_tag ${Mapper_GIT_TAGS})
 	string(MAKE_C_IDENTIFIER "git-${git_tag}" version)
@@ -71,6 +72,7 @@ foreach(git_tag ${Mapper_GIT_TAGS})
 	                   Mapper_GIT_ENABLE_POSITIONING
 	                   Mapper_GIT_MANUAL_PDF
 	                   Mapper_GIT_GDAL_DATA_DIR
+	                   Mapper_GIT_ENABLE_INSTALL
 	  BUILD [[
 	    CMAKE_ARGS
 	      "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
@@ -99,9 +101,11 @@ foreach(git_tag ${Mapper_GIT_TAGS})
 	      "-DCMAKE_PROGRAM_PATH=@HOST_DIR@/bin"
 	    >
 	    INSTALL_COMMAND
+	  $<$<NOT:$<BOOL:@Mapper_GIT_ENABLE_INSTALL@>>:"">$<$<BOOL:@Mapper_GIT_ENABLE_INSTALL@>:
 	      "${CMAKE_COMMAND}" --build . --target install/fast -- VERBOSE=1
 	        # Mapper Windows installation layout is weird
 	        "DESTDIR=${DESTDIR}${INSTALL_DIR}$<$<BOOL:@WIN32@>:/OpenOrienteering>"
+	  >
 	  $<$<NOT:$<BOOL:@CMAKE_CROSSCOMPILING@>>:
 	    TEST_COMMAND
 	      "${CMAKE_CTEST_COMMAND}" -T Test --no-compress-output
