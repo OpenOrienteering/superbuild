@@ -37,7 +37,6 @@ set(documentation
 )
 set(ci
   ci/azure-pipelines.yml
-  ci/num_jobs.cmake
 )
 
 set(SUPERBUILD_DOWNLOAD_DIR "${PROJECT_SOURCE_DIR}" CACHE PATH
