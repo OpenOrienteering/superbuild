@@ -104,34 +104,38 @@ jobs:
     matrix:
       macOS:
         imageName: 'macos-10.13'
+        SUPERBUILD_INSTALL_DIR: /Users/vsts/superbuild/install
         cmakeArgs: >
           -DUSE_SYSTEM_LZMA=OFF
-          -DMapper_GIT_GDAL_DATA_DIR=$(Build.SourcesDirectory)/build/default/install/share/gdal
+          -DMapper_GIT_GDAL_DATA_DIR=$(SUPERBUILD_INSTALL_DIR)/share/gdal
         targetSuffix:
         BUILD_COMMAND: make -j5
       Linux-x64:
         imageName: 'ubuntu-16.04'
+        SUPERBUILD_INSTALL_DIR: /home/vsts/superbuild/install
         cmakeArgs:
         targetSuffix:
       MinGW-x64:
         imageName: 'ubuntu-16.04'
+        SUPERBUILD_INSTALL_DIR: /home/vsts/superbuild/install
         cmakeArgs: >
           -DENABLE_x86_64-w64-mingw32=1
-          -Dx86_64-w64-mingw32_INSTALL_DIR=$(Build.SourcesDirectory)/build/default/install/x86_64-w64-mingw32
+          -Dx86_64-w64-mingw32_INSTALL_DIR=$(SUPERBUILD_INSTALL_DIR)/x86_64-w64-mingw32
           -Dx86_64-w64-mingw32_INSTALL_PREFIX=/usr
-          -Dx86_64-w64-mingw32_TOOLCHAIN_DIR=$(Build.SourcesDirectory)/build/default/install/x86_64-w64-mingw32/toolchain
+          -Dx86_64-w64-mingw32_TOOLCHAIN_DIR=$(SUPERBUILD_INSTALL_DIR)/x86_64-w64-mingw32/toolchain
           -Dmingw-w64_FIX_HEADERS=1
-          -DMapper_GIT_GDAL_DATA_DIR=$(Build.SourcesDirectory)/build/default/install/x86_64-w64-mingw32/usr/share/gdal
+          -DMapper_GIT_GDAL_DATA_DIR=$(SUPERBUILD_INSTALL_DIR)/x86_64-w64-mingw32/usr/share/gdal
         targetSuffix: '-x86_64-w64-mingw32'
       Android-armv7:
         imageName: 'macos-10.13'
+        SUPERBUILD_INSTALL_DIR: /Users/vsts/superbuild/install
         cmakeArgs: >
           -DENABLE_arm-linux-androideabi=1
-          -Darm-linux-androideabi_INSTALL_DIR=$(Build.SourcesDirectory)/build/default/install/arm-linux-androideabi
+          -Darm-linux-androideabi_INSTALL_DIR=$(SUPERBUILD_INSTALL_DIR)/arm-linux-androideabi
           -Darm-linux-androideabi_INSTALL_PREFIX=/usr
-          -Darm-linux-androideabi_TOOLCHAIN_DIR=$(Build.SourcesDirectory)/build/default/install/arm-linux-androideabi/toolchain
+          -Darm-linux-androideabi_TOOLCHAIN_DIR=$(SUPERBUILD_INSTALL_DIR)/arm-linux-androideabi/toolchain
           -DANDROID_BUILD_LIBCXX=1
-          -DMapper_GIT_GDAL_DATA_DIR=$(Build.SourcesDirectory)/build/default/install/arm-linux-androideabi/usr/share/gdal
+          -DMapper_GIT_GDAL_DATA_DIR=$(SUPERBUILD_INSTALL_DIR)/arm-linux-androideabi/usr/share/gdal
         targetSuffix: '-arm-linux-androideabi'
         BUILD_COMMAND: make -j5
 
@@ -157,7 +161,7 @@ jobs:
             '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxrender-dev libxi-dev
           sudo update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
           # System libraries, but expected to have superbuild copyright files
-          DEST=$(Build.SourcesDirectory)/build/default/install/share/doc/copyright
+          DEST=${SUPERBUILD_INSTALL_DIR}/share/doc/copyright
           mkdir -p ${DEST}
           cp /usr/share/doc/libexpat1/copyright      ${DEST}/expat-$(imageName).txt
           cp /usr/share/doc/libjpeg-turbo8/copyright ${DEST}/libjpeg-turbo-$(imageName).txt
@@ -167,6 +171,9 @@ jobs:
           cp /usr/share/doc/libtiff5/copyright       ${DEST}/tiff-$(imageName).txt
           cp /usr/share/doc/mingw-w64-x86-64-dev/copyright  ${DEST}/mingw-w64-x86-64-$(imageName).txt
           cp /usr/share/doc/zlib1g/copyright         ${DEST}/zlib-$(imageName).txt
+          # Stop Mapper's DEB packaging from failing (due to dependencies from superbuild)
+          mkdir -p build/default/toolchain/bin
+          ln -s /bin/true build/default/toolchain/bin/dpkg-shlibdeps
           ;;
         macos-*)
           sudo xcode-select -s /Applications/Xcode_10.1.app/Contents/Developer
@@ -184,6 +191,8 @@ jobs:
         -G "Unix Makefiles"
         -DCMAKE_BUILD_TYPE=Release
         -DSUPERBUILD_DOWNLOAD_DIR=$(Build.SourcesDirectory)/download
+        -Ddefault_INSTALL_DIR=
+        -Ddefault_INSTALL_PREFIX=$(SUPERBUILD_INSTALL_DIR)
         -DUSE_SYSTEM_PCRE2=FALSE
         -DMapper_GIT_QT_VERSION=5.12
         -DMapper_GIT_LICENSING_PROVIDER=superbuild
@@ -219,8 +228,6 @@ jobs:
       echo "##vso[task.setVariable variable=createArtifacts]$(openorienteering.superbuild.createArtifacts)"
     env:
       CTEST_OUTPUT_ON_FAILURE: 1
-      DYLD_LIBRARY_PATH: $(Build.SourcesDirectory)/build/default/install/lib
-      LD_LIBRARY_PATH: $(Build.SourcesDirectory)/build/default/install/lib
     timeoutInMinutes: 120
     displayName: 'Build'
 
@@ -237,6 +244,6 @@ jobs:
   - task: PublishPipelineArtifact@0
     inputs:
       artifactName: 'superbuild-$(imageName)$(targetSuffix)'
-      targetPath: $(Build.SourcesDirectory)/build/default/install
+      targetPath: $(SUPERBUILD_INSTALL_DIR)
     condition: and(succeeded(), in(variables['createArtifacts'], '1', 'on', 'true', 'yes'))
     displayName: 'Publish binary artifacts'
