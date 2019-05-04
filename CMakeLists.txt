@@ -37,6 +37,11 @@ set(documentation
 )
 set(ci
   ci/azure-pipelines.yml
+  ci/build.yml
+  ci/publish.yml
+  ci/setup-macos.yml
+  ci/setup-ubuntu.yml
+  ci/source.yml
 )
 
 set(SUPERBUILD_DOWNLOAD_DIR "${PROJECT_SOURCE_DIR}" CACHE PATH

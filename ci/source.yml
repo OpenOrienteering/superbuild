@@ -1,0 +1,86 @@
+# This file is part of OpenOrienteering.
+
+# Copyright 2019 Kai Pastor
+#
+# Redistribution and use is allowed according to the terms of the BSD license:
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+# 
+# 1. Redistributions of source code must retain the copyright
+#    notice, this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+# 3. The name of the author may not be used to endorse or promote products 
+#    derived from this software without specific prior written permission.
+# 
+# THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+# IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+# OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+# IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+# NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+# THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+steps:
+- task: DownloadPipelineArtifact@0
+  inputs:
+    pipelineId: $(openorienteering.superbuild.pipelineId)
+    artifactName: 'superbuild-source'
+    targetPath: $(Build.SourcesDirectory)/download
+  displayName: 'Download previous source artifact'
+  condition: variables['openorienteering.superbuild.pipelineId']
+
+- task: CMake@1
+  inputs:
+    workingDirectory: $(Build.SourcesDirectory)/build
+    cmakeArgs: >
+      $(Build.SourcesDirectory)
+      -G "Unix Makefiles"
+      -DCMAKE_BUILD_TYPE=Release
+      -DSUPERBUILD_DOWNLOAD_DIR=$(Build.SourcesDirectory)/download
+      -DSUPERBUILD_DISABLE_DEPENDENCIES=TRUE
+      -DENABLE_arm-linux-androideabi=1
+      -DANDROID_BUILD_LIBCXX=1
+      -DENABLE_x86_64-w64-mingw32=1
+      -Dx86_64-w64-mingw32-gcc_EXECUTABLE=not-needed
+      -Dx86_64-w64-mingw32-g++_EXECUTABLE=not-needed
+      -Dx86_64-w64-mingw32-windres_EXECUTABLE=not-needed
+  displayName: 'Configure for downloading sources'
+
+- bash: |
+    set -x
+    set -e
+    cd $(Build.SourcesDirectory)/build
+    make help | \
+      grep -- '-source' | \
+      sort | \
+      while read DOTS TARGET; do
+        case "${TARGET}" in
+          *-git-*)           continue ;;
+          *-toolchain-ndk-*) continue ;;
+          android-libcxx-*)  continue ;;
+          android-ndk-*)     continue ;;
+          android-sdk-*)     continue ;;
+          openorienteering*) continue ;;
+          qt*-5.6.*)         continue ;;
+          *)                 make "${TARGET}" ;;
+        esac
+      done
+    cd $(Build.SourcesDirectory)/download
+    sha256sum android-platform-*.tar.gz > android-platform.sums
+  displayName: 'Download sources'
+  env:
+    VERBOSE: ''
+
+- task: PublishPipelineArtifact@0
+  inputs:
+    artifactName: 'superbuild-source'
+    targetPath: $(Build.SourcesDirectory)/download
+  displayName: 'Publish source artifact'
+
