@@ -97,6 +97,8 @@ jobs:
 - job: Superbuild
   timeoutInMinutes: 120
   dependsOn: Source
+  variables:
+    BUILD_COMMAND: make -j3
 
   strategy:
     matrix:
@@ -105,6 +107,7 @@ jobs:
         cmakeArgs: >
           -DUSE_SYSTEM_LZMA=OFF
         targetSuffix:
+        BUILD_COMMAND: make -j5
       Linux-x64:
         imageName: 'ubuntu-16.04'
         cmakeArgs:
@@ -127,6 +130,7 @@ jobs:
           -Darm-linux-androideabi_TOOLCHAIN_DIR=$(Build.SourcesDirectory)/build/default/install/arm-linux-androideabi/toolchain
           -DANDROID_BUILD_LIBCXX=1
         targetSuffix: '-arm-linux-androideabi'
+        BUILD_COMMAND: make -j5
 
   pool:
     vmImage: $(imageName)
@@ -173,7 +177,6 @@ jobs:
       set -x
       set -e
       sed -i -e 's, install/fast, package/fast,;/DESTDIR=/d' openorienteering-mapper-git.cmake
-      cp ci/num_jobs.cmake .
     displayName: 'Patch'
 
   - task: CMake@1
@@ -195,7 +198,7 @@ jobs:
       set -x
       set -e
       cd $(Build.SourcesDirectory)/build
-      make `cat num_jobs` \
+      ${BUILD_COMMAND} \
         toolchain-info$(targetSuffix) \
         $(openorienteering.superbuild.target)$(targetSuffix)
       rm -Rf default/install/tmp
