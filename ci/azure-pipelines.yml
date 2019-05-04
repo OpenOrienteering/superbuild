@@ -106,6 +106,7 @@ jobs:
         imageName: 'macos-10.13'
         cmakeArgs: >
           -DUSE_SYSTEM_LZMA=OFF
+          -DMapper_GIT_GDAL_DATA_DIR=$(Build.SourcesDirectory)/build/default/install/share/gdal
         targetSuffix:
         BUILD_COMMAND: make -j5
       Linux-x64:
@@ -120,6 +121,7 @@ jobs:
           -Dx86_64-w64-mingw32_INSTALL_PREFIX=/usr
           -Dx86_64-w64-mingw32_TOOLCHAIN_DIR=$(Build.SourcesDirectory)/build/default/install/x86_64-w64-mingw32/toolchain
           -Dmingw-w64_FIX_HEADERS=1
+          -DMapper_GIT_GDAL_DATA_DIR=$(Build.SourcesDirectory)/build/default/install/x86_64-w64-mingw32/usr/share/gdal
         targetSuffix: '-x86_64-w64-mingw32'
       Android-armv7:
         imageName: 'macos-10.13'
@@ -129,6 +131,7 @@ jobs:
           -Darm-linux-androideabi_INSTALL_PREFIX=/usr
           -Darm-linux-androideabi_TOOLCHAIN_DIR=$(Build.SourcesDirectory)/build/default/install/arm-linux-androideabi/toolchain
           -DANDROID_BUILD_LIBCXX=1
+          -DMapper_GIT_GDAL_DATA_DIR=$(Build.SourcesDirectory)/build/default/install/arm-linux-androideabi/usr/share/gdal
         targetSuffix: '-arm-linux-androideabi'
         BUILD_COMMAND: make -j5
 
