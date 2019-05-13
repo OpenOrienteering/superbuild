@@ -49,12 +49,12 @@ string(CONFIGURE [[
 			  NO_CMAKE_SYSTEM_PATH
 			  NO_SYSTEM_ENVIRONMENT_PATH
 			)
-			find_package(${module} ${Qt5Core_VERSION_MAJOR}.${Qt5Core_VERSION_MINOR} CONFIG REQUIRED
+			find_package(${module} ${Qt5Core_VERSION_MAJOR}.${Qt5Core_VERSION_MINOR} CONFIG
 			  NO_CMAKE_FIND_ROOT_PATH
 			  NO_CMAKE_SYSTEM_PATH
 			  NO_SYSTEM_ENVIRONMENT_PATH
 			)
-			string(FIND "${{module}_INCLUDE_DIRS}" "${CMAKE_STAGING_PREFIX}/" staging_prefix_start)
+			string(FIND "${${module}_INCLUDE_DIRS}" "${CMAKE_STAGING_PREFIX}/" staging_prefix_start)
 			if(${module}_VERSION AND NOT staging_prefix_start EQUAL 0)
 				message(STATUS "Found ${SYSTEM_NAME} ${module}: ${${module}_VERSION}")
 				set(BUILD_CONDITION 0)
