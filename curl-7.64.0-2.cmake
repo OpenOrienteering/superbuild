@@ -27,11 +27,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        7.52.1)
-set(download_hash  SHA256=a8984e8b20880b621f61a62d95ff3c0763a3152093a9f9ce4287cfd614add6ae)
-set(patch_version  ${version}-5+deb9u4)
-set(patch_hash     SHA256=50bbcad2b04c6d45a97b85fc78822ad8cf8e3cc0c7d470fa92080e00b59791e1)
-set(patch_base_url ${SUPERBUILD_DEBIAN_SECURITY_URL_2018_02})
+set(version        7.64.0)
+set(download_hash  SHA256=cb90d2eb74d4e358c1ed1489f8e3af96b50ea4374ad71f143fa4595e998d81b5)
+set(patch_version  ${version}-2)
+set(patch_hash     SHA256=6173fb436e8bcea616e9bfc29eaddb25498b3a95cd5451d4cef83d957217fabe)
+set(base_url       https://snapshot.debian.org/archive/debian/20190308T031747Z/pool/main/c/curl)
 
 option(USE_SYSTEM_CURL "Use the system curl if possible" ON)
 
@@ -53,7 +53,7 @@ superbuild_package(
   VERSION        ${patch_version}
   
   SOURCE
-    URL            ${patch_base_url}/pool/updates/main/c/curl/curl_${patch_version}.debian.tar.xz
+    URL            ${base_url}/curl_${patch_version}.debian.tar.xz
     URL_HASH       ${patch_hash}
 )
   
@@ -65,7 +65,7 @@ superbuild_package(
     zlib
   
   SOURCE
-    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_06}/pool/main/c/curl/curl_${version}.orig.tar.gz
+    URL            ${base_url}/curl_${version}.orig.tar.gz
     URL_HASH       ${download_hash}
     PATCH_COMMAND
       "${CMAKE_COMMAND}"
@@ -86,6 +86,7 @@ superbuild_package(
         --disable-largefile
         --enable-shared
         --disable-static
+        --enable-pthreads
         --enable-threadsafe
         --disable-ldap
         --disable-ldaps
