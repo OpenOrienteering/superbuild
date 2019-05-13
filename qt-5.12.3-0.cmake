@@ -466,30 +466,31 @@ superbuild_package(
   BUILD_CONDITION  ${use_system_qt}
   BUILD [[
     CONFIGURE_COMMAND
-      "@qmake@" "${SOURCE_DIR}"
+      "${CMAKE_COMMAND}" -E make_directory src/assistant
+    COMMAND
+      "${CMAKE_COMMAND}" -E chdir src/assistant "@qmake@" "${SOURCE_DIR}/src/assistant"
+    COMMAND
+      "${CMAKE_COMMAND}" -E make_directory src/linguist
+    COMMAND
+      "${CMAKE_COMMAND}" -E chdir src/linguist "@qmake@" "${SOURCE_DIR}/src/linguist"
     BUILD_COMMAND
-      "$(MAKE)"
-    $<$<NOT:$<BOOL:@ANDROID@>>:
-    COMMAND
-      "$(MAKE)" -C src/assistant sub-assistant
-    COMMAND
-      "$(MAKE)" -C src/assistant sub-qcollectiongenerator
-    COMMAND
-      "$(MAKE)" -C src/assistant sub-qhelpgenerator
-    COMMAND
-      "$(MAKE)" -C src/linguist sub-linguist
+      "$(MAKE)" -C src/linguist
+    $<$<NOT:$<BOOL:@ANDROID@>>:COMMAND
+      "$(MAKE)" -C src/assistant
+        sub-assistant-make_first
+        sub-qcollectiongenerator-make_first
+        sub-qhelpgenerator-make_first
     >
     INSTALL_COMMAND
-      "$(MAKE)" install INSTALL_ROOT=${DESTDIR}
-    $<$<NOT:$<BOOL:@ANDROID@>>:
-    COMMAND
-      "$(MAKE)" -C src/assistant/assistant install INSTALL_ROOT=${DESTDIR}
-    COMMAND
-      "$(MAKE)" -C src/assistant/qcollectiongenerator install INSTALL_ROOT=${DESTDIR}
-    COMMAND
-      "$(MAKE)" -C src/assistant/qhelpgenerator install INSTALL_ROOT=${DESTDIR}
-    COMMAND
-      "$(MAKE)" -C src/linguist/linguist install INSTALL_ROOT=${DESTDIR}
+      "$(MAKE)" -C src/linguist
+        install
+        INSTALL_ROOT=${DESTDIR}
+    $<$<NOT:$<BOOL:@ANDROID@>>:COMMAND
+      "$(MAKE)" -C src/assistant
+         sub-assistant-install_subtargets
+         sub-qcollectiongenerator-install_subtargets
+         sub-qhelpgenerator-install_subtargets
+         INSTALL_ROOT=${DESTDIR}
     >
     COMMAND
       "${CMAKE_COMMAND}" -E copy
