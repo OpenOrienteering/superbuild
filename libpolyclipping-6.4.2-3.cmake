@@ -61,6 +61,7 @@ superbuild_package(
   VERSION        ${patch_version}
   DEPENDS
     source:libpolyclipping-patches-${patch_version}
+    libpolyclipping-cpp-${patch_version}
     common-licenses
   
   SOURCE
@@ -73,20 +74,34 @@ superbuild_package(
     # On Windows, shared libraries count as RUNTIME, not LIBRARY.
     COMMAND
       sed -i -e [[ s/LIBRARY DESTINATION/RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}\/bin" LIBRARY DESTINATION/ ]] cpp/CMakeLists.txt
+)
+
+# Build from a copy of the cpp directory, using ExternalPackage's CMake support
+superbuild_package(
+  NAME           libpolyclipping-cpp
+  VERSION        ${patch_version}
+  DEPENDS
+    source:libpolyclipping-${patch_version}
+    common-licenses
+  
+  SOURCE
+    DOWNLOAD_COMMAND
+      ${CMAKE_COMMAND} -E copy_directory 
+        <SOURCE_DIR>/../libpolyclipping-${patch_version}/cpp
+        <SOURCE_DIR>
   
   USING            USE_SYSTEM_POLYCLIPPING patch_version version
   BUILD_CONDITION  ${test_system_libpolyclipping}
   BUILD [[
-    CONFIGURE_COMMAND
-      "${CMAKE_COMMAND}" "${SOURCE_DIR}/cpp"
-        "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
-        "-DCMAKE_BUILD_TYPE:STRING=$<CONFIG>"
-        "-DBUILD_SHARED_LIBS:BOOL=ON" # install fails for static lib
-        --no-warn-unused-cli
-        # polyclipping uses CMAKE_{INSTALL,STAGING}_PREFIX incorrectly
-        -UCMAKE_STAGING_PREFIX
-        # VERSION is needed in the pkgconfig file
-        "-DVERSION=${version}"
+    CMAKE_ARGS
+      -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+      -DCMAKE_BUILD_TYPE:STRING=$<CONFIG>
+      -DBUILD_SHARED_LIBS:BOOL=ON # install fails for static lib
+      --no-warn-unused-cli
+      # polyclipping uses CMAKE_{INSTALL,STAGING}_PREFIX incorrectly
+      -UCMAKE_STAGING_PREFIX
+      # VERSION is needed in the pkgconfig file
+      -DVERSION=${version}
     INSTALL_COMMAND
       "${CMAKE_COMMAND}" --build . --target install/strip/fast -- "DESTDIR=${DESTDIR}${INSTALL_DIR}"
     COMMAND
