@@ -27,6 +27,10 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+parameters:
+  outputSuffix: $(TARGET_SUFFIX)
+
+
 steps:
 - bash: |
     set -e
@@ -49,7 +53,7 @@ steps:
     # Create published artifacts only when successful until here.
     echo "##vso[task.setVariable variable=CREATE_ARTIFACTS]$(openorienteering.superbuild.createArtifacts)"
     # Ensure that this variable is defined in the current job.
-    echo "##vso[task.setVariable variable=TARGET_SUFFIX]${TARGET_SUFFIX}"
+    echo "##vso[task.setVariable variable=OUTPUT_SUFFIX]${{ parameters.outputSuffix }}"
   displayName: 'Prepare publishing'
 
 - task: PublishTestResults@2
@@ -57,14 +61,14 @@ steps:
     testResultsFormat: 'cTest'
     testResultsFiles: '*/Test.xml'
     searchFolder: '$(testResults)'
-    testRunTitle: '$(IMAGE_NAME)$(TARGET_SUFFIX)'
+    testRunTitle: '$(IMAGE_NAME)$(OUTPUT_SUFFIX)'
     buildPlatform: '$(IMAGE_NAME)'
   condition: variables['testResults']
   displayName: 'Publish test results'
 
 - task: PublishPipelineArtifact@0
   inputs:
-    artifactName: 'superbuild-$(IMAGE_NAME)$(TARGET_SUFFIX)'
+    artifactName: 'superbuild-$(IMAGE_NAME)$(OUTPUT_SUFFIX)'
     targetPath: $(SUPERBUILD_INSTALL_DIR)
   condition: and(succeeded(), in(variables['CREATE_ARTIFACTS'], '1', 'on', 'true', 'yes'))
   displayName: 'Publish binary artifacts'
