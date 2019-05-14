@@ -78,6 +78,8 @@ steps:
   env:
     VERBOSE: ''
 
+- script: git archive --format tar.gz HEAD -o $(Build.SourcesDirectory)/download/openorienteering-superbuild.tar.gz
+
 - task: PublishPipelineArtifact@0
   inputs:
     artifactName: 'superbuild-source'
