@@ -50,7 +50,7 @@ jobs:
         cmakeArgs: >
           -DUSE_SYSTEM_LZMA=OFF
           -DMapper_GIT_GDAL_DATA_DIR=$(SUPERBUILD_INSTALL_DIR)/share/gdal
-        buildCommand: make -j5
+        buildArgs: -j5
     - template: publish.yml
 
 
@@ -60,7 +60,6 @@ jobs:
   variables:
     IMAGE_NAME: 'ubuntu-16.04'
     SUPERBUILD_INSTALL_DIR: /home/vsts/superbuild
-    BUILD_COMMAND: make -j3
   pool:
     vmImage: '$(IMAGE_NAME)'
   steps:
@@ -117,6 +116,5 @@ jobs:
           -D$(TARGET)_TOOLCHAIN_DIR=$(SUPERBUILD_INSTALL_DIR)/$(TARGET)/toolchain
           -DMapper_GIT_GDAL_DATA_DIR=$(SUPERBUILD_INSTALL_DIR)/$(TARGET)/usr/share/gdal
           -DANDROID_BUILD_LIBCXX=1
-        buildCommand: make -j5
+        buildArgs: -j5
     - template: publish.yml
-
