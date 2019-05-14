@@ -1000,12 +1000,23 @@ function(_sb_make_toolchained_build package toolchain)
 		set(CMAKE_COMMAND "${${SYSTEM_NAME}_CMAKE_COMMAND}")
 	endif()
 	
+	set(build_options )
+	if(DEFINED ${SYSTEM_NAME}_CMAKE_GENERATOR)
+		list(APPEND build_options -G "${${SYSTEM_NAME}_CMAKE_GENERATOR}")
+	elseif(SYSTEM_NAME STREQUAL "default")
+		list(APPEND build_options -G "${CMAKE_GENERATOR}")
+	endif()
+	
+	if(DEFINED ${SYSTEM_NAME}_MAKE_PROGRAM)
+		list(APPEND build_options "-DCMAKE_MAKE_PROGRAM=${${SYSTEM_NAME}_MAKE_PROGRAM}")
+	elseif(SYSTEM_NAME STREQUAL "default")
+		list(APPEND build_options "-DCMAKE_MAKE_PROGRAM=${CMAKE_MAKE_PROGRAM}")
+	endif()
+	
 	if(DEFINED ${SYSTEM_NAME}_BUILD_TYPE)
-		set(defined_build_type "-DCMAKE_BUILD_TYPE=${${SYSTEM_NAME}_BUILD_TYPE}")
+		list(APPEND build_options "-DCMAKE_BUILD_TYPE=${${SYSTEM_NAME}_BUILD_TYPE}")
 	elseif(DEFINED CMAKE_BUILD_TYPE)
-		set(defined_build_type "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}")
-	else()
-		set(defined_build_type )
+		list(APPEND build_options "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}")
 	endif()
 	
 	if(NOT DEFINED ${SYSTEM_NAME}_ENV_PATH)
@@ -1034,10 +1045,10 @@ function(_sb_make_toolchained_build package toolchain)
 	  COMMAND ${CMAKE_COMMAND} -E chdir "${tmp_dir}/config/generator"
 	    ${CMAKE_COMMAND} -E env ${define_env}
 	    ${CMAKE_COMMAND} "${PROJECT_BINARY_DIR}/config"
+	      ${build_options}
 	      "-DCMAKE_TOOLCHAIN_FILE:FILEPATH=${toolchain_file}"
 	      "-DSYSTEM_NAME:STRING=${SYSTEM_NAME}"
 	      "-DPACKAGE:STRING=${package}"
-	      ${defined_build_type}
 	      "-DINSTALL_DIR=${install_dir}"
 	      "-DTOOLCHAIN_DIR=${toolchain_dir}"
 	      "-DINSTALL_STAMP_DIR=${install_stamp_dir}"
@@ -1047,6 +1058,7 @@ function(_sb_make_toolchained_build package toolchain)
 	  COMMAND ${CMAKE_COMMAND} -E chdir "${tmp_dir}/config"
 	    ${CMAKE_COMMAND} -E env ${define_env}
 	    ${CMAKE_COMMAND} "${tmp_dir}"
+	      ${build_options}
 	      "-DCMAKE_TOOLCHAIN_FILE:FILEPATH=${toolchain_file}"
 	  WORKING_DIRECTORY "${PROJECT_BINARY_DIR}"
 	  COMMENT "Generating configuration for ${package}${suffix}"
