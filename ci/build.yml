@@ -50,6 +50,7 @@ steps:
       -DMapper_GIT_QT_VERSION=5.12
       -DMapper_GIT_LICENSING_PROVIDER=superbuild
       -DMapper_GIT_ENABLE_POSITIONING=ON
+      -DMapper_GIT_ENABLE_INSTALL=OFF
       -Ddefault_INSTALL_DIR=
       -Ddefault_INSTALL_PREFIX=$(SUPERBUILD_INSTALL_DIR)
       -Ddefault_TOOLCHAIN_DIR=$(SUPERBUILD_INSTALL_DIR)/toolchain
