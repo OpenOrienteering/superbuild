@@ -38,8 +38,10 @@ set(documentation
 set(ci
   ci/azure-pipelines.yml
   ci/build.yml
+  ci/msys2-shell.sh
   ci/publish.yml
   ci/setup-macos.yml
+  ci/setup-msys2.yml
   ci/setup-ubuntu.yml
   ci/source.yml
 )
@@ -578,6 +580,7 @@ set(toolchain_info_var_system  "Variables that describe the system"
   ANDROID
   APPLE
   MINGW
+  MSYS
   UNIX
   WIN32
 )

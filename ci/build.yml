@@ -42,6 +42,7 @@ steps:
 - bash: |
     echo "##vso[task.setVariable variable=PACKAGE_TARGET]$(openorienteering.superbuild.target)${TARGET_SUFFIX}" \
       | sed "s,-package${TARGET_SUFFIX}$,${TARGET_SUFFIX}-package,"
+    echo "##vso[task.setVariable variable=CMAKE_WRAPPING]${CMAKE_WRAPPING}"
     echo "##vso[task.setVariable variable=TARGET_SUFFIX]${TARGET_SUFFIX}"
     echo "##vso[task.setVariable variable=CTEST_OUTPUT_ON_FAILURE]1"
     env
@@ -51,6 +52,7 @@ steps:
   inputs:
     workingDirectory: 'build'
     cmakeArgs: >
+      $(CMAKE_WRAPPING)
       ..
       -DCMAKE_BUILD_TYPE=Release
       -DSUPERBUILD_DOWNLOAD_DIR=$(Build.SourcesDirectory)/download
@@ -69,6 +71,7 @@ steps:
   inputs:
     workingDirectory: 'build'
     cmakeArgs: >
+      $(CMAKE_WRAPPING)
       --build .
       --target toolchain-info$(TARGET_SUFFIX)
       -- ${{ parameters.buildArgs }}
@@ -78,9 +81,9 @@ steps:
   inputs:
     workingDirectory: 'build'
     cmakeArgs: >
+      $(CMAKE_WRAPPING)
       --build .
       --target $(PACKAGE_TARGET)
       -- ${{ parameters.buildArgs }}
   timeoutInMinutes: 120
   displayName: 'Build'
-
