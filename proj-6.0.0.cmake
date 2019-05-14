@@ -113,7 +113,7 @@ superbuild_package(
       -DCMAKE_PROGRAM_PATH=${HOST_DIR}/bin # for sqlite3
       -DPROJ_TESTS=OFF
     >
-    $<$<NOT:$<BOOL:@CMAKE_CROSSCOMPILING@>>:
+    $<$<NOT:$<OR:$<BOOL:@CMAKE_CROSSCOMPILING@>,$<BOOL:@MSYS@>>>:
     TEST_COMMAND
       "${CMAKE_COMMAND}" -E env
         "PROJ_LIB=${DESTDIR}${CMAKE_STAGING_PREFIX}/share/proj"

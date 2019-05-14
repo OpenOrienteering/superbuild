@@ -51,6 +51,9 @@ superbuild_package(
   SOURCE
     URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_06}/pool/main/d/doxygen/doxygen_${version}.orig.tar.gz
     URL_HASH       ${download_hash}
+
+    PATCH_COMMAND sed -i -e "/set.ICONV_DIR/d" CMakeLists.txt
+    COMMAND sed -i -e "/bigobj/d" CMakeLists.txt
   
   USING            USE_SYSTEM_DOXYGEN
   BUILD_CONDITION  ${test_system_doxygen}

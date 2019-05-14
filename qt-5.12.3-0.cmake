@@ -144,6 +144,11 @@ superbuild_package(
       "${CMAKE_COMMAND}"
         -Dpackage=qt-${short_version}-openorienteering-${qtbase_version}/qtbase
         -P "${APPLY_PATCHES_SERIES}"
+    COMMAND
+      # Enforce make for MSYS. Needed for config.tests outside qtbase, e.g. libtiff in qtimageformats
+      # Cf. https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-qt5/0025-qt-5.8.0-force-using-make-on-msys.patch
+      sed -i -e "/MAKEFILE_GENERATOR, MINGW/,/mingw32-make/ s/.equals.QMAKE_HOST.os, Windows./\\!isEmpty(QMAKE_SH)|\\!equals(QMAKE_HOST.os, Windows)/"
+        mkspecs/features/configure_base.prf
   
   USING default crosscompiling windows android macos USE_SYSTEM_QT module short_version qtbase_version
   BUILD_CONDITION  ${use_system_qt}
@@ -206,6 +211,11 @@ superbuild_package(
       -headerdir      "${CMAKE_INSTALL_PREFIX}/include/qt5"
       -libdir         "${CMAKE_INSTALL_PREFIX}/lib"
       -extprefix      "${CMAKE_STAGING_PREFIX}"
+      $<$<BOOL:@MSYS@>:
+        -no-pkg-config
+        -platform  win32-g++
+        -opengl desktop
+      >
       $<@crosscompiling@:
         -no-pkg-config
         -hostprefix "${HOST_PREFIX}"

@@ -88,6 +88,9 @@ superbuild_package(
     COMMAND
       # AWK is not used for ANDROID builds.
       sed -i -e "s,if(UNIX AND AWK),if(UNIX AND AWK AND NOT ANDROID)," CMakeLists.txt
+    COMMAND
+      # MSYS2 on Windows doesn't handle symlinks well.
+      sed -i -e "s, AND NOT MSYS,," CMakeLists.txt
   
   USING            USE_SYSTEM_LIBPNG patch_version
   BUILD_CONDITION  ${test_system_png}
