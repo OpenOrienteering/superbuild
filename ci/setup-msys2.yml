@@ -1,0 +1,98 @@
+# This file is part of OpenOrienteering.
+
+# Copyright 2019 Kai Pastor
+#
+# Redistribution and use is allowed according to the terms of the BSD license:
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+# 
+# 1. Redistributions of source code must retain the copyright
+#    notice, this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+# 3. The name of the author may not be used to endorse or promote products 
+#    derived from this software without specific prior written permission.
+# 
+# THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+# IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+# OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+# IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+# NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+# THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+steps:
+- task: DownloadPipelineArtifact@0
+  inputs:
+    pipelineId: $(openorienteering.superbuild.msysBuildId)
+    artifactName: 'MSYS2-$(MINGW)-base'
+    targetPath: $(SUPERBUILD_INSTALL_DIR_NATIVE)
+  condition: variables['openorienteering.superbuild.msysBuildId']
+  displayName: 'Download MSYS2 base artifacts'
+
+- script: |
+    choco install msys2 --x86 --params="/InstallDir:%SUPERBUILD_INSTALL_DIR_NATIVE% /NoUpdate /NoPath"
+  condition: not(variables['openorienteering.superbuild.msysBuildId'])
+  displayName: 'Install MSYS2'
+
+- script: |
+    set PATH=%SUPERBUILD_INSTALL_DIR_NATIVE%\usr\bin;%WINDIR%\system32;%WINDIR%;%WINDIR%\system32\wbem
+    pacman --noconfirm -Syyuu 2>error.log
+    if errorlevel 1 (
+      type error.log 1>&2
+      exit /b 1
+    ) else (
+      type error.log
+    )
+    %SUPERBUILD_INSTALL_DIR_NATIVE%\usr\bin\pacman --noconfirm -Syuu
+    if msys-%MINGW%==msys-mingw32 (
+      echo ##vso[task.setVariable variable=MSYSTEM_CARCH]i686
+    ) else (
+      echo ##vso[task.setVariable variable=MSYSTEM_CARCH]x86_64
+    )
+  condition: not(variables['openorienteering.superbuild.msysBuildId'])
+  displayName: 'Update MSYS2 and prepare for MinGW'
+
+- script: |
+    set PATH=%SUPERBUILD_INSTALL_DIR_NATIVE%\usr\bin;%WINDIR%\system32;%WINDIR%;%WINDIR%\system32\wbem
+    pacman --noconfirm -S --needed ^
+      bison ^
+      gzip ^
+      make ^
+      patch ^
+      python ^
+      mingw-w64-%MSYSTEM_CARCH%-binutils ^
+      mingw-w64-%MSYSTEM_CARCH%-cmake ^
+      mingw-w64-%MSYSTEM_CARCH%-gcc ^
+      mingw-w64-%MSYSTEM_CARCH%-headers-git ^
+      mingw-w64-%MSYSTEM_CARCH%-libiconv ^
+      mingw-w64-%MSYSTEM_CARCH%-tools-git  ^
+      mingw-w64-%MSYSTEM_CARCH%-winpthreads-git ^
+      2>error.log
+    if errorlevel 1 (
+      type error.log 1>&2
+      exit /b 1
+    ) else (
+      type error.log
+    )
+  condition: not(variables['openorienteering.superbuild.msysBuildId'])
+  displayName: 'Install MSYS2 MinGW packages for OpenOrienteering Superbuild'
+  
+- script: |
+    set PATH=%SUPERBUILD_INSTALL_DIR_NATIVE%\usr\bin;%WINDIR%\system32;%WINDIR%;%WINDIR%\system32\wbem
+    pacman --noconfirm -Scc
+    exit /b 0
+  condition: not(variables['openorienteering.superbuild.msysBuildId'])
+  displayName: 'Reduce installation size for CI'
+
+- task: PublishPipelineArtifact@0
+  inputs:
+    artifactName: 'MSYS2-$(MINGW)-base'
+    targetPath: $(SUPERBUILD_INSTALL_DIR_NATIVE)
+  displayName: 'Publish MSYS2 base artifacts'

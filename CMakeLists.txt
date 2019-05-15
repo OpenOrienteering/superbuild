@@ -38,8 +38,10 @@ set(documentation
 set(ci
   ci/azure-pipelines.yml
   ci/build.yml
+  ci/msys2-shell.sh
   ci/publish.yml
   ci/setup-macos.yml
+  ci/setup-msys2.yml
   ci/setup-ubuntu.yml
   ci/source.yml
 )
@@ -554,6 +556,13 @@ set(toolchain_info_var_behavior  "Variables that change behavior"
     CMAKE_FIND_ROOT_PATH_MODE_PROGRAM
   CMAKE_INSTALL_PREFIX
   CMAKE_STAGING_PREFIX
+  CMAKE PREFIX_PATH
+    CMAKE_APPBUNDLE_PATH
+    CMAKE_FRAMEWORK_PATH
+    CMAKE_IGNORE_PATH
+    CMAKE_INCLUDE_PATH
+    CMAKE_LIBRARY_PATH
+    CMAKE_PROGRAM_PATH
   CMAKE_SYSTEM_PREFIX_PATH
     CMAKE_SYSTEM_APPBUNDLE_PATH
     CMAKE_SYSTEM_FRAMEWORK_PATH
@@ -578,6 +587,7 @@ set(toolchain_info_var_system  "Variables that describe the system"
   ANDROID
   APPLE
   MINGW
+  MSYS
   UNIX
   WIN32
 )
@@ -1000,26 +1010,47 @@ function(_sb_make_toolchained_build package toolchain)
 		set(CMAKE_COMMAND "${${SYSTEM_NAME}_CMAKE_COMMAND}")
 	endif()
 	
+	set(build_options )
+	if(DEFINED ${SYSTEM_NAME}_CMAKE_GENERATOR)
+		list(APPEND build_options -G "${${SYSTEM_NAME}_CMAKE_GENERATOR}")
+	elseif(SYSTEM_NAME STREQUAL "default")
+		list(APPEND build_options -G "${CMAKE_GENERATOR}")
+	endif()
+	
+	if(DEFINED ${SYSTEM_NAME}_MAKE_PROGRAM)
+		list(APPEND build_options "-DCMAKE_MAKE_PROGRAM=${${SYSTEM_NAME}_MAKE_PROGRAM}")
+	elseif(SYSTEM_NAME STREQUAL "default")
+		list(APPEND build_options "-DCMAKE_MAKE_PROGRAM=${CMAKE_MAKE_PROGRAM}")
+	endif()
+	
 	if(DEFINED ${SYSTEM_NAME}_BUILD_TYPE)
-		set(defined_build_type "-DCMAKE_BUILD_TYPE=${${SYSTEM_NAME}_BUILD_TYPE}")
+		list(APPEND build_options "-DCMAKE_BUILD_TYPE=${${SYSTEM_NAME}_BUILD_TYPE}")
 	elseif(DEFINED CMAKE_BUILD_TYPE)
-		set(defined_build_type "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}")
-	else()
-		set(defined_build_type )
+		list(APPEND build_options "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}")
 	endif()
 	
 	if(NOT DEFINED ${SYSTEM_NAME}_ENV_PATH)
-		# Don't add ${HOST_DIR}/bin,
-		# or find_package may pick host packages when cross compiling.
-		set(${SYSTEM_NAME}_ENV_PATH "${toolchain_dir}/bin:$ENV{PATH}")
+		file(TO_CMAKE_PATH "$ENV{PATH}" env_path_cmake)
+		if("${SYSTEM_NAME}" STREQUAL "default")
+			file(TO_CMAKE_PATH "${HOST_DIR}" host_dir_cmake)
+			list(INSERT env_path_cmake 0 "${host_dir_cmake}/bin")
+		endif()
+		file(TO_CMAKE_PATH "${toolchain_dir}" toolchain_dir_cmake)
+		list(INSERT env_path_cmake 0 "${toolchain_dir_cmake}/bin")
+		if(MSYS)
+			set(${SYSTEM_NAME}_ENV_PATH "`cygpath -up '${env_path_cmake}'`")
+		elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+			file(TO_NATIVE_PATH "${env_path_cmake}" ${SYSTEM_NAME}_ENV_PATH)
+		else()
+			string(REPLACE ";" ":" ${SYSTEM_NAME}_ENV_PATH "${env_path_cmake}")
+		endif()
 	endif()
 	
 	set(define_env )
 	foreach(var ${SUPERBUILD_HANDLE_ENV})
 		if(DEFINED ${SYSTEM_NAME}_ENV_${var})
-			list(APPEND define_env "${var}=${${SYSTEM_NAME}_ENV_${var}}")
-		elseif(SYSTEM_NAME STREQUAL "default" AND DEFINED ENV{${var}})
-			list(APPEND define_env "${var}=$ENV{${var}}")
+			string(REPLACE ";" "\;" value "${${SYSTEM_NAME}_ENV_${var}}")
+			list(APPEND define_env "${var}=${value}")
 		endif()
 	endforeach()
 	string(MD5 env_stamp "${define_env}")
@@ -1034,10 +1065,10 @@ function(_sb_make_toolchained_build package toolchain)
 	  COMMAND ${CMAKE_COMMAND} -E chdir "${tmp_dir}/config/generator"
 	    ${CMAKE_COMMAND} -E env ${define_env}
 	    ${CMAKE_COMMAND} "${PROJECT_BINARY_DIR}/config"
+	      ${build_options}
 	      "-DCMAKE_TOOLCHAIN_FILE:FILEPATH=${toolchain_file}"
 	      "-DSYSTEM_NAME:STRING=${SYSTEM_NAME}"
 	      "-DPACKAGE:STRING=${package}"
-	      ${defined_build_type}
 	      "-DINSTALL_DIR=${install_dir}"
 	      "-DTOOLCHAIN_DIR=${toolchain_dir}"
 	      "-DINSTALL_STAMP_DIR=${install_stamp_dir}"
@@ -1047,6 +1078,7 @@ function(_sb_make_toolchained_build package toolchain)
 	  COMMAND ${CMAKE_COMMAND} -E chdir "${tmp_dir}/config"
 	    ${CMAKE_COMMAND} -E env ${define_env}
 	    ${CMAKE_COMMAND} "${tmp_dir}"
+	      ${build_options}
 	      "-DCMAKE_TOOLCHAIN_FILE:FILEPATH=${toolchain_file}"
 	  WORKING_DIRECTORY "${PROJECT_BINARY_DIR}"
 	  COMMENT "Generating configuration for ${package}${suffix}"

@@ -27,13 +27,20 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+parameters:
+  outputSuffix: $(TARGET_SUFFIX)
+
+
 steps:
 - bash: |
     set -e
     set -x
-    TEST_RESULTS="$(Build.SourcesDirectory)/testResults"
+    test -d build/default || exit 0
+    #
+    TEST_RESULTS="${PWD}/testResults"
     rm -Rf "${TEST_RESULTS}"
-    cd $(Build.SourcesDirectory)/build/default
+    #
+    cd build/default
     for I in */Testing/*/Test.xml; do
       if test -f "${I}"; then
         DIR=`echo ${I%/Test.xml} | sed -e 's,/Testing/,_,g'`
@@ -44,27 +51,27 @@ steps:
     #
     set +x # Tracing the echo line may overwrite the desired effect.
     if test -d "${TEST_RESULTS}"; then
-      echo "##vso[task.setVariable variable=testResults]${TEST_RESULTS}"
+      echo "##vso[task.setVariable variable=PUBLISH_TEST_RESULTS]1"
     fi
     # Create published artifacts only when successful until here.
     echo "##vso[task.setVariable variable=CREATE_ARTIFACTS]$(openorienteering.superbuild.createArtifacts)"
     # Ensure that this variable is defined in the current job.
-    echo "##vso[task.setVariable variable=TARGET_SUFFIX]${TARGET_SUFFIX}"
+    echo "##vso[task.setVariable variable=OUTPUT_SUFFIX]${{ parameters.outputSuffix }}"
   displayName: 'Prepare publishing'
 
 - task: PublishTestResults@2
   inputs:
     testResultsFormat: 'cTest'
-    testResultsFiles: '*/Test.xml'
-    searchFolder: '$(testResults)'
-    testRunTitle: '$(IMAGE_NAME)$(TARGET_SUFFIX)'
+    testResultsFiles: 'testResults/*/Test.xml'
+    searchFolder: '$(Build.SourcesDirectory)'
+    testRunTitle: '$(IMAGE_NAME)$(OUTPUT_SUFFIX)'
     buildPlatform: '$(IMAGE_NAME)'
-  condition: variables['testResults']
+  condition: in(variables['PUBLISH_TEST_RESULTS'], '1', 'on', 'true', 'yes')
   displayName: 'Publish test results'
 
 - task: PublishPipelineArtifact@0
   inputs:
-    artifactName: 'superbuild-$(IMAGE_NAME)$(TARGET_SUFFIX)'
+    artifactName: 'superbuild-$(IMAGE_NAME)$(OUTPUT_SUFFIX)'
     targetPath: $(SUPERBUILD_INSTALL_DIR)
   condition: and(succeeded(), in(variables['CREATE_ARTIFACTS'], '1', 'on', 'true', 'yes'))
   displayName: 'Publish binary artifacts'
