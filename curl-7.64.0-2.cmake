@@ -102,6 +102,11 @@ superbuild_package(
         --disable-manual
         --enable-ipv6
       $<$<STREQUAL:@CMAKE_SYSTEM_NAME@,Windows>:
+        --without-brotli
+        --without-libpsl
+        --without-libidn2
+        --without-nghttp2
+        --without-ssl
         --with-winssl
       > # Windows
       $<$<STREQUAL:@CMAKE_SYSTEM_NAME@,Darwin>:
