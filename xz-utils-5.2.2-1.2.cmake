@@ -71,6 +71,7 @@ superbuild_package(
   DEPENDS
     source:xz-utils-patches-${patch_version}
     common-licenses
+    libiconv
   
   SOURCE
     URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_06}/pool/main/x/xz-utils/xz-utils_${version}.orig.tar.xz

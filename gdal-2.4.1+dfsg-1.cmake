@@ -92,6 +92,7 @@ superbuild_package(
     common-licenses
     curl
     expat
+    libiconv
     libjpeg
     liblzma
     libpng
