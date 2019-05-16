@@ -153,6 +153,9 @@ superbuild_package(
         --without-python
         --without-xerces
         --without-xml2
+      $<$<STREQUAL:@CMAKE_SYSTEM_NAME@,Windows>:
+        --without-crypto
+      > # Windows
         "CPPFLAGS=${SUPERBUILD_CPPFLAGS}"
         "CFLAGS=${SUPERBUILD_CFLAGS}"
         "CXXFLAGS=${SUPERBUILD_CXXFLAGS}"
