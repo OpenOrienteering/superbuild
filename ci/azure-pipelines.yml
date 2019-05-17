@@ -146,6 +146,7 @@ jobs:
           -Ddefault_PREFIX_PATH=$(SUPERBUILD_INSTALL_DIR)/$(MINGW)/superbuild
           -DUSE_SYSTEM_CURL=OFF
           -DUSE_SYSTEM_EXPAT=OFF
+          -DUSE_SYSTEM_LIBICONV=OFF
           -DUSE_SYSTEM_LZMA=OFF
           -DUSE_SYSTEM_ZLIB=OFF
           -DMapper_GIT_LICENSING_PROVIDER=OFF

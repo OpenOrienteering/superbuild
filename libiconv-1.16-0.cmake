@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2017-2019 Kai Pastor
+# Copyright -2019 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -27,53 +27,38 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        7.64.0)
-set(download_hash  SHA256=cb90d2eb74d4e358c1ed1489f8e3af96b50ea4374ad71f143fa4595e998d81b5)
-set(patch_version  ${version}-2)
-set(patch_hash     SHA256=6173fb436e8bcea616e9bfc29eaddb25498b3a95cd5451d4cef83d957217fabe)
-set(base_url       https://snapshot.debian.org/archive/debian/20190308T031747Z/pool/main/c/curl)
+set(version        1.16)
+set(download_hash  SHA256=e6a1b1b589654277ee790cce3734f07876ac4ccfaecbee8afa0b649cf529cc04)
+set(patch_version  ${version}-0)
+set(base_url       https://ftp.gnu.org/pub/gnu/libiconv)
 
-option(USE_SYSTEM_CURL "Use the system curl if possible" ON)
+option(USE_SYSTEM_LIBICONV "Use the system libiconv if possible" ON)
 
-set(test_system_curl [[
-	if(USE_SYSTEM_CURL)
+set(test_system_libiconv [[
+    if(NOT WIN32)
+		set(BUILD_CONDITION 0)
+	elseif(USE_SYSTEM_LIBICONV)
 		enable_language(C)
-		find_package(CURL CONFIG QUIET)
-		find_package(CURL MODULE QUIET)
-		string(FIND "${CURL_INCLUDE_DIRS}" "${CMAKE_STAGING_PREFIX}/" staging_prefix_start)
-		if(CURL_FOUND AND NOT staging_prefix_start EQUAL 0)
-			message(STATUS "Found ${SYSTEM_NAME} curl: ${CURL_LIBRARIES}")
+		find_package(Iconv CONFIG QUIET)
+		find_package(Iconv MODULE QUIET)
+		string(FIND "${Iconv_INCLUDE_DIRS}" "${CMAKE_STAGING_PREFIX}/" staging_prefix_start)
+		if(Iconv_FOUND AND NOT staging_prefix_start EQUAL 0)
+			message(STATUS "Found ${SYSTEM_NAME} Iconv: ${Iconv_LIBRARIES}")
 			set(BUILD_CONDITION 0)
 		endif()
 	endif()
 ]])
 
 superbuild_package(
-  NAME           curl-patches
+  NAME           libiconv
   VERSION        ${patch_version}
   
   SOURCE
-    URL            ${base_url}/curl_${patch_version}.debian.tar.xz
-    URL_HASH       ${patch_hash}
-)
-  
-superbuild_package(
-  NAME           curl
-  VERSION        ${patch_version}
-  DEPENDS
-    source:curl-patches-${patch_version}
-    zlib
-  
-  SOURCE
-    URL            ${base_url}/curl_${version}.orig.tar.gz
+    URL            ${base_url}/libiconv-${version}.tar.gz
     URL_HASH       ${download_hash}
-    PATCH_COMMAND
-      "${CMAKE_COMMAND}"
-        -Dpackage=curl-patches-${patch_version}
-        -P "${APPLY_PATCHES_SERIES}"
   
-  USING            USE_SYSTEM_CURL patch_version
-  BUILD_CONDITION  ${test_system_curl}
+  USING            USE_SYSTEM_LIBICONV
+  BUILD_CONDITION  ${test_system_libiconv}
   BUILD [[
     CONFIGURE_COMMAND
       "${SOURCE_DIR}/configure"
@@ -81,37 +66,8 @@ superbuild_package(
         $<$<BOOL:@CMAKE_CROSSCOMPILING@>:
         --host=${SUPERBUILD_TOOLCHAIN_TRIPLET}
         >
-        --disable-silent-rules
-        --enable-symbol-hiding
-        --disable-largefile
         --enable-shared
         --disable-static
-        --enable-pthreads
-        --enable-threadsafe
-        --disable-ldap
-        --disable-ldaps
-        --disable-rtsp
-        --disable-dict
-        --disable-telnet
-        --disable-tftp
-        --disable-pop3
-        --disable-imap
-        --disable-smb
-        --disable-smtp
-        --disable-gopher
-        --disable-manual
-        --enable-ipv6
-      $<$<STREQUAL:@CMAKE_SYSTEM_NAME@,Windows>:
-        --without-brotli
-        --without-libpsl
-        --without-libidn2
-        --without-nghttp2
-        --without-ssl
-        --with-winssl
-      > # Windows
-      $<$<STREQUAL:@CMAKE_SYSTEM_NAME@,Darwin>:
-        --with-darwinssl
-      > # Darwin
         "CPPFLAGS=${SUPERBUILD_CPPFLAGS}"
         "CFLAGS=${SUPERBUILD_CFLAGS}"
         "LDFLAGS=${SUPERBUILD_LDFLAGS}"
@@ -122,7 +78,11 @@ superbuild_package(
       "$(MAKE)" install "DESTDIR=${DESTDIR}${INSTALL_DIR}"
     COMMAND
       "${CMAKE_COMMAND}" -E copy
-        "<SOURCE_DIR>/../curl-patches-${patch_version}/copyright"
-        "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/curl-${patch_version}.txt"
+        "<SOURCE_DIR>/COPYING.LIB"
+        "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/libiconv-${patch_version}.txt"
+    COMMAND
+      "${CMAKE_COMMAND}" -E copy
+        "<SOURCE_DIR>/COPYING"
+        "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/iconv-${patch_version}.txt"
   ]]
 )

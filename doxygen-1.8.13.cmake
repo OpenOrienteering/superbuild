@@ -46,7 +46,8 @@ set(test_system_doxygen [[
 superbuild_package(
   NAME           doxygen
   VERSION        ${version}
-  DEPENDS        zlib
+  DEPENDS        libiconv
+                 zlib
   
   SOURCE
     URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_06}/pool/main/d/doxygen/doxygen_${version}.orig.tar.gz

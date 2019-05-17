@@ -71,7 +71,6 @@ steps:
       mingw-w64-%MSYSTEM_CARCH%-cmake ^
       mingw-w64-%MSYSTEM_CARCH%-gcc ^
       mingw-w64-%MSYSTEM_CARCH%-headers-git ^
-      mingw-w64-%MSYSTEM_CARCH%-libiconv ^
       mingw-w64-%MSYSTEM_CARCH%-tools-git  ^
       mingw-w64-%MSYSTEM_CARCH%-winpthreads-git ^
       2>error.log
