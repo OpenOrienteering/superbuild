@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright -2019 Kai Pastor
+# Copyright 2019 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -57,7 +57,10 @@ superbuild_package(
     URL            ${base_url}/libiconv-${version}.tar.gz
     URL_HASH       ${download_hash}
   
-  USING            USE_SYSTEM_LIBICONV
+  USING
+    USE_SYSTEM_LIBICONV
+    patch_version
+  
   BUILD_CONDITION  ${test_system_libiconv}
   BUILD [[
     CONFIGURE_COMMAND
