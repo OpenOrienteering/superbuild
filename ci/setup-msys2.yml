@@ -96,15 +96,15 @@ steps:
       mkdir superbuild\share\doc\copyright
     )
     
-    type share\licenses\gcc-libs\README          >  superbuild\share\doc\copyright\gcc-libs.txt
-    echo ---                                     >> superbuild\share\doc\copyright\gcc-libs.txt
-    type share\licenses\gcc-libs\COPYING.RUNTIME >> superbuild\share\doc\copyright\gcc-libs.txt
+    type share\licenses\gcc-libs\README          >  superbuild\share\doc\copyright\gcc-libs-msys2.txt
+    echo ---                                     >> superbuild\share\doc\copyright\gcc-libs-msys2.txt
+    type share\licenses\gcc-libs\COPYING.RUNTIME >> superbuild\share\doc\copyright\gcc-libs-msys2.txt
     REM Deprecation warning: Mapper still looks for gnustl*. It should use gcc-libs* instead.
-    copy superbuild\share\doc\copyright\gcc-libs.txt superbuild\share\doc\copyright\gnustl.txt
+    type superbuild\share\doc\copyright\gcc-libs-msys2.txt > superbuild\share\doc\copyright\gnustl-msys2.txt
     
-    type share\licenses\libwinpthread\mingw-w64-libraries\winpthreads\COPYING >  superbuild\share\doc\copyright\winpthreads.txt
+    type share\licenses\libwinpthread\mingw-w64-libraries\winpthreads\COPYING > superbuild\share\doc\copyright\winpthreads-msys2.txt
     
-    type share\licenses\libwinpthread\COPYING    >  superbuild\share\doc\copyright\mingw-w64.txt
+    type share\licenses\libwinpthread\COPYING > superbuild\share\doc\copyright\mingw-w64-msys2.txt
   displayName: 'Generate copyright files for toolchain libraries'
 
 - task: PublishPipelineArtifact@0

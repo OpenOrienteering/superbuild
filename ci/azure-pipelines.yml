@@ -149,7 +149,6 @@ jobs:
           -DUSE_SYSTEM_LIBICONV=OFF
           -DUSE_SYSTEM_LZMA=OFF
           -DUSE_SYSTEM_ZLIB=OFF
-          -DMapper_GIT_LICENSING_PROVIDER=OFF
           -DMapper_GIT_GDAL_DATA_DIR=$(SUPERBUILD_INSTALL_DIR)/$(MINGW)/superbuild/share/gdal
           -DSUPERBUILD_DOWNLOAD_DIR=../download
     - template: publish.yml
