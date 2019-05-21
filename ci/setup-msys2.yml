@@ -28,6 +28,19 @@
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 steps:
+- script: |
+    echo ##vso[task.setVariable variable=CHERE_INVOKING]enabled_from_arguments
+    echo ##vso[task.setVariable variable=MSYSCON]defterm
+    echo ##vso[task.setVariable variable=CMAKE_WRAPPING]-E env $(SUPERBUILD_INSTALL_DIR_NATIVE)\usr\bin\bash.exe ../ci/msys2-shell.sh cmake
+    if msys-%MINGW%==msys-mingw32 (
+      echo ##vso[task.setVariable variable=MSYSTEM]MINGW32
+      echo ##vso[task.setVariable variable=MSYSTEM_CARCH]i686
+    ) else (
+      echo ##vso[task.setVariable variable=MSYSTEM]MINGW64
+      echo ##vso[task.setVariable variable=MSYSTEM_CARCH]x86_64
+    )
+  displayName: 'Setup MSYS2 environment variables'
+
 - task: DownloadPipelineArtifact@0
   inputs:
     pipelineId: $(openorienteering.superbuild.msysBuildId)
@@ -51,11 +64,6 @@ steps:
       type error.log
     )
     %SUPERBUILD_INSTALL_DIR_NATIVE%\usr\bin\pacman --noconfirm -Syuu
-    if msys-%MINGW%==msys-mingw32 (
-      echo ##vso[task.setVariable variable=MSYSTEM_CARCH]i686
-    ) else (
-      echo ##vso[task.setVariable variable=MSYSTEM_CARCH]x86_64
-    )
   condition: not(variables['openorienteering.superbuild.msysBuildId'])
   displayName: 'Update MSYS2 and prepare for MinGW'
 
