@@ -43,6 +43,42 @@ set(test_system_doxygen [[
 	endif()
 ]])
 
+
+# Fix mingw64 builds
+# https://github.com/msys2/MINGW-packages/blob/b99b3d396d8d3dfcee41548d1b96729464bde4e5/mingw-w64-doxygen/fix-casts.patch
+string(REPLACE ";" "\\\;" fix-casts_patch [[
+--- doxygen-1.8.6/qtools/qcstring.cpp.orig	2013-05-19 19:12:31.000000000 +0400
++++ doxygen-1.8.6/qtools/qcstring.cpp	2014-04-04 06:54:07.313800000 +0400
+@@ -476,7 +476,7 @@
+   if ( to > first && *(to-1) == 0x20 )
+     to--;
+   *to = '\0';
+-  result.resize( (int)((long)to - (long)result.data()) + 1 );
++  result.resize( (int)(reinterpret_cast<intptr_t>(to) - reinterpret_cast<intptr_t>(result.data())) + 1 );
+   return result;
+ }
+ 
+@@ -717,7 +717,7 @@
+     int res;
+     uchar c;
+     if ( !s1 || !s2 )
+-	return s1 == s2 ? 0 : (int)((long)s2 - (long)s1);
++	return s1 == s2 ? 0 : (int)(reinterpret_cast<intptr_t>(s2) - reinterpret_cast<intptr_t>(s1));
+     for ( ; !(res = (c=tolower(*s1)) - tolower(*s2)); s1++, s2++ )
+ 	if ( !c )				// strings are equal
+ 	    break;
+@@ -731,7 +731,7 @@
+     int res;
+     uchar c;
+     if ( !s1 || !s2 )
+-	return (int)((long)s2 - (long)s1);
++	return (int)(reinterpret_cast<uintptr_t>(s2) - reinterpret_cast<uintptr_t>(s1));
+     for ( ; len--; s1++, s2++ ) {
+ 	if ( (res = (c=tolower(*s1)) - tolower(*s2)) )
+ 	    return res;
+]])
+
+
 superbuild_package(
   NAME           doxygen
   VERSION        ${version}
@@ -53,8 +89,15 @@ superbuild_package(
     URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_06}/pool/main/d/doxygen/doxygen_${version}.orig.tar.gz
     URL_HASH       ${download_hash}
 
-    PATCH_COMMAND sed -i -e "/set.ICONV_DIR/d" CMakeLists.txt
-    COMMAND sed -i -e "/bigobj/d" CMakeLists.txt
+    PATCH_COMMAND
+      patch -p1 -i fix-casts.patch
+    COMMAND
+      sed -i -e "/set.ICONV_DIR/d" CMakeLists.txt
+    COMMAND
+      sed -i -e "/bigobj/d" CMakeLists.txt
+  
+  SOURCE_WRITE
+    fix-casts.patch fix-casts_patch
   
   USING            USE_SYSTEM_DOXYGEN
   BUILD_CONDITION  ${test_system_doxygen}

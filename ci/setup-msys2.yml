@@ -28,6 +28,19 @@
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 steps:
+- script: |
+    echo ##vso[task.setVariable variable=CHERE_INVOKING]enabled_from_arguments
+    echo ##vso[task.setVariable variable=MSYSCON]defterm
+    echo ##vso[task.setVariable variable=CMAKE_WRAPPING]-E env $(SUPERBUILD_INSTALL_DIR_NATIVE)\usr\bin\bash.exe ../ci/msys2-shell.sh cmake
+    if msys-%MINGW%==msys-mingw32 (
+      echo ##vso[task.setVariable variable=MSYSTEM]MINGW32
+      echo ##vso[task.setVariable variable=MSYSTEM_CARCH]i686
+    ) else (
+      echo ##vso[task.setVariable variable=MSYSTEM]MINGW64
+      echo ##vso[task.setVariable variable=MSYSTEM_CARCH]x86_64
+    )
+  displayName: 'Setup MSYS2 environment variables'
+
 - task: DownloadPipelineArtifact@0
   inputs:
     pipelineId: $(openorienteering.superbuild.msysBuildId)
@@ -51,11 +64,6 @@ steps:
       type error.log
     )
     %SUPERBUILD_INSTALL_DIR_NATIVE%\usr\bin\pacman --noconfirm -Syuu
-    if msys-%MINGW%==msys-mingw32 (
-      echo ##vso[task.setVariable variable=MSYSTEM_CARCH]i686
-    ) else (
-      echo ##vso[task.setVariable variable=MSYSTEM_CARCH]x86_64
-    )
   condition: not(variables['openorienteering.superbuild.msysBuildId'])
   displayName: 'Update MSYS2 and prepare for MinGW'
 
@@ -90,8 +98,56 @@ steps:
   condition: not(variables['openorienteering.superbuild.msysBuildId'])
   displayName: 'Reduce installation size for CI'
 
+- script: |
+    cd /D %SUPERBUILD_INSTALL_DIR_NATIVE%\%MINGW%
+    if not exist superbuild\share\doc\copyright (
+      mkdir superbuild\share\doc\copyright
+    )
+    
+    type share\licenses\gcc-libs\README          >  superbuild\share\doc\copyright\gcc-libs-msys2.txt
+    echo ---                                     >> superbuild\share\doc\copyright\gcc-libs-msys2.txt
+    type share\licenses\gcc-libs\COPYING.RUNTIME >> superbuild\share\doc\copyright\gcc-libs-msys2.txt
+    REM Deprecation warning: Mapper still looks for gnustl*. It should use gcc-libs* instead.
+    type superbuild\share\doc\copyright\gcc-libs-msys2.txt > superbuild\share\doc\copyright\gnustl-msys2.txt
+    
+    type share\licenses\libwinpthread\mingw-w64-libraries\winpthreads\COPYING > superbuild\share\doc\copyright\winpthreads-msys2.txt
+    
+    type share\licenses\libwinpthread\COPYING > superbuild\share\doc\copyright\mingw-w64-msys2.txt
+  displayName: 'Generate copyright files for toolchain libraries'
+
 - task: PublishPipelineArtifact@0
   inputs:
     artifactName: 'MSYS2-$(MINGW)-base'
     targetPath: $(SUPERBUILD_INSTALL_DIR_NATIVE)
   displayName: 'Publish MSYS2 base artifacts'
+
+- script: |
+    if not exist mingw-source (
+      mkdir mingw-source
+    )
+    cd mingw-source
+    
+    set LANG=C
+    set PATH=%SUPERBUILD_INSTALL_DIR_NATIVE%\usr\bin;%WINDIR%\system32;%WINDIR%;%WINDIR%\system32\wbem
+    pacman -Qo /%MINGW%/bin/libstdc++-6.dll ^
+      | sed "s,-gcc-libs,-gcc," ^
+      | sed "s,^.*owned by mingw-w64-%MSYSTEM_CARCH%,http://repo.msys2.org/mingw/sources/mingw-w64,;s, ,-,;s, *$,.src.tar.gz," > urls.txt
+    pacman -Qo /%MINGW%/bin/libwinpthread-1.dll ^
+      | sed "s,-libwinpthread,-winpthreads," ^
+      | sed "s,^.*owned by mingw-w64-%MSYSTEM_CARCH%,http://repo.msys2.org/mingw/sources/mingw-w64,;s, ,-,;s, *$,.src.tar.gz," >> urls.txt
+    pacman -Qo /%MINGW%/%MSYSTEM_CARCH%-w64-mingw32/include/windows.h ^
+      | sed "s,^.*owned by mingw-w64-%MSYSTEM_CARCH%,http://repo.msys2.org/mingw/sources/mingw-w64,;s, ,-,;s, *$,.src.tar.gz," >> urls.txt
+    
+    type urls.txt
+    wget --no-verbose -i urls.txt 2>&1
+    if errorlevel 1 (
+      echo ##vso[task.LogIssue type=warning]Failed to download some %MINGW% source tarballs.
+      exit /b 0
+    )
+  displayName: 'Get extra source tarballs'
+
+- task: PublishPipelineArtifact@0
+  inputs:
+    artifactName: 'MSYS2-$(MINGW)-source'
+    targetPath: '$(Build.SourcesDirectory)\mingw-source'
+  displayName: 'Publish MSYS2 source artifacts'

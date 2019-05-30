@@ -125,12 +125,8 @@ jobs:
   variables:
     IMAGE_NAME: 'windows-2019'
     MINGW: mingw32
-    MSYSTEM: MINGW32
-    MSYSCON: defterm
-    CHERE_INVOKING: enabled_from_arguments
     SUPERBUILD_INSTALL_DIR: 'C:/msys2'
     SUPERBUILD_INSTALL_DIR_NATIVE: 'C:\msys2'
-    CMAKE_WRAPPING: -E env $(SUPERBUILD_INSTALL_DIR_NATIVE)\usr\bin\bash.exe ../ci/msys2-shell.sh cmake
     VERBOSE: 1
   pool:
     vmImage: '$(IMAGE_NAME)'
@@ -149,7 +145,38 @@ jobs:
           -DUSE_SYSTEM_LIBICONV=OFF
           -DUSE_SYSTEM_LZMA=OFF
           -DUSE_SYSTEM_ZLIB=OFF
-          -DMapper_GIT_LICENSING_PROVIDER=OFF
+          -DMapper_GIT_GDAL_DATA_DIR=$(SUPERBUILD_INSTALL_DIR)/$(MINGW)/superbuild/share/gdal
+          -DSUPERBUILD_DOWNLOAD_DIR=../download
+    - template: publish.yml
+      parameters:
+        outputSuffix: -$(MINGW)
+
+- job: Windows_mingw64
+  timeoutInMinutes: 240
+  dependsOn: Source
+  variables:
+    IMAGE_NAME: 'windows-2019'
+    MINGW: mingw64
+    SUPERBUILD_INSTALL_DIR: 'C:/msys2'
+    SUPERBUILD_INSTALL_DIR_NATIVE: 'C:\msys2'
+    VERBOSE: 1
+  pool:
+    vmImage: '$(IMAGE_NAME)'
+  steps:
+    - template: setup-msys2.yml
+    - template: build.yml
+      parameters:
+        cmakeArgs: >
+          -G "MSYS Makefiles"
+          -Ddefault_INSTALL_DIR=
+          -Ddefault_INSTALL_PREFIX=$(SUPERBUILD_INSTALL_DIR)/$(MINGW)/superbuild
+          -Ddefault_TOOLCHAIN_DIR=$(SUPERBUILD_INSTALL_DIR)/$(MINGW)/toolchain
+          -Ddefault_PREFIX_PATH=$(SUPERBUILD_INSTALL_DIR)/$(MINGW)/superbuild
+          -DUSE_SYSTEM_CURL=OFF
+          -DUSE_SYSTEM_EXPAT=OFF
+          -DUSE_SYSTEM_LIBICONV=OFF
+          -DUSE_SYSTEM_LZMA=OFF
+          -DUSE_SYSTEM_ZLIB=OFF
           -DMapper_GIT_GDAL_DATA_DIR=$(SUPERBUILD_INSTALL_DIR)/$(MINGW)/superbuild/share/gdal
           -DSUPERBUILD_DOWNLOAD_DIR=../download
     - template: publish.yml

@@ -30,11 +30,11 @@
 steps:
 - task: DownloadPipelineArtifact@0
   inputs:
-    pipelineId: $(openorienteering.superbuild.pipelineId)
+    pipelineId: $(openorienteering.superbuild.sourceBuildId)
     artifactName: 'superbuild-source'
     targetPath: $(Build.SourcesDirectory)/download
   displayName: 'Download previous source artifact'
-  condition: variables['openorienteering.superbuild.pipelineId']
+  condition: variables['openorienteering.superbuild.sourceBuildId']
 
 - task: CMake@1
   inputs:
