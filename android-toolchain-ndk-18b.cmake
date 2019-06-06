@@ -150,6 +150,10 @@ if(NOT ANDROID_NDK_ROOT)
 	string(REPLACE "ndk-" "" version ${ANDROID_NDK_VERSION})
 	set(ndk_r18b_darwin_hash SHA1=98cb9909aa8c2dab32db188bbdc3ac6207e09440)
 	set(ndk_r18b_linux_hash  SHA1=500679655da3a86aecf67007e8ab230ea9b4dd7b)
+	set(ANDROID_NDK_INSTALL_ROOT "${PROJECT_BINARY_DIR}/source" CACHE STRING
+	  "The directory where to install the downloaded NDK (i.e. the basedir of ANDROID_NDK_ROOT)"
+	)
+	set(ANDROID_NDK_ROOT "${ANDROID_NDK_INSTALL_ROOT}/android-ndk-${version}")
 	superbuild_package(
 	  NAME         android-ndk
 	  VERSION      ${version}
@@ -157,8 +161,11 @@ if(NOT ANDROID_NDK_ROOT)
 	  SOURCE
 	    URL           https://dl.google.com/android/repository/android-ndk-${version}-${sdk_host}-x86_64.zip
 	    URL_HASH      ${ndk_${version}_${sdk_host}_hash}
+	    DOWNLOAD_NO_EXTRACT 1 # We extract manually from within the source directory.
+	    PATCH_COMMAND
+	      "${CMAKE_COMMAND}" -E chdir "${ANDROID_NDK_INSTALL_ROOT}"
+	        "${CMAKE_COMMAND}" -E tar xzf "<DOWNLOADED_FILE>"
 	)
-	set(ANDROID_NDK_ROOT "${PROJECT_BINARY_DIR}/source/android-ndk-${version}")
 	list(APPEND android_toolchain_dependencies source:android-ndk-${version})
 	
 	# For GPL compliance, allow building libc++ from source.
@@ -245,19 +252,19 @@ if(NOT ANDROID_NDK_ROOT)
 		      "${CMAKE_COMMAND}" -E chdir "<SOURCE_DIR>/external/libunwind_llvm"
 		        "${CMAKE_COMMAND}" -E tar xvf "${SUPERBUILD_DOWNLOAD_DIR}/android-platform-external-libunwind_llvm_${ANDROID_NDK_VERSION}.tar.gz"
 		    COMMAND
-		      "${CMAKE_COMMAND}" -E create_symlink "<SOURCE_DIR>/../android-${ANDROID_NDK_VERSION}" "android-${ANDROID_NDK_VERSION}"
+		      "${CMAKE_COMMAND}" -E create_symlink "${ANDROID_NDK_ROOT}" "android-${ANDROID_NDK_VERSION}"
 		    COMMAND
 		      "${CMAKE_COMMAND}" -E make_directory "<SOURCE_DIR>/toolchains/${sdk_host}-x86_64"
 		    COMMAND
-		      "${CMAKE_COMMAND}" -E create_symlink "<SOURCE_DIR>/../android-${ANDROID_NDK_VERSION}/toolchains/llvm/prebuilt/${sdk_host}-x86_64" "<SOURCE_DIR>/toolchains/${sdk_host}-x86_64/llvm"
+		      "${CMAKE_COMMAND}" -E create_symlink "${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${sdk_host}-x86_64" "<SOURCE_DIR>/toolchains/${sdk_host}-x86_64/llvm"
 		    COMMAND
-		      "${CMAKE_COMMAND}" -E create_symlink "<SOURCE_DIR>/../android-${ANDROID_NDK_VERSION}/toolchains/aarch64-linux-android-4.9/prebuilt/${sdk_host}-x86_64" "<SOURCE_DIR>/toolchains/${sdk_host}-x86_64/aarch64-linux-android-4.9"
+		      "${CMAKE_COMMAND}" -E create_symlink "${ANDROID_NDK_ROOT}/toolchains/aarch64-linux-android-4.9/prebuilt/${sdk_host}-x86_64" "<SOURCE_DIR>/toolchains/${sdk_host}-x86_64/aarch64-linux-android-4.9"
 		    COMMAND
-		      "${CMAKE_COMMAND}" -E create_symlink "<SOURCE_DIR>/../android-${ANDROID_NDK_VERSION}/toolchains/arm-linux-androideabi-4.9/prebuilt/${sdk_host}-x86_64" "<SOURCE_DIR>/toolchains/${sdk_host}-x86_64/arm-linux-androideabi-4.9"
+		      "${CMAKE_COMMAND}" -E create_symlink "${ANDROID_NDK_ROOT}/toolchains/arm-linux-androideabi-4.9/prebuilt/${sdk_host}-x86_64" "<SOURCE_DIR>/toolchains/${sdk_host}-x86_64/arm-linux-androideabi-4.9"
 		    COMMAND
-		      "${CMAKE_COMMAND}" -E create_symlink "<SOURCE_DIR>/../android-${ANDROID_NDK_VERSION}/toolchains/x86-4.9/prebuilt/${sdk_host}-x86_64" "<SOURCE_DIR>/toolchains/${sdk_host}-x86_64/x86-4.9"
+		      "${CMAKE_COMMAND}" -E create_symlink "${ANDROID_NDK_ROOT}/toolchains/x86-4.9/prebuilt/${sdk_host}-x86_64" "<SOURCE_DIR>/toolchains/${sdk_host}-x86_64/x86-4.9"
 		    COMMAND
-		      "${CMAKE_COMMAND}" -E create_symlink "<SOURCE_DIR>/../android-${ANDROID_NDK_VERSION}/toolchains/x86_64-4.9/prebuilt/${sdk_host}-x86_64" "<SOURCE_DIR>/toolchains/${sdk_host}-x86_64/x86_64-4.9"
+		      "${CMAKE_COMMAND}" -E create_symlink "${ANDROID_NDK_ROOT}/toolchains/x86_64-4.9/prebuilt/${sdk_host}-x86_64" "<SOURCE_DIR>/toolchains/${sdk_host}-x86_64/x86_64-4.9"
 		)
 		foreach(abi ${enabled_abis})
 			superbuild_package(
@@ -266,18 +273,18 @@ if(NOT ANDROID_NDK_ROOT)
 			  SOURCE
 			    android-libcxx-${ANDROID_NDK_VERSION}
 			  
-			  USING ANDROID_NDK_VERSION abi
+			  USING ANDROID_NDK_ROOT abi
 			  BUILD [[
 			    CONFIGURE_COMMAND ""
 			    BUILD_COMMAND "${CMAKE_COMMAND}" -E chdir "<SOURCE_DIR>/external/libcxx"
-			      bash -e -- "<SOURCE_DIR>/../android-${ANDROID_NDK_VERSION}/ndk-build"
+			      bash -e -- "${ANDROID_NDK_ROOT}/ndk-build"
 			        "V=1"
 			        "APP_ABI=${abi}"
 			        "APP_PLATFORM=android-16"
 			        "APP_MODULES=c++_shared c++_static"
 			        "BIONIC_PATH=<SOURCE_DIR>/bionic"
-			        "NDK_UNIFIED_SYSROOT_PATH=<SOURCE_DIR>/../android-${ANDROID_NDK_VERSION}/sysroot"
-			        "NDK_PLATFORMS_ROOT=<SOURCE_DIR>/../android-${ANDROID_NDK_VERSION}/platforms"
+			        "NDK_UNIFIED_SYSROOT_PATH=${ANDROID_NDK_ROOT}/sysroot"
+			        "NDK_PLATFORMS_ROOT=${ANDROID_NDK_ROOT}/platforms"
 			        "NDK_TOOLCHAINS_ROOT=<SOURCE_DIR>/toolchains"
 			        "NDK_NEW_TOOLCHAINS_LAYOUT=true"
 			        "NDK_PROJECT_PATH=null"
@@ -297,22 +304,22 @@ if(NOT ANDROID_NDK_ROOT)
 			        $<$<STREQUAL:${abi},armeabi-v7a>:
 			        "libcxx/obj/local/${abi}/libunwind.a"
 			        >
-			        "<SOURCE_DIR>/../android-${ANDROID_NDK_VERSION}/sources/cxx-stl/llvm-libc++/libs/${abi}/"
+			        "${ANDROID_NDK_ROOT}/sources/cxx-stl/llvm-libc++/libs/${abi}/"
 			    COMMAND
 			      "${CMAKE_COMMAND}" -E copy
 			        "<SOURCE_DIR>/external/libcxx/LICENSE.TXT"
-			        "<SOURCE_DIR>/../android-${ANDROID_NDK_VERSION}/sources/cxx-stl/llvm-libc++/NOTICE"
+			        "${ANDROID_NDK_ROOT}/sources/cxx-stl/llvm-libc++/NOTICE"
 			    COMMAND
 			      echo
 			        "\\n"
 			        "==============================================================================\\n"
 			        "libc++ CREDITS.TXT\\n"
 			        "==============================================================================\\n"
-					>> "<SOURCE_DIR>/../android-${ANDROID_NDK_VERSION}/sources/cxx-stl/llvm-libc++/NOTICE"
+					>> "${ANDROID_NDK_ROOT}/sources/cxx-stl/llvm-libc++/NOTICE"
 			    COMMAND
 			      cat
 			        "<SOURCE_DIR>/external/libcxx/CREDITS.TXT"
-			        >> "<SOURCE_DIR>/../android-${ANDROID_NDK_VERSION}/sources/cxx-stl/llvm-libc++/NOTICE"
+			        >> "${ANDROID_NDK_ROOT}/sources/cxx-stl/llvm-libc++/NOTICE"
 			  ]]
 			)
 		endforeach()
