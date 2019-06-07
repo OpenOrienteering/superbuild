@@ -79,6 +79,7 @@ steps:
       mingw-w64-%MSYSTEM_CARCH%-cmake ^
       mingw-w64-%MSYSTEM_CARCH%-gcc ^
       mingw-w64-%MSYSTEM_CARCH%-headers-git ^
+      mingw-w64-%MSYSTEM_CARCH%-nsis ^
       mingw-w64-%MSYSTEM_CARCH%-tools-git  ^
       mingw-w64-%MSYSTEM_CARCH%-winpthreads-git ^
       2>error.log
@@ -136,6 +137,8 @@ steps:
       | sed "s,-libwinpthread,-winpthreads," ^
       | sed "s,^.*owned by mingw-w64-%MSYSTEM_CARCH%,http://repo.msys2.org/mingw/sources/mingw-w64,;s, ,-,;s, *$,.src.tar.gz," >> urls.txt
     pacman -Qo /%MINGW%/%MSYSTEM_CARCH%-w64-mingw32/include/windows.h ^
+      | sed "s,^.*owned by mingw-w64-%MSYSTEM_CARCH%,http://repo.msys2.org/mingw/sources/mingw-w64,;s, ,-,;s, *$,.src.tar.gz," >> urls.txt
+    pacman -Qo /%MINGW%/bin/makensis.exe ^
       | sed "s,^.*owned by mingw-w64-%MSYSTEM_CARCH%,http://repo.msys2.org/mingw/sources/mingw-w64,;s, ,-,;s, *$,.src.tar.gz," >> urls.txt
     
     type urls.txt
