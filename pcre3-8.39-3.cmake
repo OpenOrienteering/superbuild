@@ -83,6 +83,7 @@ superbuild_package(
       "-DPCRE_BUILD_PCRE32:BOOL=ON"
       "-DPCRE_SUPPORT_UTF:BOOL=ON"
       "-DPCRE_SUPPORT_UNICODE_PROPERTIES:BOOL=ON"
+      $<$<BOOL:@ANDROID@>:-DHAVE_STRTOQ= >
     INSTALL_COMMAND
       "${CMAKE_COMMAND}" --build . --target install/strip/fast
     COMMAND
