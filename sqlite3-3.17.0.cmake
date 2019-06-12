@@ -89,9 +89,8 @@ superbuild_package(
         "LDFLAGS=${SUPERBUILD_LDFLAGS}"
         $<$<BOOL:@ANDROID@>:
           "CC=${STANDALONE_C_COMPILER}"
-        $<$<STREQUAL:@ANDROID_PLATFORM@,android-18>:
           "LIBS=-lcompiler_rt-extras"
-        >>
+        >
     INSTALL_COMMAND
       "$(MAKE)" install "DESTDIR=${DESTDIR}${INSTALL_DIR}"
     COMMAND
