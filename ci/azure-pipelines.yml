@@ -121,6 +121,81 @@ jobs:
         buildArgs: -j5
     - template: publish.yml
 
+- job: Android_aarch64
+  timeoutInMinutes: 120
+  dependsOn: Source
+  variables:
+    IMAGE_NAME: 'macos-10.13'
+    SUPERBUILD_INSTALL_DIR: /Users/vsts/superbuild
+    TARGET: aarch64-linux-android
+    TARGET_SUFFIX: -$(TARGET)
+  pool:
+    vmImage: '$(IMAGE_NAME)'
+  steps:
+    - template: setup-macos.yml
+    - template: build.yml
+      parameters:
+        cmakeArgs: >
+          -DENABLE_$(TARGET)=1
+          -D$(TARGET)_INSTALL_DIR=$(SUPERBUILD_INSTALL_DIR)/$(TARGET)
+          -D$(TARGET)_INSTALL_PREFIX=/usr
+          -D$(TARGET)_TOOLCHAIN_DIR=$(SUPERBUILD_INSTALL_DIR)/$(TARGET)/toolchain
+          -DMapper_GIT_GDAL_DATA_DIR=$(SUPERBUILD_INSTALL_DIR)/$(TARGET)/usr/share/gdal
+          -DANDROID_NDK_INSTALL_ROOT=/Users/vsts
+          -DANDROID_BUILD_LIBCXX=1
+        buildArgs: -j5
+    - template: publish.yml
+
+- job: Android_x86
+  timeoutInMinutes: 120
+  dependsOn: Source
+  variables:
+    IMAGE_NAME: 'macos-10.13'
+    SUPERBUILD_INSTALL_DIR: /Users/vsts/superbuild
+    TARGET: i686-linux-android
+    TARGET_SUFFIX: -$(TARGET)
+  pool:
+    vmImage: '$(IMAGE_NAME)'
+  steps:
+    - template: setup-macos.yml
+    - template: build.yml
+      parameters:
+        cmakeArgs: >
+          -DENABLE_$(TARGET)=1
+          -D$(TARGET)_INSTALL_DIR=$(SUPERBUILD_INSTALL_DIR)/$(TARGET)
+          -D$(TARGET)_INSTALL_PREFIX=/usr
+          -D$(TARGET)_TOOLCHAIN_DIR=$(SUPERBUILD_INSTALL_DIR)/$(TARGET)/toolchain
+          -DMapper_GIT_GDAL_DATA_DIR=$(SUPERBUILD_INSTALL_DIR)/$(TARGET)/usr/share/gdal
+          -DANDROID_NDK_INSTALL_ROOT=/Users/vsts
+          -DANDROID_BUILD_LIBCXX=1
+        buildArgs: -j5
+    - template: publish.yml
+
+- job: Android_x86_64
+  timeoutInMinutes: 120
+  dependsOn: Source
+  variables:
+    IMAGE_NAME: 'macos-10.13'
+    SUPERBUILD_INSTALL_DIR: /Users/vsts/superbuild
+    TARGET: x86_64-linux-android
+    TARGET_SUFFIX: -$(TARGET)
+  pool:
+    vmImage: '$(IMAGE_NAME)'
+  steps:
+    - template: setup-macos.yml
+    - template: build.yml
+      parameters:
+        cmakeArgs: >
+          -DENABLE_$(TARGET)=1
+          -D$(TARGET)_INSTALL_DIR=$(SUPERBUILD_INSTALL_DIR)/$(TARGET)
+          -D$(TARGET)_INSTALL_PREFIX=/usr
+          -D$(TARGET)_TOOLCHAIN_DIR=$(SUPERBUILD_INSTALL_DIR)/$(TARGET)/toolchain
+          -DMapper_GIT_GDAL_DATA_DIR=$(SUPERBUILD_INSTALL_DIR)/$(TARGET)/usr/share/gdal
+          -DANDROID_NDK_INSTALL_ROOT=/Users/vsts
+          -DANDROID_BUILD_LIBCXX=1
+        buildArgs: -j5
+    - template: publish.yml
+
 - job: Windows_mingw32
   timeoutInMinutes: 240
   dependsOn: Source
