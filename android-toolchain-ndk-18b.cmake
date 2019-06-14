@@ -50,6 +50,11 @@ set(supported_abis
   x86_64
 )
 
+set(system_arch_arm64-v8a    arm64)
+set(system_arch_armeabi-v7a  arm)
+set(system_arch_x86          x86)
+set(system_arch_x86_64       x86_64)
+
 set(system_name_arm64-v8a    aarch64-linux-android)
 set(system_name_armeabi-v7a  arm-linux-androideabi)
 set(system_name_x86          i686-linux-android)
@@ -92,7 +97,11 @@ endif()
 if(NOT DEFINED ANDROID_API AND NOT "$ENV{ANDROID_API}" STREQUAL "")
 	set(ANDROID_API "$ENV{ANDROID_API}")
 elseif(NOT DEFINED ANDROID_API)
-	set(ANDROID_API 18)
+	if(enabled_abis MATCHES "64")
+		set(ANDROID_API 21)
+	else()
+		set(ANDROID_API 18)
+	endif()
 endif()
 
 if(ANDROID_SDK_ROOT AND ANDROID_NDK_ROOT)
@@ -372,11 +381,7 @@ include(]] "${ANDROID_NDK_ROOT}" [[/build/cmake/android.toolchain.cmake)
 
 # Get rid of NDK root in CMAKE_FIND_ROOT_PATH
 set(CMAKE_FIND_ROOT_PATH   "]] "${${system_name}_FIND_ROOT_PATH}" [[")
-if(ANDROID_ABI MATCHES "arm")
-    list(APPEND CMAKE_FIND_ROOT_PATH "${ANDROID_NDK_ROOT}/platforms/android-${ANDROID_NATIVE_API_LEVEL}/arch-arm")
-elseif(ANDROID_ABI MATCHES "x86")
-    list(APPEND CMAKE_FIND_ROOT_PATH "${ANDROID_NDK_ROOT}/platforms/android-${ANDROID_NATIVE_API_LEVEL}/arch-x86")
-endif()
+list(APPEND CMAKE_FIND_ROOT_PATH "${ANDROID_NDK_ROOT}/platforms/android-${ANDROID_NATIVE_API_LEVEL}/arch-]] ${system_arch_${abi}} [[")
 set(CMAKE_SYSTEM_LIBRARY_PATH "/usr/lib/${SYSTEM_NAME}")
 
 set(STANDALONE_C_COMPILER   "]] "${toolchain_dir}" [[/bin/${SYSTEM_NAME}-clang")
@@ -393,8 +398,6 @@ set(CMAKE_TARGET_MESSAGES  OFF CACHE BOOL "Whether to report a message for each 
 set(CMAKE_VERBOSE_MAKEFILE ON  CACHE BOOL "Enable verbose output from Makefile builds")
 ]]
 )
-	string(REPLACE "i686-linux-android" "x86" toolchain_name "${system_name}")
-	string(REPLACE "x86_64-linux-android" "x86_64" toolchain_name "${system_name}")
 	
 	set(make_toolchain_sh [[
 set -x
@@ -405,7 +408,7 @@ test -d "${INSTALL_DIR}.saved" && rm -Rf "${INSTALL_DIR}.saved"
 mv "${INSTALL_DIR}" "${INSTALL_DIR}.saved"
 
 bash "]] ${ANDROID_NDK_ROOT} [[/build/tools/make-standalone-toolchain.sh" \
-  "--toolchain=]] ${toolchain_name} [[-4.9" \
+  "--arch=]] ${system_arch_${abi}} [[" \
   "--stl=libcxx" \
   "--platform=android-]] ${ANDROID_API} [[" \
   "--install-dir=${INSTALL_DIR}" \

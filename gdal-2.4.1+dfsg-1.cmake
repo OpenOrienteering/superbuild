@@ -165,6 +165,11 @@ superbuild_package(
         $<$<BOOL:@ANDROID@>:
           "CC=${STANDALONE_C_COMPILER}"
           "CXX=${STANDALONE_CXX_COMPILER}"
+          $<$<STREQUAL:@ANDROID_ABI@,arm64-v8a>:
+            # https://github.com/android-ndk/ndk/issues/148
+            "LDFLAGS=-Wl,-rpath-link=${CMAKE_STAGING_PREFIX}/lib"
+            "LIBS=-l${ANDROID_STL}"
+          >
         >
     BUILD_COMMAND
       "$(MAKE)"
