@@ -27,11 +27,12 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(download_version  autoconf-3170000)
-set(version           3.17.0-${download_version})
-set(download_hash     SHA1=7bcff1c158ed9e2c0e159c1b4b6c36d4d65dff8c)
-set(patch_version     3.17.0-1)
-set(patch_hash        SHA256=e7772890f3b4ea42adf05f2cdbb3759d53670b6bb9bf60a7dcdb9376e7b44544)
+set(download_version  autoconf-3280000)
+set(version           3.28.0-0)
+set(download_hash     SHA1=01b9d8fc77085e144dddc87456c9783e53d09a53)
+set(patch_version     3.27.2-3)
+set(patch_hash        SHA256=0a95abfc23baa8d0fa2ec7fc6b96f46e34c37f23ff540bc041eff111e6550af9)
+set(base_url          https://snapshot.debian.org/archive/debian/20190610T204956Z/pool/main/s/sqlite3)
 
 option(USE_SYSTEM_SQLITE3 "Use the system sqlite if possible" ON)
 
@@ -57,7 +58,7 @@ superbuild_package(
   VERSION        ${patch_version}
   
   SOURCE
-    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_03}/pool/main/s/sqlite3/sqlite3_${patch_version}.debian.tar.xz
+    URL            ${base_url}/sqlite3_${patch_version}.debian.tar.xz
     URL_HASH       ${patch_hash}
 )
   
@@ -69,7 +70,7 @@ superbuild_package(
     common-licenses
   
   SOURCE
-    URL            https://www.sqlite.org/2017/sqlite-${download_version}.tar.gz
+    URL            https://www.sqlite.org/2019/sqlite-${download_version}.tar.gz
     URL_HASH       ${download_hash}
   
   USING            USE_SYSTEM_SQLITE3 version patch_version
@@ -89,7 +90,6 @@ superbuild_package(
         "LDFLAGS=${SUPERBUILD_LDFLAGS}"
         $<$<BOOL:@ANDROID@>:
           "CC=${STANDALONE_C_COMPILER}"
-          "LIBS=-lcompiler_rt-extras"
         >
     INSTALL_COMMAND
       "$(MAKE)" install "DESTDIR=${DESTDIR}${INSTALL_DIR}"
