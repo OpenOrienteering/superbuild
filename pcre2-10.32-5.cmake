@@ -27,10 +27,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        10.22)
-set(download_hash  SHA256=e44d8a6f31bb33cce01ed43743f464290f1d96f60b5fd838786e632d3624a7bd)
+set(version        10.32)
+set(download_hash  SHA256=9ca9be72e1a04f22be308323caa8c06ebd0c51efe99ee11278186cafbc4fe3af)
 set(patch_version  ${version}-5)
-set(patch_hash     SHA256=9b7b314fab9310fe6f3d4d29a82ab0fee14ccb0c1fccd6331b288c70c1726d2d)
+set(patch_hash     SHA256=bfe23d2661bf5727a10a1c1e49660c35afc0a4ad1c151bdcefb7c5a52e71e685)
+set(base_url       https://snapshot.debian.org/archive/debian/20190326T041411Z/pool/main/p/pcre2)
 
 option(USE_SYSTEM_PCRE2 "Use the system pcre2 if possible" ON)
 
@@ -51,7 +52,7 @@ set(test_system_pcre2 [[
 set(download_pcre2_diff_cmake "${PROJECT_BINARY_DIR}/download-pcre2_${patch_version}.diff.cmake")
 file(WRITE "${download_pcre2_diff_cmake}" "
 file(DOWNLOAD
-  \"${SUPERBUILD_DEBIAN_BASE_URL_2018_02}/pool/main/p/pcre2/pcre2_${patch_version}.diff.gz\"
+  \"${base_url}/pcre2_${patch_version}.diff.gz\"
   \"${SUPERBUILD_DOWNLOAD_DIR}/pcre2_${patch_version}.diff.gz\"
   EXPECTED_HASH ${patch_hash}
 )")
@@ -62,7 +63,7 @@ superbuild_package(
   VERSION        ${patch_version}
   
   SOURCE
-    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2018_02}/pool/main/p/pcre2/pcre2_${version}.orig.tar.gz
+    URL            ${base_url}/pcre2_${version}.orig.tar.gz
     URL_HASH       ${download_hash}
     PATCH_COMMAND
       "${CMAKE_COMMAND}" -P "${download_pcre2_diff_cmake}"
