@@ -29,11 +29,11 @@
 
 # https://tracker.debian.org/pkg/tiff
 
-set(version        4.0.8)
-set(download_hash  SHA256=59d7a5a8ccd92059913f246877db95a2918e6c04fb9d43fd74e5c3390dac2910)
-set(patch_version  ${version}-2+deb9u2)
-set(patch_hash     SHA256=25fc9acaa503e454e40050a4fb6bca69bdce0f3d5eec5a08d8abe29b4f9584d9)
-set(patch_base_url ${SUPERBUILD_DEBIAN_SECURITY_URL_2018_02})
+set(version        4.0.10)
+set(download_hash  SHA256=2c52d11ccaf767457db0c46795d9c7d1a8d8f76f68b0b800a3dfe45786b996e4)
+set(patch_version  ${version}-4)
+set(patch_hash     SHA256=eed80359456ae1437426be3894ed594ac6d6051306afee6093abdc65a07887b0)
+set(base_url       https://snapshot.debian.org/archive/debian/20190203T151428Z/pool/main/t/tiff)
 
 option(USE_SYSTEM_LIBTIFF "Use the system libtiff if possible" ON)
 
@@ -64,7 +64,7 @@ superbuild_package(
   VERSION        ${patch_version}
   
   SOURCE
-    URL            ${patch_base_url}/pool/updates/main/t/tiff/tiff_${patch_version}.debian.tar.xz
+    URL            ${base_url}/tiff_${patch_version}.debian.tar.xz
     URL_HASH       ${patch_hash}
 )
   
@@ -78,7 +78,7 @@ superbuild_package(
     zlib
   
   SOURCE
-    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_11}/pool/main/t/tiff/tiff_${version}.orig.tar.gz
+    URL            ${base_url}/tiff_${version}.orig.tar.gz
     URL_HASH       ${download_hash}
     PATCH_COMMAND
       "${CMAKE_COMMAND}"
@@ -88,6 +88,9 @@ superbuild_package(
       echo "\tTIFFReadRGBAStripExt" >> libtiff/libtiff.def
     COMMAND
       echo "\tTIFFReadRGBATileExt" >> libtiff/libtiff.def
+    COMMAND
+	  # Also on MinGW, rpcndr.h already defines `boolean`
+      sed -e "s/ && !defined.__MINGW32__.//" -i -- test/raw_decode.c
   
   USING            USE_SYSTEM_LIBTIFF patch_version
   BUILD_CONDITION  ${test_system_tiff}
