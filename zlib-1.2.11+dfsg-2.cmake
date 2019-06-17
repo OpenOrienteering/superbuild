@@ -27,10 +27,17 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        1.2.8.dfsg)
-set(download_hash  SHA256=2caecc2c3f1ef8b87b8f72b128a03e61c307e8c14f5ec9b422ef7914ba75cf9f)
-set(patch_version  ${version}-5)
-set(patch_hash     SHA256=7b88f58d1bfe8e873b8362ede3d0bc569793decc60094189fad1a110599cdd95)
+# https://tracker.debian.org/pkg/zlib
+
+# As long as zlib Debian sources and coypright are insufficient,
+# we use libz-mingw-w64 instead:
+# https://tracker.debian.org/pkg/libz-mingw-w64
+
+set(version        1.2.11+dfsg)   # libz-mingw-w64
+set(download_hash  SHA256=9d0404bc07629383dd71cb0b50749d7dcd156d28476f8a197bfb0f50005e4177)
+set(patch_version  ${version}-2)  # libz-mingw-w64
+set(patch_hash     SHA256=b01dfe018f2558b96ea4ca83a69f887d7a1b1882c61383df0a6050451a308610)
+set(base_url       https://snapshot.debian.org/archive/debian/20180509T221858Z/pool/main/libz/libz-mingw-w64)
 
 option(USE_SYSTEM_ZLIB "Use the system zlib if possible" ON)
 
@@ -63,7 +70,7 @@ superbuild_package(
   VERSION        ${patch_version}
   
   SOURCE
-    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_06}/pool/main/z/zlib/zlib_${patch_version}.debian.tar.xz
+    URL            ${base_url}/libz-mingw-w64_${patch_version}.debian.tar.xz
     URL_HASH       ${patch_hash}
 )
 
@@ -74,7 +81,7 @@ superbuild_package(
     source:zlib-patches-${patch_version}
   
   SOURCE
-    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_06}/pool/main/z/zlib/zlib_${version}.orig.tar.gz
+    URL            ${base_url}/libz-mingw-w64_${version}.orig.tar.xz
     URL_HASH       ${download_hash}
     PATCH_COMMAND
       "${CMAKE_COMMAND}"
