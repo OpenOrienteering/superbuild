@@ -29,11 +29,11 @@
 
 # https://tracker.debian.org/pkg/gdal
 
-set(version        2.4.1+dfsg)
-set(download_hash  SHA256=9c3c3a4b6940e78f65a52e0aa31a8e0e3b2c1cacd209e9397d74a262ad969909)
+set(version        3.0.0+dfsg)
+set(download_hash  SHA256=2df790306ccaead0f2ead9a9d01c0bfd7220e5a819cad1e2c51c369b2e4fb976)
 set(patch_version  ${version}-1)
-set(patch_hash     SHA256=152477e4ad03d0483414bb55fa5c0cb0e314456426275acedf18745092eab56e)
-set(base_url       https://snapshot.debian.org/archive/debian/20190322T212047Z/pool/main/g/gdal)
+set(patch_hash     SHA256=015ea3792bd8c5abcdb17397d24b52c6bcc45b850e800180c3cb67189edd2def)
+set(base_url       https://snapshot.debian.org/archive/debian/20190509T223945Z/pool/main/g/gdal)
 
 option(USE_SYSTEM_GDAL "Use the system GDAL if possible" ON)
 
@@ -80,7 +80,7 @@ superbuild_package(
   VERSION        ${patch_version}
   
   SOURCE
-    URL            ${base_url}/gdal_${patch_version}~exp1.debian.tar.xz
+    URL            ${base_url}/gdal_${patch_version}~exp2.debian.tar.xz
     URL_HASH       ${patch_hash}
 )
   
