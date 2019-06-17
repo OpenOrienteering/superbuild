@@ -133,6 +133,10 @@ echo y | ./tools/bin/sdkmanager --install "build-tools\\;]] "${build_tools_versi
 yes    | ./tools/bin/sdkmanager --licenses
 ]]
 	)
+	set(ANDROID_SDK_INSTALL_ROOT "${PROJECT_BINARY_DIR}/source" CACHE STRING
+	  "The directory where to install the downloaded SDK (i.e. the basedir of ANDROID_SDK_ROOT)"
+	)
+	set(ANDROID_SDK_ROOT "${ANDROID_SDK_INSTALL_ROOT}/android-sdk-${sdk_tools_version}")
 	superbuild_package(
 	  NAME         android-sdk
 	  VERSION      ${sdk_tools_version}
@@ -145,11 +149,14 @@ yes    | ./tools/bin/sdkmanager --licenses
 	    URL_HASH      ${sdk_tools_${sdk_host}_${sdk_tools_version}_hash}
 	    DOWNLOAD_NO_EXTRACT 1 # We extract manually from within the source directory.
 	    PATCH_COMMAND
-	      "${CMAKE_COMMAND}" -E tar xzf "<DOWNLOADED_FILE>"
+	      "${CMAKE_COMMAND}" -E make_directory "${ANDROID_SDK_ROOT}"
 	    COMMAND
-	      sh -e ./sdk_setup.sh # Download missing components.
+	      "${CMAKE_COMMAND}" -E chdir "${ANDROID_SDK_ROOT}"
+	        "${CMAKE_COMMAND}" -E tar xzf "<DOWNLOADED_FILE>"
+	    COMMAND
+	      "${CMAKE_COMMAND}" -E chdir "${ANDROID_SDK_ROOT}"
+	        sh -e "<SOURCE_DIR>/sdk_setup.sh" # Download missing components.
 	)
-	set(ANDROID_SDK_ROOT "${PROJECT_BINARY_DIR}/source/android-sdk-${sdk_tools_version}")
 	list(APPEND android_toolchain_dependencies source:android-sdk-${sdk_tools_version})
 endif()
 
