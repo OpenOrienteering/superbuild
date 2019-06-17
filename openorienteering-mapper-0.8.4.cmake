@@ -47,7 +47,7 @@ superbuild_package(
     qtsensors-${qt_version}
     qttools-${qt_version}
     qttranslations-${qt_version}
-    zlib-1.2.8.dfsg-5
+    zlib
     host:doxygen-1.8.13
     host:qttools-${qt_version}
   
