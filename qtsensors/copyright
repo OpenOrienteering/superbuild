@@ -29,8 +29,7 @@ Copyright: 2016 Lorn Potter
 License: LGPL-3 or GPL-2
 
 Files: src/plugins/sensors/android/*
-Copyright: 2016 BlackBerry Limited (formerly Research In Motion)
-           2016 BogDan Vatra
+Copyright: 2016-2019 BogDan Vatra
            2016 The Qt Company Ltd.
 License: LGPL-3 or GPL-2
 
