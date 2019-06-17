@@ -27,10 +27,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        2.2.0)
-set(download_hash  SHA256=d9e50ff2d19b3538bd2127902a89987474e1a4db8e43a66a4d1a712ab9a504ff)
-set(patch_version  ${version}-2+deb9u1)
-set(patch_hash     SHA256=d3e171fc4d2e6173945daab7d7df46d640fa23134c9474080f6d1b65d494b0a5)
+set(version        2.2.6)
+set(download_hash  SHA256=17b43c2716d521369f82fc2dc70f359860e90fa440bea65b3b85f0b246ea81f2)
+set(patch_version  ${version}-1)
+set(patch_hash     SHA256=f0bc55f93042b6f517c39b2757021e8f505e19583b1a9d5f11b224825be62037)
+set(base_url       https://snapshot.debian.org/archive/debian/20180815T214415Z/pool/main/e/expat)
 
 option(USE_SYSTEM_EXPAT "Use the system Expat if possible" ON)
 
@@ -51,7 +52,7 @@ superbuild_package(
   VERSION        ${patch_version}
   
   SOURCE
-    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_11}/pool/main/e/expat/expat_${patch_version}.debian.tar.xz
+    URL            ${base_url}/expat_${patch_version}.debian.tar.xz
     URL_HASH       ${patch_hash}
 )
   
@@ -62,7 +63,7 @@ superbuild_package(
     source:expat-patches-${patch_version}
   
   SOURCE
-    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_11}/pool/main/e/expat/expat_${version}.orig.tar.bz2
+    URL            https://downloads.sourceforge.net/expat/expat-${version}.tar.bz2
     URL_HASH       ${download_hash}
     PATCH_COMMAND
       "${CMAKE_COMMAND}"
