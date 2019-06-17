@@ -29,9 +29,9 @@
 
 set(version        7.64.0)
 set(download_hash  SHA256=cb90d2eb74d4e358c1ed1489f8e3af96b50ea4374ad71f143fa4595e998d81b5)
-set(patch_version  ${version}-2)
-set(patch_hash     SHA256=6173fb436e8bcea616e9bfc29eaddb25498b3a95cd5451d4cef83d957217fabe)
-set(base_url       https://snapshot.debian.org/archive/debian/20190308T031747Z/pool/main/c/curl)
+set(patch_version  ${version}-4)
+set(patch_hash     SHA256=15618c3b4e0000dd65d6708d9ca362a7f33327fb4362ac8802028504051aba0c)
+set(base_url       https://snapshot.debian.org/archive/debian/20190615T034431Z/pool/main/c/curl)
 
 option(USE_SYSTEM_CURL "Use the system curl if possible" ON)
 
@@ -112,6 +112,9 @@ superbuild_package(
       $<$<STREQUAL:@CMAKE_SYSTEM_NAME@,Darwin>:
         --with-darwinssl
       > # Darwin
+      $<$<BOOL:@ANDROID@>:
+        --without-ssl
+      > # Android
         "CPPFLAGS=${SUPERBUILD_CPPFLAGS}"
         "CFLAGS=${SUPERBUILD_CFLAGS}"
         "LDFLAGS=${SUPERBUILD_LDFLAGS}"
