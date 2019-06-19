@@ -48,7 +48,10 @@ jobs:
     - template: build.yml
       parameters:
         cmakeArgs: >
+          -DUSE_SYSTEM_CURL=OFF
+          -DUSE_SYSTEM_EXPAT=OFF
           -DUSE_SYSTEM_LZMA=OFF
+          -DUSE_SYSTEM_SQLITE3=OFF
           -DMapper_GIT_GDAL_DATA_DIR=$(SUPERBUILD_INSTALL_DIR)/share/gdal
         buildArgs: -j5
     - template: publish.yml
