@@ -48,6 +48,9 @@ jobs:
     - template: build.yml
       parameters:
         cmakeArgs: >
+          "-DCMAKE_PREFIX_PATH=/Users/vsts/superbuild\;/usr"
+          -DCMAKE_FIND_FRAMEWORK=LAST
+          -DCMAKE_FIND_APPBUNDLE=LAST
           -DUSE_SYSTEM_LZMA=OFF
           -DMapper_GIT_GDAL_DATA_DIR=$(SUPERBUILD_INSTALL_DIR)/share/gdal
         buildArgs: -j5
