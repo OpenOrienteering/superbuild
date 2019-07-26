@@ -29,9 +29,9 @@
 
 set(version        2.2.6)
 set(download_hash  SHA256=17b43c2716d521369f82fc2dc70f359860e90fa440bea65b3b85f0b246ea81f2)
-set(patch_version  ${version}-1)
-set(patch_hash     SHA256=f0bc55f93042b6f517c39b2757021e8f505e19583b1a9d5f11b224825be62037)
-set(base_url       https://snapshot.debian.org/archive/debian/20180815T214415Z/pool/main/e/expat)
+set(patch_version  ${version}-2)
+set(patch_hash     SHA256=678c073cecab66cc5ea0feaf02626db4300008d9c20df9ebe81958944af31673)
+set(base_url       https://snapshot.debian.org/archive/debian/20190625T042133Z/pool/main/e/expat)
 
 option(USE_SYSTEM_EXPAT "Use the system Expat if possible" ON)
 
@@ -54,6 +54,10 @@ superbuild_package(
   SOURCE
     URL            ${base_url}/expat_${patch_version}.debian.tar.xz
     URL_HASH       ${patch_hash}
+    PATCH_COMMAND
+      # This patch would not apply with -p1
+      sed -e "s,/expat/lib/,/lib/,g" -i --
+        patches/Fix_extraction_of_namespace_prefix_from_XML_name.patch
 )
   
 superbuild_package(
