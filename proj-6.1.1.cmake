@@ -27,11 +27,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        6.0.0)
-set(download_hash  SHA256=4510a2c1c8f9056374708a867c51b1192e8d6f9a5198dd320bf6a168e44a3657)
-set(patch_version  ${version}-1-exp2)
-set(patch_hash     SHA256=a5b20f39fb712f0bf8574d308601d0cf80ed843fa555c1b65758db59c86d14ee)
-set(base_url       https://snapshot.debian.org/archive/debian/20190308T164945Z/pool/main/p/proj)
+set(version        6.1.1)
+set(download_hash  SHA256=5cf0a2360a28b5d724c53edbb87f3f3b14fd96001265411ac4e56f369e2d503f)
+set(patch_version  ${version}-1-exp1)
+set(patch_hash     SHA256=3621c37f7b85173448f5c46ede37fddffdb0059d6e5bdd97101fa889d127dda1)
+set(base_url       https://snapshot.debian.org/archive/debian/20190701T145228Z/pool/main/p/proj)
 
 set(datumgrid_version  1.8)
 set(datumgrid_hash SHA256=b9838ae7e5f27ee732fb0bfed618f85b36e8bb56d7afb287d506338e9f33861e)
@@ -68,7 +68,7 @@ superbuild_package(
   VERSION        ${patch_version}
   
   SOURCE
-    URL            ${base_url}/proj_${version}-1~exp2.debian.tar.xz
+    URL            ${base_url}/proj_${version}-1~exp1.debian.tar.xz
     URL_HASH       ${patch_hash}
 )
 
@@ -124,9 +124,9 @@ superbuild_package(
       "${CMAKE_COMMAND}" --build . --target install/strip/fast
     $<$<BOOL:@WIN32@>:
       COMMAND
-        # GDAL tries to link -lproj. Proj4-config.cmake references libproj_6_0.dll.a.
+        # GDAL tries to link -lproj. Proj4-config.cmake references libproj_6_1.dll.a.
         "${CMAKE_COMMAND}" -E copy
-          "${DESTDIR}${CMAKE_STAGING_PREFIX}/lib/libproj_6_0.dll.a"
+          "${DESTDIR}${CMAKE_STAGING_PREFIX}/lib/libproj_6_1.dll.a"
           "${DESTDIR}${CMAKE_STAGING_PREFIX}/lib/libproj.dll.a"
     >
     COMMAND
