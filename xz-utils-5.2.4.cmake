@@ -27,13 +27,14 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        5.2.2)
-set(download_hash  SHA256=f341b1906ebcdde291dd619399ae944600edc9193619dd0c0110a5f05bfcc89e)
+set(version        5.2.4)
+set(download_hash  SHA256=9717ae363760dedf573dad241420c5fea86256b65bc21d2cf71b2b12f0544f4b)
 
 # Note: None of the patches from 5.2.2-1.2 are actually used.
 # They are Debian specific and require autotools for reconfiguration.
-set(patch_version  ${version}-1.2)
-set(patch_hash     SHA256=231c08d5c2c4e5c8ef5d6d58cac91aaeb2e4fcddc35e1ed3c69d730a2375c948)
+set(patch_version  ${version}-1)
+set(patch_hash     SHA256=d37b558444b76e88a69601df008cf1c0343c58cb7765b7bbb2099b0a19619361)
+set(base_url       https://snapshot.debian.org/archive/debian/20190128T030507Z/pool/main/x/xz-utils)
 
 option(USE_SYSTEM_LZMA "Use the system XZ-Utils/LZMA library if possible" ON)
 
@@ -55,14 +56,8 @@ superbuild_package(
   VERSION        ${patch_version}
   
   SOURCE
-    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_06}/pool/main/x/xz-utils/xz-utils_${patch_version}.debian.tar.xz
+    URL            ${base_url}/xz-utils_${patch_version}.debian.tar.xz
     URL_HASH       ${patch_hash}
-    PATCH_COMMAND
-      sed -i -e "/liblzma-skip-ABI-incompatible-check-when-liblzma.so.patch/d" patches/series
-    COMMAND
-      sed -i -e "/liblzma-make-dlopen-based-liblzma2-compatibility-opt.patch/d" patches/series
-    COMMAND
-      sed -i -e "/kfreebsd-link-against-libfreebsd-glue.patch/d" patches/series
 )
   
 superbuild_package(
@@ -74,7 +69,7 @@ superbuild_package(
     libiconv
   
   SOURCE
-    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_06}/pool/main/x/xz-utils/xz-utils_${version}.orig.tar.xz
+    URL            ${base_url}/xz-utils_${version}.orig.tar.xz
     URL_HASH       ${download_hash}
     PATCH_COMMAND
       "${CMAKE_COMMAND}"
