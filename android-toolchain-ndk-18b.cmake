@@ -207,7 +207,8 @@ if(NOT ANDROID_NDK_ROOT)
 		  VERSION      ${ANDROID_NDK_VERSION}
 		  SOURCE
 		    DOWNLOAD_NAME android-platform-bionic_${ANDROID_NDK_VERSION}.tar.gz
-		    URL           https://android.googlesource.com/platform/bionic/+archive/${ANDROID_NDK_VERSION}.tar.gz
+		    URL           https://github.com/OpenOrienteering/superbuild/releases/download/v20190622.4/android-platform-bionic_${ANDROID_NDK_VERSION}.tar.gz
+		                  https://android.googlesource.com/platform/bionic/+archive/${ANDROID_NDK_VERSION}.tar.gz
 		    ${android-platform-bionic_${ANDROID_NDK_VERSION}_hash}
 		    DOWNLOAD_NO_EXTRACT 1
 		)
@@ -217,7 +218,8 @@ if(NOT ANDROID_NDK_ROOT)
 		  VERSION      ${ANDROID_NDK_VERSION}
 		  SOURCE
 		    DOWNLOAD_NAME android-platform-external-libcxx_${ANDROID_NDK_VERSION}.tar.gz
-		    URL           https://android.googlesource.com/platform/external/libcxx/+archive/${ANDROID_NDK_VERSION}.tar.gz
+		    URL           https://github.com/OpenOrienteering/superbuild/releases/download/v20190622.4/android-platform-external-libcxx_${ANDROID_NDK_VERSION}.tar.gz
+		                  https://android.googlesource.com/platform/external/libcxx/+archive/${ANDROID_NDK_VERSION}.tar.gz
 		    ${android-platform-external-libcxx_${ANDROID_NDK_VERSION}_hash}
 		    DOWNLOAD_NO_EXTRACT 1
 		)
@@ -227,7 +229,8 @@ if(NOT ANDROID_NDK_ROOT)
 		  VERSION      ${ANDROID_NDK_VERSION}
 		  SOURCE
 		    DOWNLOAD_NAME android-platform-external-libcxxabi_${ANDROID_NDK_VERSION}.tar.gz
-		    URL           https://android.googlesource.com/platform/external/libcxxabi/+archive/${ANDROID_NDK_VERSION}.tar.gz
+		    URL           https://github.com/OpenOrienteering/superbuild/releases/download/v20190622.4/android-platform-external-libcxxabi_${ANDROID_NDK_VERSION}.tar.gz
+		                  https://android.googlesource.com/platform/external/libcxxabi/+archive/${ANDROID_NDK_VERSION}.tar.gz
 		    ${android-platform-external-libcxxabi_${ANDROID_NDK_VERSION}_hash}
 		    DOWNLOAD_NO_EXTRACT 1
 		)
@@ -237,7 +240,8 @@ if(NOT ANDROID_NDK_ROOT)
 		  VERSION      ${ANDROID_NDK_VERSION}
 		  SOURCE
 		    DOWNLOAD_NAME android-platform-external-libunwind_llvm_${ANDROID_NDK_VERSION}.tar.gz
-		    URL           https://android.googlesource.com/platform/external/libunwind_llvm/+archive/${ANDROID_NDK_VERSION}.tar.gz
+		    URL           https://github.com/OpenOrienteering/superbuild/releases/download/v20190622.4/android-platform-external-libunwind_llvm_${ANDROID_NDK_VERSION}.tar.gz
+		                  https://android.googlesource.com/platform/external/libunwind_llvm/+archive/${ANDROID_NDK_VERSION}.tar.gz
 		    ${android-platform-external-libunwind_llvm_${ANDROID_NDK_VERSION}_hash}
 		    DOWNLOAD_NO_EXTRACT 1
 		)
