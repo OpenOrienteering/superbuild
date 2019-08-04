@@ -398,6 +398,10 @@ set(ANDROID_ABI            "]] ${abi} [[")
 set(ANDROID_PLATFORM       "]] ${system_platform_${abi}} [[")
 set(ANDROID_STL            "c++_shared")
 set(ANDROID_TOOLCHAIN      "clang")
+if("${CMAKE_VERSION}" VERSION_GREATER_EQUAL 3.15)
+  set(CMAKE_C_COMPILER_FRONTEND_VARIANT   GNU)
+  set(CMAKE_CXX_COMPILER_FRONTEND_VARIANT GNU)
+endif()
 include(]] "${ANDROID_NDK_ROOT}" [[/build/cmake/android.toolchain.cmake)
 
 # Get rid of NDK root in CMAKE_FIND_ROOT_PATH
