@@ -60,6 +60,11 @@ set(system_name_armeabi-v7a  arm-linux-androideabi)
 set(system_name_x86          i686-linux-android)
 set(system_name_x86_64       x86_64-linux-android)
 
+set(system_platform_armeabi-v7a  android-16)
+set(system_platform_arm64-v8a    android-21)
+set(system_platform_x86          android-16)
+set(system_platform_x86_64       android-21)
+
 set(enabled_abis )
 foreach(abi ${supported_abis})
 	option(ENABLE_${system_name_${abi}} "Enable the ${system_name_${abi}} toolchain" 0)
@@ -94,14 +99,14 @@ endif()
 if(NOT DEFINED ANDROID_NDK_ROOT AND NOT "$ENV{ANDROID_NDK_ROOT}" STREQUAL "")
 	set(ANDROID_NDK_ROOT "$ENV{ANDROID_NDK_ROOT}")
 endif()
-if(NOT DEFINED ANDROID_PLATFORM AND NOT "$ENV{ANDROID_PLATFORM}" STREQUAL "")
-	set(ANDROID_PLATFORM "$ENV{ANDROID_PLATFORM}")
-elseif(NOT DEFINED ANDROID_PLATFORM)
-	if(enabled_abis MATCHES "64")
-		set(ANDROID_PLATFORM android-21)
-	else()
-		set(ANDROID_PLATFORM android-16)
-	endif()
+if(NOT "$ENV{ANDROID_PLATFORM}" STREQUAL "")
+	foreach(abi ${supported_abis})
+		set(system_platform_${abi} "$ENV{ANDROID_PLATFORM}")
+	endforeach()
+elseif(DEFINED ANDROID_PLATFORM)
+	foreach(abi ${supported_abis})
+		set(system_platform_${abi} "${ANDROID_PLATFORM}")
+	endforeach()
 endif()
 if(NOT DEFINED ANDROID_COMPILE_SDK AND NOT "$ENV{ANDROID_COMPILE_SDK}" STREQUAL "")
 	set(ANDROID_COMPILE_SDK "$ENV{ANDROID_COMPILE_SDK}")
@@ -298,14 +303,14 @@ if(NOT ANDROID_NDK_ROOT)
 			  SOURCE
 			    android-libcxx-${ANDROID_NDK_VERSION}
 			  
-			  USING ANDROID_NDK_ROOT abi
+			  USING ANDROID_NDK_ROOT abi system_platform_${abi}
 			  BUILD [[
 			    CONFIGURE_COMMAND ""
 			    BUILD_COMMAND "${CMAKE_COMMAND}" -E chdir "<SOURCE_DIR>/external/libcxx"
 			      bash -e -- "${ANDROID_NDK_ROOT}/ndk-build"
 			        "V=1"
 			        "APP_ABI=${abi}"
-			        "APP_PLATFORM=android-16"
+			        "APP_PLATFORM=${system_platform_${abi}}"
 			        "APP_MODULES=c++_shared c++_static"
 			        "BIONIC_PATH=<SOURCE_DIR>/bionic"
 			        "NDK_UNIFIED_SYSROOT_PATH=${ANDROID_NDK_ROOT}/sysroot"
@@ -390,7 +395,7 @@ set(CMAKE_FIND_NO_INSTALL_PREFIX TRUE)
 set(ANDROID_SDK_ROOT       "]] "${ANDROID_SDK_ROOT}" [[")
 set(ANDROID_NDK_ROOT       "]] "${ANDROID_NDK_ROOT}" [[")
 set(ANDROID_ABI            "]] ${abi} [[")
-set(ANDROID_PLATFORM       "]] ${ANDROID_PLATFORM} [[")
+set(ANDROID_PLATFORM       "]] ${system_platform_${abi}} [[")
 set(ANDROID_STL            "c++_shared")
 set(ANDROID_TOOLCHAIN      "clang")
 include(]] "${ANDROID_NDK_ROOT}" [[/build/cmake/android.toolchain.cmake)
@@ -426,7 +431,7 @@ mv "${INSTALL_DIR}" "${INSTALL_DIR}.saved"
 bash "]] ${ANDROID_NDK_ROOT} [[/build/tools/make-standalone-toolchain.sh" \
   "--arch=]] ${system_arch_${abi}} [[" \
   "--stl=libcxx" \
-  "--platform=]] ${ANDROID_PLATFORM} [[" \
+  "--platform=]] ${system_platform_${abi}} [[" \
   "--install-dir=${INSTALL_DIR}" \
   "--force"
 
