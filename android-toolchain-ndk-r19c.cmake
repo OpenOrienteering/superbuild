@@ -290,18 +290,6 @@ if(NOT ANDROID_NDK_ROOT)
 		        "${CMAKE_COMMAND}" -E tar xvf "${SUPERBUILD_DOWNLOAD_DIR}/android-platform-external-libunwind_llvm_${ANDROID_NDK_VERSION}.tar.gz"
 		    COMMAND
 		      "${CMAKE_COMMAND}" -E create_symlink "${ANDROID_NDK_ROOT}" "android-${ANDROID_NDK_VERSION}"
-		    COMMAND
-		      "${CMAKE_COMMAND}" -E make_directory "<SOURCE_DIR>/toolchains/${sdk_host}-x86_64"
-		    COMMAND
-		      "${CMAKE_COMMAND}" -E create_symlink "${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${sdk_host}-x86_64" "<SOURCE_DIR>/toolchains/${sdk_host}-x86_64/llvm"
-		    COMMAND
-		      "${CMAKE_COMMAND}" -E create_symlink "${ANDROID_NDK_ROOT}/toolchains/aarch64-linux-android-4.9/prebuilt/${sdk_host}-x86_64" "<SOURCE_DIR>/toolchains/${sdk_host}-x86_64/aarch64-linux-android-4.9"
-		    COMMAND
-		      "${CMAKE_COMMAND}" -E create_symlink "${ANDROID_NDK_ROOT}/toolchains/arm-linux-androideabi-4.9/prebuilt/${sdk_host}-x86_64" "<SOURCE_DIR>/toolchains/${sdk_host}-x86_64/arm-linux-androideabi-4.9"
-		    COMMAND
-		      "${CMAKE_COMMAND}" -E create_symlink "${ANDROID_NDK_ROOT}/toolchains/x86-4.9/prebuilt/${sdk_host}-x86_64" "<SOURCE_DIR>/toolchains/${sdk_host}-x86_64/x86-4.9"
-		    COMMAND
-		      "${CMAKE_COMMAND}" -E create_symlink "${ANDROID_NDK_ROOT}/toolchains/x86_64-4.9/prebuilt/${sdk_host}-x86_64" "<SOURCE_DIR>/toolchains/${sdk_host}-x86_64/x86_64-4.9"
 		)
 		foreach(abi ${enabled_abis})
 			superbuild_package(
