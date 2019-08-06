@@ -157,14 +157,14 @@ superbuild_package(
       $<$<STREQUAL:@CMAKE_SYSTEM_NAME@,Windows>:
         --without-crypto
       > # Windows
+        "CC=${SUPERBUILD_CC}"
+        "CXX=${SUPERBUILD_CXX}"
         "CPPFLAGS=${SUPERBUILD_CPPFLAGS}"
         "CFLAGS=${SUPERBUILD_CFLAGS}"
         "CXXFLAGS=${SUPERBUILD_CXXFLAGS}"
         "LDFLAGS=${SUPERBUILD_LDFLAGS}"
         "PKG_CONFIG="
         $<$<BOOL:@ANDROID@>:
-          "CC=${STANDALONE_C_COMPILER}"
-          "CXX=${STANDALONE_CXX_COMPILER}"
           $<$<STREQUAL:@ANDROID_ABI@,arm64-v8a>:
             # https://github.com/android-ndk/ndk/issues/148
             "LDFLAGS=-Wl,-rpath-link=${CMAKE_STAGING_PREFIX}/lib"

@@ -111,12 +111,10 @@ superbuild_package(
         >$<$<STREQUAL:@NASM_EXECUTABLE@,NASM_EXECUTABLE-NOTFOUND>:
         --without-simd
         >
+        "CC=${SUPERBUILD_CC}"
         "CPPFLAGS=${SUPERBUILD_CPPFLAGS}"
         "CFLAGS=${SUPERBUILD_CFLAGS}"
         "LDFLAGS=${SUPERBUILD_LDFLAGS}"
-        $<$<BOOL:@ANDROID@>:
-          "CC=${STANDALONE_C_COMPILER}"
-        >
     INSTALL_COMMAND
       "$(MAKE)" install "DESTDIR=${DESTDIR}${INSTALL_DIR}"
     COMMAND

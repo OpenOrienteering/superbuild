@@ -256,10 +256,17 @@ function(sb_test_build_condition)
 	set(BUILD_CONDITION ${BUILD_CONDITION} PARENT_SCOPE)
 endfunction()
 
+if(NOT SUPERBUILD_CC)
+	set(SUPERBUILD ${CMAKE_C_COMPILER})
+endif()
+if(NOT SUPERBUILD_CXX)
+	set(SUPERBUILD ${CMAKE_CXX_COMPILER})
+endif()
+
 # Publish some properties to a target, for use in generator expressions.
 # This approximately reproduces the processing order of cmake's
 # find_file and find_library.
-set(SUPERBUILD_CPPFLAGS " ")
+set(SUPERBUILD_CPPFLAGS "${SUPERBUILD_CPPFLAGS} ")
 macro(check_include_dir subdir)
 	foreach(path ${CMAKE_FIND_ROOT_PATH} "")
 		string(REGEX REPLACE "//*" "/" include_dir "${path}${subdir}")
@@ -273,7 +280,7 @@ macro(check_include_dir subdir)
 	endforeach()
 endmacro()
 
-set(SUPERBUILD_LDFLAGS " ")
+set(SUPERBUILD_LDFLAGS "${SUPERBUILD_LDFLAGS} ")
 macro(check_lib_dir subdir)
 	foreach(path ${CMAKE_FIND_ROOT_PATH} "")
 		string(REGEX REPLACE "//*" "/" lib_dir "${path}${subdir}")
@@ -647,6 +654,8 @@ set(toolchain_info_var_languages  "Variables for languages"
 
 list(APPEND toolchain_info_groups toolchain_info_var_configure)
 set(toolchain_info_var_configure "Variables for traditional `configure`"
+  SUPERBUILD_CC
+  SUPERBUILD_CXX
   SUPERBUILD_CPPFLAGS
   SUPERBUILD_CFLAGS
   SUPERBUILD_CXXFLAGS
