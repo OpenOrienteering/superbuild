@@ -142,7 +142,6 @@ superbuild_package(
         "--with-proj=${CMAKE_STAGING_PREFIX}"
         "--with-sqlite3=${SQLITE3_DIR}"
         --without-geos
-        --without-grib
         --without-java
         --without-jpeg12
         --without-netcdf
