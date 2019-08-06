@@ -45,7 +45,7 @@ steps:
       -DCMAKE_BUILD_TYPE=Release
       -DSUPERBUILD_DOWNLOAD_DIR=$(Build.SourcesDirectory)/download
       -DSUPERBUILD_DISABLE_DEPENDENCIES=TRUE
-      -DENABLE_arm-linux-androideabi=1
+      -DENABLE_armv7a-linux-androideabi=1
       -DANDROID_BUILD_LIBCXX=1
       -DENABLE_x86_64-w64-mingw32=1
       -Dx86_64-w64-mingw32-gcc_EXECUTABLE=not-needed
