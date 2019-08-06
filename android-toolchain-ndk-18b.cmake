@@ -409,8 +409,8 @@ set(CMAKE_FIND_ROOT_PATH   "]] "${${system_name}_FIND_ROOT_PATH}" [[")
 list(APPEND CMAKE_FIND_ROOT_PATH "${ANDROID_NDK_ROOT}/platforms/android-${ANDROID_NATIVE_API_LEVEL}/arch-]] ${system_arch_${abi}} [[")
 set(CMAKE_SYSTEM_LIBRARY_PATH "/usr/lib/${SYSTEM_NAME}")
 
-set(STANDALONE_C_COMPILER   "]] "${toolchain_dir}" [[/bin/${SYSTEM_NAME}-clang")
-set(STANDALONE_CXX_COMPILER "]] "${toolchain_dir}" [[/bin/${SYSTEM_NAME}-clang++")
+set(SUPERBUILD_CC           "]] "${toolchain_dir}" [[/bin/${SYSTEM_NAME}-clang")
+set(SUPERBUILD_CXX          "]] "${toolchain_dir}" [[/bin/${SYSTEM_NAME}-clang++")
 
 set(ANDROID_KEYSTORE_URL    "]] "${ANDROID_KEYSTORE_URL}" [[")
 set(ANDROID_KEYSTORE_ALIAS  "]] "${ANDROID_KEYSTORE_ALIAS}" [[")

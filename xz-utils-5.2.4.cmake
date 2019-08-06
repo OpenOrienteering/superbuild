@@ -88,12 +88,10 @@ superbuild_package(
         --disable-static
         --enable-shared
         --disable-lzma-links
+        "CC=${SUPERBUILD_CC}"
         "CPPFLAGS=${SUPERBUILD_CPPFLAGS}"
         "CFLAGS=${SUPERBUILD_CFLAGS}"
         "LDFLAGS=${SUPERBUILD_LDFLAGS}"
-        $<$<BOOL:@ANDROID@>:
-          "CC=${STANDALONE_C_COMPILER}"
-        >
     INSTALL_COMMAND
       "$(MAKE)" install "DESTDIR=${DESTDIR}${INSTALL_DIR}"
     COMMAND
