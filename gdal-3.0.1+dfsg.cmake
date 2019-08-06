@@ -164,13 +164,6 @@ superbuild_package(
         "CXXFLAGS=${SUPERBUILD_CXXFLAGS}"
         "LDFLAGS=${SUPERBUILD_LDFLAGS}"
         "PKG_CONFIG="
-        $<$<BOOL:@ANDROID@>:
-          $<$<STREQUAL:@ANDROID_ABI@,arm64-v8a>:
-            # https://github.com/android-ndk/ndk/issues/148
-            "LDFLAGS=-Wl,-rpath-link=${CMAKE_STAGING_PREFIX}/lib"
-            "LIBS=-l${ANDROID_STL}"
-          >
-        >
     BUILD_COMMAND
       "$(MAKE)"
     INSTALL_COMMAND

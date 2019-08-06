@@ -411,6 +411,14 @@ set(CMAKE_SYSTEM_LIBRARY_PATH "/usr/lib/${SYSTEM_NAME}")
 
 set(SUPERBUILD_CC           "]] "${toolchain_dir}" [[/bin/${SYSTEM_NAME}-clang")
 set(SUPERBUILD_CXX          "]] "${toolchain_dir}" [[/bin/${SYSTEM_NAME}-clang++")
+if("${ANDROID_ABI}" STREQUAL "arm64-v8a")
+    # For arm64, the NDK defaults to the bfd linker which tries to load all .so
+    # files. Note that the gold linker has an issue with debug information.
+    # Future NDKs will switch to lld for all targets.
+    set(CMAKE_EXE_LINKER_FLAGS "-fuse-ld=gold ${CMAKE_EXE_LINKER_FLAGS}")
+    set(SUPERBUILD_LDFLAGS     "-fuse-ld=gold ")
+endif()
+
 
 set(ANDROID_KEYSTORE_URL    "]] "${ANDROID_KEYSTORE_URL}" [[")
 set(ANDROID_KEYSTORE_ALIAS  "]] "${ANDROID_KEYSTORE_ALIAS}" [[")
