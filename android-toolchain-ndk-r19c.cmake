@@ -33,10 +33,14 @@ if(CMAKE_VERSION VERSION_LESS 3.7.0)
 	return()
 endif()
 
-set(ANDROID_TOOLCHAIN_VERSION "ndk-r18b" CACHE STRING
-  "Version of the Android toolchain to be used"
+set(supported_ndks
+  ndk-r19c
+  ndk-r20  # compiler bugs pending, to be fixed in ndk-r21
 )
-if(NOT ANDROID_TOOLCHAIN_VERSION STREQUAL "ndk-r18b")
+set(ANDROID_TOOLCHAIN_VERSION "ndk-r19c" CACHE STRING
+  "Version of the Android NDK toolchain to be used"
+)
+if(NOT ANDROID_TOOLCHAIN_VERSION IN_LIST supported_ndks)
 	return() # not this .cmake file
 endif()
 
@@ -44,19 +48,19 @@ unset(ANDROID_NDK_VERSION CACHE)
 set(ANDROID_NDK_VERSION "${ANDROID_TOOLCHAIN_VERSION}")
 
 set(supported_abis
-  arm64-v8a 
-  armeabi-v7a  
+  armeabi-v7a
+  arm64-v8a
   x86
   x86_64
 )
 
-set(system_arch_arm64-v8a    arm64)
 set(system_arch_armeabi-v7a  arm)
+set(system_arch_arm64-v8a    arm64)
 set(system_arch_x86          x86)
 set(system_arch_x86_64       x86_64)
 
+set(system_name_armeabi-v7a  armv7a-linux-androideabi)
 set(system_name_arm64-v8a    aarch64-linux-android)
-set(system_name_armeabi-v7a  arm-linux-androideabi)
 set(system_name_x86          i686-linux-android)
 set(system_name_x86_64       x86_64-linux-android)
 
@@ -174,8 +178,10 @@ endif()
 if(NOT ANDROID_NDK_ROOT)
 	# Download NDK.
 	string(REPLACE "ndk-" "" version ${ANDROID_NDK_VERSION})
-	set(ndk_r18b_darwin_hash SHA1=98cb9909aa8c2dab32db188bbdc3ac6207e09440)
-	set(ndk_r18b_linux_hash  SHA1=500679655da3a86aecf67007e8ab230ea9b4dd7b)
+	set(ndk_r19c_darwin_hash SHA1=f46b8193109bba8a58e0461c1a48f4534051fb25)
+	set(ndk_r19c_linux_hash  SHA1=fd94d0be6017c6acbd193eb95e09cf4b6f61b834)
+	set(ndk_r20_darwin_hash  SHA1=96d5f1c50452596912d1982439c514194b5751e6)
+	set(ndk_r20_linux_hash   SHA1=8665fc84a1b1f0d6ab3b5fdd1e30200cc7b9adff)
 	set(ANDROID_NDK_INSTALL_ROOT "${PROJECT_BINARY_DIR}/source" CACHE STRING
 	  "The directory where to install the downloaded NDK (i.e. the basedir of ANDROID_NDK_ROOT)"
 	)
@@ -206,6 +212,7 @@ if(NOT ANDROID_NDK_ROOT)
 				endif()
 			endforeach()
 		endif()
+		
 		# For commit IDs cf. git tags or NDK's prebuilt/linux-x86_64/repo.prop
 		superbuild_package(
 		  NAME         android-platform-bionic
@@ -303,20 +310,20 @@ if(NOT ANDROID_NDK_ROOT)
 			  SOURCE
 			    android-libcxx-${ANDROID_NDK_VERSION}
 			  
-			  USING ANDROID_NDK_ROOT abi system_platform_${abi}
+			  USING ANDROID_NDK_ROOT abi sdk_host system_platform_${abi}
 			  BUILD [[
 			    CONFIGURE_COMMAND ""
-			    BUILD_COMMAND "${CMAKE_COMMAND}" -E chdir "<SOURCE_DIR>/external/libcxx"
+			    BUILD_COMMAND
 			      bash -e -- "${ANDROID_NDK_ROOT}/ndk-build"
+			        -C "<SOURCE_DIR>/external/libcxx"
 			        "V=1"
 			        "APP_ABI=${abi}"
 			        "APP_PLATFORM=${system_platform_${abi}}"
 			        "APP_MODULES=c++_shared c++_static"
 			        "BIONIC_PATH=<SOURCE_DIR>/bionic"
-			        "NDK_UNIFIED_SYSROOT_PATH=${ANDROID_NDK_ROOT}/sysroot"
+			        "NDK_UNIFIED_SYSROOT_PATH=${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${sdk_host}-x86_64/sysroot"
 			        "NDK_PLATFORMS_ROOT=${ANDROID_NDK_ROOT}/platforms"
 			        "NDK_TOOLCHAINS_ROOT=<SOURCE_DIR>/toolchains"
-			        "NDK_NEW_TOOLCHAINS_LAYOUT=true"
 			        "NDK_PROJECT_PATH=null"
 			        "APP_BUILD_SCRIPT=<SOURCE_DIR>/external/libcxx/Android.mk"
 			        "NDK_APPLICATION_MK=<SOURCE_DIR>/external/libcxx/Application.mk"
@@ -409,8 +416,8 @@ set(CMAKE_FIND_ROOT_PATH   "]] "${${system_name}_FIND_ROOT_PATH}" [[")
 list(APPEND CMAKE_FIND_ROOT_PATH "${ANDROID_NDK_ROOT}/platforms/android-${ANDROID_NATIVE_API_LEVEL}/arch-]] ${system_arch_${abi}} [[")
 set(CMAKE_SYSTEM_LIBRARY_PATH "/usr/lib/${SYSTEM_NAME}")
 
-set(SUPERBUILD_CC           "]] "${toolchain_dir}" [[/bin/${SYSTEM_NAME}-clang")
-set(SUPERBUILD_CXX          "]] "${toolchain_dir}" [[/bin/${SYSTEM_NAME}-clang++")
+set(SUPERBUILD_CC           "]] "${ANDROID_NDK_ROOT}" [[/toolchains/llvm/prebuilt/]] "${sdk_host}" [[-x86_64/bin/${SYSTEM_NAME}${ANDROID_NATIVE_API_LEVEL}-clang")
+set(SUPERBUILD_CXX          "]] "${ANDROID_NDK_ROOT}" [[/toolchains/llvm/prebuilt/]] "${sdk_host}" [[-x86_64/bin/${SYSTEM_NAME}${ANDROID_NATIVE_API_LEVEL}-clang++")
 if("${ANDROID_ABI}" STREQUAL "arm64-v8a")
     # For arm64, the NDK defaults to the bfd linker which tries to load all .so
     # files. Note that the gold linker has an issue with debug information.
@@ -432,30 +439,6 @@ set(CMAKE_VERBOSE_MAKEFILE ON  CACHE BOOL "Enable verbose output from Makefile b
 ]]
 )
 	
-	set(make_toolchain_sh [[
-set -x
-set -e
-INSTALL_DIR=$1
-
-test -d "${INSTALL_DIR}.saved" && rm -Rf "${INSTALL_DIR}.saved"
-mv "${INSTALL_DIR}" "${INSTALL_DIR}.saved"
-
-bash "]] ${ANDROID_NDK_ROOT} [[/build/tools/make-standalone-toolchain.sh" \
-  "--arch=]] ${system_arch_${abi}} [[" \
-  "--stl=libcxx" \
-  "--platform=]] ${system_platform_${abi}} [[" \
-  "--install-dir=${INSTALL_DIR}" \
-  "--force"
-
-test -d "${INSTALL_DIR}.new" && rm -Rf "${INSTALL_DIR}.new"
-mv "${INSTALL_DIR}" "${INSTALL_DIR}.new"
-
-mv "${INSTALL_DIR}.saved" "${INSTALL_DIR}"
-"]] ${CMAKE_COMMAND} [[" -E copy_directory "${INSTALL_DIR}.new" "${INSTALL_DIR}"
-rm -Rf "${INSTALL_DIR}.new"
-]]
-	)
-	
 	string(REPLACE android-libcxx-@abi@ android-libcxx-${abi} dependencies "${android_toolchain_dependencies}")
 	
 	string(MD5 md5 "${toolchain}")
@@ -469,11 +452,11 @@ rm -Rf "${INSTALL_DIR}.new"
 	  
 	  SOURCE_WRITE
 	    toolchain.cmake   toolchain
-	    make_toolchain.sh make_toolchain_sh
 	  
 	  USING
 	    md5
 	    install_dir
+	    sdk_host
 	    system_name
 	    ${system_name}_INSTALL_PREFIX
 	    ANDROID_NDK_ROOT
@@ -494,8 +477,7 @@ rm -Rf "${INSTALL_DIR}.new"
 	      >
 	    >
 	    BUILD_COMMAND
-	      bash "<SOURCE_DIR>/make_toolchain.sh"
-	        "${INSTALL_DIR}"
+	      ""
 	    INSTALL_COMMAND
 	      "${CMAKE_COMMAND}" -E copy_if_different
 	        "${SOURCE_DIR}/toolchain.cmake" "${INSTALL_DIR}/toolchain.cmake"
@@ -503,6 +485,72 @@ rm -Rf "${INSTALL_DIR}.new"
 	      "${CMAKE_COMMAND}" -E copy_if_different
 	        "${ANDROID_NDK_ROOT}/sources/cxx-stl/llvm-libc++/NOTICE"
 	        "${install_dir}${${system_name}_INSTALL_PREFIX}/share/doc/copyright/libc++-${ANDROID_NDK_VERSION}.txt"
+	    $<$<STREQUAL:@system_name@,armv7a-linux-androideabi>:# Add tools with same prefix as compiler
+	      COMMAND
+	        "${CMAKE_COMMAND}" -E copy_if_different
+	          "${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${sdk_host}-x86_64/bin/arm-linux-androideabi-ar"
+	          "${INSTALL_DIR}/bin/${system_name}-ar"
+	      COMMAND
+	        "${CMAKE_COMMAND}" -E copy_if_different
+	          "${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${sdk_host}-x86_64/bin/arm-linux-androideabi-as"
+	          "${INSTALL_DIR}/bin/${system_name}-as"
+	      COMMAND
+	        "${CMAKE_COMMAND}" -E copy_if_different
+	          "${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${sdk_host}-x86_64/bin/arm-linux-androideabi-c++filt"
+	          "${INSTALL_DIR}/bin/${system_name}-c++filt"
+	      COMMAND
+	        "${CMAKE_COMMAND}" -E copy_if_different
+	          "${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${sdk_host}-x86_64/bin/arm-linux-androideabi-dwp"
+	          "${INSTALL_DIR}/bin/${system_name}-dwp"
+	      COMMAND
+	        "${CMAKE_COMMAND}" -E copy_if_different
+	          "${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${sdk_host}-x86_64/bin/arm-linux-androideabi-elfedit"
+	          "${INSTALL_DIR}/bin/${system_name}-gprof"
+	      COMMAND
+	        "${CMAKE_COMMAND}" -E copy_if_different
+	          "${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${sdk_host}-x86_64/bin/arm-linux-androideabi-ld"
+	          "${INSTALL_DIR}/bin/${system_name}-ld"
+	      COMMAND
+	        "${CMAKE_COMMAND}" -E copy_if_different
+	          "${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${sdk_host}-x86_64/bin/arm-linux-androideabi-ld.bfd"
+	          "${INSTALL_DIR}/bin/${system_name}-ld.bfd"
+	      COMMAND
+	        "${CMAKE_COMMAND}" -E copy_if_different
+	          "${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${sdk_host}-x86_64/bin/arm-linux-androideabi-ld.gold"
+	          "${INSTALL_DIR}/bin/${system_name}-ld.gold"
+	      COMMAND
+	        "${CMAKE_COMMAND}" -E copy_if_different
+	          "${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${sdk_host}-x86_64/bin/arm-linux-androideabi-nm"
+	          "${INSTALL_DIR}/bin/${system_name}-nm"
+	      COMMAND
+	        "${CMAKE_COMMAND}" -E copy_if_different
+	          "${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${sdk_host}-x86_64/bin/arm-linux-androideabi-objcopy"
+	          "${INSTALL_DIR}/bin/${system_name}-objcopy"
+	      COMMAND
+	        "${CMAKE_COMMAND}" -E copy_if_different
+	          "${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${sdk_host}-x86_64/bin/arm-linux-androideabi-objdump"
+	          "${INSTALL_DIR}/bin/${system_name}-objdump"
+	      COMMAND
+	        "${CMAKE_COMMAND}" -E copy_if_different
+	          "${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${sdk_host}-x86_64/bin/arm-linux-androideabi-ranlib"
+	          "${INSTALL_DIR}/bin/${system_name}-ranlib"
+	      COMMAND
+	        "${CMAKE_COMMAND}" -E copy_if_different
+	          "${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${sdk_host}-x86_64/bin/arm-linux-androideabi-readelf"
+	          "${INSTALL_DIR}/bin/${system_name}-readelf"
+	      COMMAND
+	        "${CMAKE_COMMAND}" -E copy_if_different
+	          "${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${sdk_host}-x86_64/bin/arm-linux-androideabi-size"
+	          "${INSTALL_DIR}/bin/${system_name}-size"
+	      COMMAND
+	        "${CMAKE_COMMAND}" -E copy_if_different
+	          "${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${sdk_host}-x86_64/bin/arm-linux-androideabi-strings"
+	          "${INSTALL_DIR}/bin/${system_name}-strings"
+	      COMMAND
+	        "${CMAKE_COMMAND}" -E copy_if_different
+	          "${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${sdk_host}-x86_64/bin/arm-linux-androideabi-strip"
+	          "${INSTALL_DIR}/bin/${system_name}-strip"
+	    >
 	  ]]
 	)
 endforeach()

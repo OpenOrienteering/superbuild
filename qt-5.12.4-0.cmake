@@ -149,6 +149,11 @@ superbuild_package(
       # Cf. https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-qt5/0025-qt-5.8.0-force-using-make-on-msys.patch
       sed -i -e "/MAKEFILE_GENERATOR, MINGW/,/mingw32-make/ s/.equals.QMAKE_HOST.os, Windows./\\!isEmpty(QMAKE_SH)|\\!equals(QMAKE_HOST.os, Windows)/"
         mkspecs/features/configure_base.prf
+    COMMAND
+      # Fix Qt 5.12.4 build with NDK r20
+      # Cf. https://codereview.qt-project.org/c/qt/qtbase/+/264903
+      sed -e "/^QMAKE_LINK / s/$/ -nostdlib++/" -i --
+        mkspecs/android-clang/qmake.conf
   
   USING default crosscompiling windows android macos USE_SYSTEM_QT module short_version qtbase_version
   BUILD_CONDITION  ${use_system_qt}
