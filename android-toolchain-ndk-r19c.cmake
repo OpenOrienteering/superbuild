@@ -406,6 +406,13 @@ set(CMAKE_SYSTEM_LIBRARY_PATH "/usr/lib/${SYSTEM_NAME}")
 
 set(SUPERBUILD_CC           "]] "${ANDROID_NDK_ROOT}" [[/toolchains/llvm/prebuilt/]] "${sdk_host}" [[-x86_64/bin/${SYSTEM_NAME}${ANDROID_NATIVE_API_LEVEL}-clang")
 set(SUPERBUILD_CXX          "]] "${ANDROID_NDK_ROOT}" [[/toolchains/llvm/prebuilt/]] "${sdk_host}" [[-x86_64/bin/${SYSTEM_NAME}${ANDROID_NATIVE_API_LEVEL}-clang++")
+# ANDROID_LINKER_FLAGS defines flags for ABI specific linking requirements.
+# Last not least, this includes the unwinding particularities of 32-bit ARM,
+# https://android.googlesource.com/platform/ndk/+/master/docs/BuildSystemMaintainers.md#Unwinding
+if(NOT DEFINED ANDROID_LINKER_FLAGS)
+    message(WARNING "ANDROID_LINKER_FLAGS is undefined. Expect undefined behaviour.")
+endif()
+set(SUPERBUILD_LDFLAGS     "${ANDROID_LINKER_FLAGS}")
 if("${ANDROID_ABI}" STREQUAL "arm64-v8a")
     # For arm64, the NDK defaults to the bfd linker which tries to load all .so
     # files. Note that the gold linker has an issue with debug information.
