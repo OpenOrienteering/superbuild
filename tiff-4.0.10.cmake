@@ -70,7 +70,7 @@ superbuild_package(
   
 superbuild_package(
   NAME           tiff
-  VERSION        ${patch_version}
+  VERSION        ${patch_version}openorienteering1
   DEPENDS
     source:tiff-patches-${patch_version}
     libjpeg
@@ -97,12 +97,10 @@ superbuild_package(
   BUILD [[
     CMAKE_ARGS
       "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
-      # This cache entry is a fallback, needed for MinGW
-      "-DFILE_OFFSET_BITS=32"
-      # USE_WIN32_FILEIO causes build problems and doesn't seem to be the
-      # default for autoconf/configure controlled builds. In addition, more
-      # trouble is pending, http://bugzilla.maptools.org/show_bug.cgi?id=1941.
-      "-DUSE_WIN32_FILEIO:BOOL=OFF"
+      # We don't provide all possible sources (yet)
+      "-Djbig:BOOL=OFF"
+      "-Dwebp:BOOL=OFF"
+      "-Dzstd:BOOL=OFF"
       # GNUInstallDirs doesn't work with CMAKE_STAGING_PREFIX
       -UCMAKE_STAGING_PREFIX
     INSTALL_COMMAND
