@@ -86,7 +86,7 @@ superbuild_package(
   
 superbuild_package(
   NAME           gdal
-  VERSION        ${patch_version}
+  VERSION        ${patch_version}openorienteering1
   DEPENDS
     source:gdal-patches-${patch_version}
     common-licenses
@@ -153,6 +153,7 @@ superbuild_package(
         --without-python
         --without-xerces
         --without-xml2
+        --without-zstd
       $<$<STREQUAL:@CMAKE_SYSTEM_NAME@,Windows>:
         --without-crypto
       > # Windows
