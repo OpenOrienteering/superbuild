@@ -27,11 +27,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        2.2.6)
-set(download_hash  SHA256=17b43c2716d521369f82fc2dc70f359860e90fa440bea65b3b85f0b246ea81f2)
+set(version        2.2.7)
+set(download_hash  SHA256=cbc9102f4a31a8dafd42d642e9a3aa31e79a0aedaa1f6efd2795ebc83174ec18)
 set(patch_version  ${version}-2)
-set(patch_hash     SHA256=678c073cecab66cc5ea0feaf02626db4300008d9c20df9ebe81958944af31673)
-set(base_url       https://snapshot.debian.org/archive/debian/20190625T042133Z/pool/main/e/expat)
+set(patch_hash     SHA256=9f427b1f23a95ded54f347d67dd527cb130b686bc190428dc95ed67a0100bc0a)
+set(base_url       https://snapshot.debian.org/archive/debian/20190908T172415Z/pool/main/e/expat)
 
 option(USE_SYSTEM_EXPAT "Use the system Expat if possible" ON)
 
@@ -56,8 +56,8 @@ superbuild_package(
     URL_HASH       ${patch_hash}
     PATCH_COMMAND
       # This patch would not apply with -p1
-      sed -e "s,/expat/lib/,/lib/,g" -i --
-        patches/Fix_extraction_of_namespace_prefix_from_XML_name.patch
+      sed -e "s, [ab]/expat/, expat/,g" -i --
+        patches/CVE-2019-15903_Deny_internal_entities_closing_the_doctype.patch
 )
   
 superbuild_package(
