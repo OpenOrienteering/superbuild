@@ -27,11 +27,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        1.6.36)
-set(download_hash  SHA256=eceb924c1fa6b79172fdfd008d335f0e59172a86a66481e09d4089df872aa319)
-set(patch_version  ${version}-6)
-set(patch_hash     SHA256=69751c1d45b319237144f536385a6cc05c8d852d83170d7f7f322474e04b94b0)
-set(base_url       https://snapshot.debian.org/archive/debian/20190408T153501Z/pool/main/libp/libpng1.6)
+set(version        1.6.37)
+set(download_hash  SHA256=ca74a0dace179a8422187671aee97dd3892b53e168627145271cad5b5ac81307)
+set(patch_version  ${version}-1)
+set(patch_hash     SHA256=1be8793d8ef9265dd43f526540a55c5114c427f2a18862d2238a193bdad9b6a1)
+set(base_url       https://snapshot.debian.org/archive/debian/20190702T085226Z/pool/main/libp/libpng1.6)
 
 option(USE_SYSTEM_LIBPNG "Use the system libpng if possible" ON)
 
@@ -75,7 +75,7 @@ superbuild_package(
     zlib
   
   SOURCE
-    URL            ${base_url}//libpng1.6_${version}.orig.tar.xz
+    URL            ${base_url}/libpng1.6_${version}.orig.tar.gz
     URL_HASH       ${download_hash}
     PATCH_COMMAND
       "${CMAKE_COMMAND}"
