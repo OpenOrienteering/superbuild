@@ -29,8 +29,10 @@
 
 set(version        8.39)
 set(download_hash  SHA256=b858099f82483031ee02092711689e7245586ada49e534a06e678b8ea9549e8b)
-set(patch_version  ${version}-3)
-set(patch_hash     SHA256=a9f0e1a96b6a017965fe69233e267682c289f2cfeb33b46fb78aedcb8cf2c16a)
+set(patch_version  ${version}-12)
+set(patch_hash     SHA256=ee193ddee446f0bdb966fca5987ef871da7a528a473304285619988102371c4c)
+set(base_url       https://snapshot.debian.org/archive/debian/20190307T215729Z/pool/main/p/pcre3)
+
 
 option(USE_SYSTEM_PCRE3 "Use the system pcre3 if possible" ON)
 
@@ -52,7 +54,7 @@ superbuild_package(
   VERSION        ${patch_version}
   
   SOURCE
-    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_06}/pool/main/p/pcre3/pcre3_${patch_version}.debian.tar.gz
+    URL            ${base_url}/pcre3_${patch_version}.debian.tar.gz
     URL_HASH       ${patch_hash}
 )
   
@@ -63,7 +65,7 @@ superbuild_package(
     source:pcre3-patches-${patch_version}
   
   SOURCE
-    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_06}/pool/main/p/pcre3/pcre3_${version}.orig.tar.bz2
+    URL            ${base_url}/pcre3_${version}.orig.tar.bz2
     URL_HASH       ${download_hash}
     PATCH_COMMAND
       "${CMAKE_COMMAND}"
