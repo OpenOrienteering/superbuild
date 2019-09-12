@@ -28,7 +28,7 @@
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 set(short_version  5.12)
-set(version        5.12.4)
+set(version        5.12.5)
 
 option(USE_SYSTEM_QT "Use the system Qt if possible" ON)
 
@@ -90,7 +90,7 @@ superbuild_package(
   
   SOURCE
     URL            https://github.com/OpenOrienteering/superbuild/archive/qt-${short_version}-openorienteering_${version}-0.tar.gz
-    URL_HASH       SHA256=91988f504ef1659bf553142722e19aa20b73e22b7619eefaa1e70f5a5920fb38
+    URL_HASH       SHA256=b153617337e054e106d0a3cd0a802c78fcb77d4eef56e5df2e639fe18b542a68
 )
 
 
@@ -119,7 +119,7 @@ superbuild_package(
   
   SOURCE
     URL             https://download.qt.io/archive/qt/${short_version}/${version}/submodules/qtbase-everywhere-src-${version}.tar.xz
-    URL_HASH        SHA256=20fbc7efa54ff7db9552a7a2cdf9047b80253c1933c834f35b0bc5c1ae021195
+    URL_HASH        SHA256=fc8abffbbda9da3e593d8d62b56bc17dbaab13ff71b72915ddda11dabde4d625
     
     # Don't accidently used bundled copies
     PATCH_COMMAND
@@ -149,11 +149,6 @@ superbuild_package(
       # Cf. https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-qt5/0025-qt-5.8.0-force-using-make-on-msys.patch
       sed -i -e "/MAKEFILE_GENERATOR, MINGW/,/mingw32-make/ s/.equals.QMAKE_HOST.os, Windows./\\!isEmpty(QMAKE_SH)|\\!equals(QMAKE_HOST.os, Windows)/"
         mkspecs/features/configure_base.prf
-    COMMAND
-      # Fix Qt 5.12.4 build with NDK r20
-      # Cf. https://codereview.qt-project.org/c/qt/qtbase/+/264903
-      sed -e "/^QMAKE_LINK / s/$/ -nostdlib++/" -i --
-        mkspecs/android-clang/qmake.conf
   
   USING default crosscompiling windows android macos USE_SYSTEM_QT module short_version qtbase_version
   BUILD_CONDITION  ${use_system_qt}
@@ -283,7 +278,7 @@ superbuild_package(
   
   SOURCE
     URL             https://download.qt.io/archive/qt/${short_version}/${version}/submodules/qtandroidextras-everywhere-src-${version}.tar.xz
-    URL_HASH        SHA256=18e0dbd82920b0ca51b29172fc0ed1f2a923cb7c4fa8fb574595abc16ec3245e
+    URL_HASH        SHA256=f115ccef1e808da7c5d0348f3e245952a2973966f34d18b935f9e3eb16062eab
   
   USING qmake USE_SYSTEM_QT module short_version qtandroidextras_version
   BUILD_CONDITION  ${use_system_qt}
@@ -321,7 +316,7 @@ superbuild_package(
   
   SOURCE
     URL             https://download.qt.io/archive/qt/${short_version}/${version}/submodules/qtimageformats-everywhere-src-${version}.tar.xz
-    URL_HASH        SHA256=2dee25c3eea90d172cbd40f41450153322b902da1daa7d2370a55124b2307bb3
+    URL_HASH        SHA256=9f19394830542fb9e6bde6806b6216b7207f96bff674b91e8e8a8f89699e1f0a
     
     # Don't accidently used bundled copies
     PATCH_COMMAND
@@ -363,7 +358,7 @@ superbuild_package(
   
   SOURCE
     URL             https://download.qt.io/archive/qt/${short_version}/${version}/submodules/qtlocation-everywhere-src-${version}.tar.xz
-    URL_HASH        SHA256=127b40bd7679fead3fb98f4c9c1d71dde9d6d416e90a6000129b61a5f128b3a0
+    URL_HASH        SHA256=12c8b59755abc4ca56e135e8ae3db7c6ba1bd95c779060f10a01393ae1040122
     
   USING qmake USE_SYSTEM_QT module short_version qtlocation_version
   BUILD_CONDITION  ${use_system_qt}
@@ -401,7 +396,7 @@ superbuild_package(
   
   SOURCE
     URL             https://download.qt.io/archive/qt/${short_version}/${version}/submodules/qtsensors-everywhere-src-${version}.tar.xz
-    URL_HASH        SHA256=95873c7ea5960008d6eb41368ca64d68fbd05594ca8c2cd848b1612fc4aec0a9
+    URL_HASH        SHA256=e3a86a706f475bb23fc874de56026482de223ebd24f8cb4e94a28d1985ca0b85
   
   USING qmake USE_SYSTEM_QT module short_version qtsensors_version
   BUILD_CONDITION  ${use_system_qt}
@@ -438,7 +433,7 @@ superbuild_package(
   
   SOURCE
     URL             https://download.qt.io/archive/qt/${short_version}/${version}/submodules/qtserialport-everywhere-src-${version}.tar.xz
-    URL_HASH        SHA256=bf487df8a9fb2eddf103842b57a75b17ef4c498ee40306ae9997017c82b0ad39
+    URL_HASH        SHA256=f8ef0321a59ecfe2c72adc2ee220e0047403439a3c7b9efb719b1476af1fb862
   
   USING qmake USE_SYSTEM_QT module short_version qtserialport_version
   BUILD_CONDITION  ${use_system_qt}
@@ -475,7 +470,7 @@ superbuild_package(
   
   SOURCE
     URL             https://download.qt.io/archive/qt/${short_version}/${version}/submodules/qttools-everywhere-src-${version}.tar.xz
-    URL_HASH        SHA256=3b0e353860a9c0cd4db9eeae5f94fef8811ed7d107e3e5e97e4a557f61bd6eb6
+    URL_HASH        SHA256=28e095047b4985437dd66120cbcb49ac091bf4f12576ecad7ebc781b7dd44025
   
   USING qmake USE_SYSTEM_QT module short_version qttools_version
   BUILD_CONDITION  ${use_system_qt}
@@ -536,7 +531,7 @@ superbuild_package(
   
   SOURCE
     URL             https://download.qt.io/archive/qt/${short_version}/${version}/submodules/qttranslations-everywhere-src-${version}.tar.xz
-    URL_HASH        SHA256=ab8dd55f5ca869cab51c3a6ce0888f854b96dc03c7f25d2bd3d2c50314ab60fb
+    URL_HASH        SHA256=72eb6317190fdcc3f8de37996adc646ab8772988766bacaab60a5bcc7d6a3f2a
   
   USING qmake USE_SYSTEM_QT module short_version qttranslations_version
   BUILD_CONDITION  ${use_system_qt}
@@ -574,7 +569,7 @@ if(GIT_EXECUTABLE AND PYTHONINTERP_FOUND)
         source:qttranslations-everywhere-src-${version}-0
       
       SOURCE
-        GIT_REPOSITORY https://github.com/OpenOrienteering/Superbuild.git
+        GIT_REPOSITORY https://github.com/OpenOrienteering/superbuild.git
         GIT_TAG        qt-${short_version}-openorienteering
       
       USING version PYTHON_EXECUTABLE
