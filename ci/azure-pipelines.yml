@@ -59,7 +59,7 @@ jobs:
 
 - job: Linux
   timeoutInMinutes: 120
-  dependsOn: Source
+  dependsOn: macOS
   variables:
     IMAGE_NAME: 'ubuntu-16.04'
     SUPERBUILD_INSTALL_DIR: /home/vsts/superbuild
@@ -77,6 +77,7 @@ jobs:
 - job: MinGW_Linux
   timeoutInMinutes: 120
   dependsOn: Source
+  condition: False
   variables:
     IMAGE_NAME: 'ubuntu-16.04'
     SUPERBUILD_INSTALL_DIR: /home/vsts/superbuild
@@ -127,7 +128,7 @@ jobs:
 
 - job: Android_aarch64
   timeoutInMinutes: 120
-  dependsOn: Source
+  dependsOn: Android_armv7
   variables:
     IMAGE_NAME: 'macos-10.13'
     SUPERBUILD_INSTALL_DIR: /Users/vsts/superbuild
@@ -153,7 +154,7 @@ jobs:
 
 - job: Android_x86
   timeoutInMinutes: 120
-  dependsOn: Source
+  dependsOn: Android_x86_64
   variables:
     IMAGE_NAME: 'macos-10.13'
     SUPERBUILD_INSTALL_DIR: /Users/vsts/superbuild
