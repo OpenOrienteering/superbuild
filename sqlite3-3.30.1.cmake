@@ -27,12 +27,12 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(download_version  autoconf-3290000)
-set(version           3.29.0-1)
-set(download_hash     SHA1=053d8237eb9741b0e297073810668c2611a8e38e)
-set(patch_version     3.29.0-1)
-set(patch_hash        SHA256=5466cab5aa67b7ecea1828c25ed0ebe3c10956ff1e1fc2087c190db3031cef87)
-set(base_url          https://snapshot.debian.org/archive/debian/20190711T221031Z/pool/main/s/sqlite3)
+set(download_version  autoconf-3300100)
+set(version           3.30.1)
+set(download_hash     SHA1=8383f29d53fa1d4383e4c8eb3e087f2ed940a9e0)
+set(patch_version     ${version}-1)
+set(patch_hash        SHA256=340a6d04b85e1858f5631c0493389aa4d11a666de3899b6bae8de50b15e555fe)
+set(base_url          https://snapshot.debian.org/archive/debian/20191013T030844Z/pool/main/s/sqlite3)
 
 option(USE_SYSTEM_SQLITE3 "Use the system sqlite if possible" ON)
 
@@ -64,7 +64,7 @@ superbuild_package(
   
 superbuild_package(
   NAME           sqlite3
-  VERSION        ${version}
+  VERSION        ${patch_version}
   DEPENDS
     source:sqlite3-patches-${patch_version}
     common-licenses
