@@ -47,7 +47,7 @@ steps:
     cp /usr/share/doc/libjpeg-turbo8/copyright ${DEST}/libjpeg-turbo-${IMAGE_NAME}.txt
     cp /usr/share/doc/liblzma5/copyright       ${DEST}/liblzma-${IMAGE_NAME}.txt
     cp /usr/share/doc/libpcre3/copyright       ${DEST}/pcre3-${IMAGE_NAME}.txt
-    cp /usr/share/doc/libpng12-0/copyright     ${DEST}/libpng-${IMAGE_NAME}.txt
+    cp /usr/share/doc/libpng16-16/copyright    ${DEST}/libpng-${IMAGE_NAME}.txt
     cp /usr/share/doc/libtiff5/copyright       ${DEST}/tiff-${IMAGE_NAME}.txt
     cp /usr/share/doc/mingw-w64-x86-64-dev/copyright  ${DEST}/mingw-w64-x86-64-${IMAGE_NAME}.txt
     cp /usr/share/doc/zlib1g/copyright         ${DEST}/zlib-${IMAGE_NAME}.txt
