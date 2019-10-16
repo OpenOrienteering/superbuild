@@ -30,7 +30,7 @@
 jobs:
 - job: Source
   pool:
-    vmImage: 'ubuntu-16.04'
+    vmImage: 'ubuntu-18.04'
   steps:
   - template: source.yml
 
@@ -61,7 +61,7 @@ jobs:
   timeoutInMinutes: 120
   dependsOn: macOS
   variables:
-    IMAGE_NAME: 'ubuntu-16.04'
+    IMAGE_NAME: 'ubuntu-18.04'
     SUPERBUILD_INSTALL_DIR: /home/vsts/superbuild
   pool:
     vmImage: '$(IMAGE_NAME)'
@@ -79,7 +79,7 @@ jobs:
   dependsOn: Source
   condition: False
   variables:
-    IMAGE_NAME: 'ubuntu-16.04'
+    IMAGE_NAME: 'ubuntu-18.04'
     SUPERBUILD_INSTALL_DIR: /home/vsts/superbuild
     TARGET: x86_64-w64-mingw32
     TARGET_SUFFIX: -$(TARGET)
