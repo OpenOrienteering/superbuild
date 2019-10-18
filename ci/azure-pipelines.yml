@@ -71,6 +71,7 @@ jobs:
       parameters:
         cmakeArgs: >
           -DMapper_GIT_GDAL_DATA_DIR=$(SUPERBUILD_INSTALL_DIR)/share/gdal
+    - template: build-iwyu.yml
     - template: publish.yml
 
 
