@@ -27,11 +27,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        6.2.0)
-set(download_hash  SHA256=b300c0f872f632ad7f8eb60725edbf14f0f8f52db740a3ab23e7b94f1cd22a50)
+set(version        6.2.1)
+set(download_hash  SHA256=7f2e0fe63312f1e766057cceb53dc9585c4a335ff6641de45696dbd40d17c340)
 set(patch_version  ${version}-1)
-set(patch_hash     SHA256=356fb69da850433a3f58986f3d307cc1c9195718080c5fc8677d9ebef84fcab4)
-set(base_url       https://snapshot.debian.org/archive/debian/20190902T165024Z/pool/main/p/proj)
+set(patch_hash     SHA256=49cc0da8d17d3e3ecbd513e629d17dd7f978d6e7aa26e4c88e594dc9f04ffa32)
+set(base_url       https://snapshot.debian.org/archive/debian/20191102T030437Z/pool/main/p/proj/)
 
 set(datumgrid_version  1.8)
 set(datumgrid_hash SHA256=b9838ae7e5f27ee732fb0bfed618f85b36e8bb56d7afb287d506338e9f33861e)
@@ -68,7 +68,7 @@ superbuild_package(
   VERSION        ${patch_version}
   
   SOURCE
-    URL            ${base_url}/proj_${patch_version}.debian.tar.xz
+    URL            ${base_url}proj_${patch_version}.debian.tar.xz
     URL_HASH       ${patch_hash}
 )
 
@@ -83,7 +83,7 @@ superbuild_package(
     sqlite3
   
   SOURCE
-    URL            ${base_url}/proj_${version}.orig.tar.gz
+    URL            ${base_url}proj_${version}.orig.tar.gz
     URL_HASH       ${download_hash}
     PATCH_COMMAND
       "${CMAKE_COMMAND}"
