@@ -29,11 +29,11 @@
 
 # https://tracker.debian.org/pkg/gdal
 
-set(version        3.0.1+dfsg)
-set(download_hash  SHA256=dd4d699ee57bfc1e69f08ec3d19d00de216da6707f1c557521e89b61257f143b)
+set(version        3.0.2+dfsg)
+set(download_hash  SHA256=fbbd4085745e2b2eeb98f92f68a03f4dd7484e02c17e64c6a1c0779cf283c64b)
 set(patch_version  ${version}-1)
-set(patch_hash     SHA256=5d18c5eb87ffaad74b8cde99a02263626b351c654c66626622679de23c60ca20)
-set(base_url       https://snapshot.debian.org/archive/debian/20190705T150130Z/pool/main/g/gdal)
+set(patch_hash     SHA256=eb53e2bc8193bb6ee167f600e4be04c93a4cb85affefc024987b3a9bcacdf9d1)
+set(base_url       https://snapshot.debian.org/archive/debian/20191104T205643Z/pool/main/g/gdal/)
 
 option(USE_SYSTEM_GDAL "Use the system GDAL if possible" ON)
 
@@ -80,13 +80,13 @@ superbuild_package(
   VERSION        ${patch_version}
   
   SOURCE
-    URL            ${base_url}/gdal_${patch_version}~exp1.debian.tar.xz
+    URL            ${base_url}gdal_${patch_version}~exp1.debian.tar.xz
     URL_HASH       ${patch_hash}
 )
   
 superbuild_package(
   NAME           gdal
-  VERSION        ${patch_version}openorienteering1
+  VERSION        ${patch_version}
   DEPENDS
     source:gdal-patches-${patch_version}
     common-licenses
@@ -103,7 +103,7 @@ superbuild_package(
     zlib
   
   SOURCE
-    URL            ${base_url}/gdal_${version}.orig.tar.xz
+    URL            ${base_url}gdal_${version}.orig.tar.xz
     URL_HASH       ${download_hash}
     PATCH_COMMAND
       "${CMAKE_COMMAND}"
