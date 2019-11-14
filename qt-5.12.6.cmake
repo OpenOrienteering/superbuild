@@ -28,7 +28,7 @@
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 set(short_version  5.12)
-set(version        5.12.5)
+set(version        5.12.6)
 
 option(USE_SYSTEM_QT "Use the system Qt if possible" ON)
 
@@ -90,7 +90,7 @@ superbuild_package(
   
   SOURCE
     URL            https://github.com/OpenOrienteering/superbuild/archive/qt-${short_version}-openorienteering_${version}-0.tar.gz
-    URL_HASH       SHA256=b153617337e054e106d0a3cd0a802c78fcb77d4eef56e5df2e639fe18b542a68
+    URL_HASH       SHA256=29786360f29489e6459c144a12d0828dca2f754833f841c09e45632abb45d8b9
 )
 
 
@@ -119,7 +119,7 @@ superbuild_package(
   
   SOURCE
     URL             https://download.qt.io/archive/qt/${short_version}/${version}/submodules/qtbase-everywhere-src-${version}.tar.xz
-    URL_HASH        SHA256=fc8abffbbda9da3e593d8d62b56bc17dbaab13ff71b72915ddda11dabde4d625
+    URL_HASH        SHA256=6ab52649d74d7c1728cf4a6cf335d1142b3bf617d476e2857eb7961ef43f9f27
     
     # Don't accidently used bundled copies
     PATCH_COMMAND
@@ -278,7 +278,7 @@ superbuild_package(
   
   SOURCE
     URL             https://download.qt.io/archive/qt/${short_version}/${version}/submodules/qtandroidextras-everywhere-src-${version}.tar.xz
-    URL_HASH        SHA256=f115ccef1e808da7c5d0348f3e245952a2973966f34d18b935f9e3eb16062eab
+    URL_HASH        SHA256=a0f15a4ba29abe90de2b2c221efd22ecfb6793590ff9610f85e6e6b6562784fe
   
   USING qmake USE_SYSTEM_QT module short_version qtandroidextras_version
   BUILD_CONDITION  ${use_system_qt}
@@ -316,7 +316,7 @@ superbuild_package(
   
   SOURCE
     URL             https://download.qt.io/archive/qt/${short_version}/${version}/submodules/qtimageformats-everywhere-src-${version}.tar.xz
-    URL_HASH        SHA256=9f19394830542fb9e6bde6806b6216b7207f96bff674b91e8e8a8f89699e1f0a
+    URL_HASH        SHA256=330d1c29a135c44bb36b5ffc2ba4f8915dbc446d5d75563523ebcfd373617858
     
     # Don't accidently used bundled copies
     PATCH_COMMAND
@@ -358,7 +358,7 @@ superbuild_package(
   
   SOURCE
     URL             https://download.qt.io/archive/qt/${short_version}/${version}/submodules/qtlocation-everywhere-src-${version}.tar.xz
-    URL_HASH        SHA256=12c8b59755abc4ca56e135e8ae3db7c6ba1bd95c779060f10a01393ae1040122
+    URL_HASH        SHA256=7ae231ca4de3c0915e92bb95440b0ddc7113790b1acb536c9394472e8dde2278
     
   USING qmake USE_SYSTEM_QT module short_version qtlocation_version
   BUILD_CONDITION  ${use_system_qt}
@@ -396,7 +396,7 @@ superbuild_package(
   
   SOURCE
     URL             https://download.qt.io/archive/qt/${short_version}/${version}/submodules/qtsensors-everywhere-src-${version}.tar.xz
-    URL_HASH        SHA256=e3a86a706f475bb23fc874de56026482de223ebd24f8cb4e94a28d1985ca0b85
+    URL_HASH        SHA256=59dba4c0bc72846d938e0862f14d8064fb664d893f270a41d3abf4e871290ef5
   
   USING qmake USE_SYSTEM_QT module short_version qtsensors_version
   BUILD_CONDITION  ${use_system_qt}
@@ -433,7 +433,7 @@ superbuild_package(
   
   SOURCE
     URL             https://download.qt.io/archive/qt/${short_version}/${version}/submodules/qtserialport-everywhere-src-${version}.tar.xz
-    URL_HASH        SHA256=f8ef0321a59ecfe2c72adc2ee220e0047403439a3c7b9efb719b1476af1fb862
+    URL_HASH        SHA256=77d0def93078fb5d9de6faa9ccff05cce5b934899e856b04bcf7f721a4e190be
   
   USING qmake USE_SYSTEM_QT module short_version qtserialport_version
   BUILD_CONDITION  ${use_system_qt}
@@ -470,7 +470,7 @@ superbuild_package(
   
   SOURCE
     URL             https://download.qt.io/archive/qt/${short_version}/${version}/submodules/qttools-everywhere-src-${version}.tar.xz
-    URL_HASH        SHA256=28e095047b4985437dd66120cbcb49ac091bf4f12576ecad7ebc781b7dd44025
+    URL_HASH        SHA256=e94991c7885c2650cefd71189873e45b1d64d6042e439a0a0d9652c191d3c777
   
   USING qmake USE_SYSTEM_QT module short_version qttools_version
   BUILD_CONDITION  ${use_system_qt}
@@ -531,7 +531,7 @@ superbuild_package(
   
   SOURCE
     URL             https://download.qt.io/archive/qt/${short_version}/${version}/submodules/qttranslations-everywhere-src-${version}.tar.xz
-    URL_HASH        SHA256=72eb6317190fdcc3f8de37996adc646ab8772988766bacaab60a5bcc7d6a3f2a
+    URL_HASH        SHA256=798ac44414206898d0192653118de3f115c59016e2bf82ad0c659f9f8c864768
   
   USING qmake USE_SYSTEM_QT module short_version qttranslations_version
   BUILD_CONDITION  ${use_system_qt}
