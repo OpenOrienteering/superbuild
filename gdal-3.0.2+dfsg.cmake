@@ -96,6 +96,7 @@ superbuild_package(
     libjpeg
     liblzma
     libpng
+    openjpeg2
     pcre3
     proj
     sqlite3
@@ -138,6 +139,9 @@ superbuild_package(
         $<$<NOT:$<BOOL:@ANDROID@>>:
           "--with-libz=${LIBZ_DIR}"
         >
+        "--with-openjpeg"
+          "OPENJPEG_CFLAGS=-I${CMAKE_STAGING_PREFIX}/include/openjpeg2"
+          "OPENJPEG_LIBS=-lopenjp2"
         "--with-png=${CMAKE_STAGING_PREFIX}"
         "--with-proj=${CMAKE_STAGING_PREFIX}"
         "--with-sqlite3=${SQLITE3_DIR}"
