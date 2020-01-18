@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016-2019 Kai Pastor
+# Copyright 2016-2020 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -27,11 +27,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        6.2.1)
-set(download_hash  SHA256=7f2e0fe63312f1e766057cceb53dc9585c4a335ff6641de45696dbd40d17c340)
+set(version        6.3.0)
+set(download_hash  SHA256=68ce9ba0005d442c2c1d238a3b9bc6654c358159b4af467b91e8d5b407c79c77)
 set(patch_version  ${version}-1)
-set(patch_hash     SHA256=49cc0da8d17d3e3ecbd513e629d17dd7f978d6e7aa26e4c88e594dc9f04ffa32)
-set(base_url       https://snapshot.debian.org/archive/debian/20191102T030437Z/pool/main/p/proj/)
+set(patch_hash     SHA256=5ca5082bcafa008761c6ca518d08d7081fb5ff824957665905caca601c639ab2)
+set(base_url       https://snapshot.debian.org/archive/debian/20200102T085356Z/pool/main/p/proj/)
 
 set(datumgrid_version  1.8)
 set(datumgrid_hash SHA256=b9838ae7e5f27ee732fb0bfed618f85b36e8bb56d7afb287d506338e9f33861e)
@@ -122,13 +122,6 @@ superbuild_package(
     >
     INSTALL_COMMAND
       "${CMAKE_COMMAND}" --build . --target install/strip/fast
-    $<$<BOOL:@WIN32@>:
-      COMMAND
-        # GDAL tries to link -lproj. Proj4-config.cmake references libproj_6_1.dll.a.
-        "${CMAKE_COMMAND}" -E copy
-          "${DESTDIR}${CMAKE_STAGING_PREFIX}/lib/libproj_6_2.dll.a"
-          "${DESTDIR}${CMAKE_STAGING_PREFIX}/lib/libproj.dll.a"
-    >
     COMMAND
       "${CMAKE_COMMAND}" -E copy_directory
         "<SOURCE_DIR>/../proj-datumgrid-${datumgrid_version}"
