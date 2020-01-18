@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016-2019 Kai Pastor
+# Copyright 2016-2020 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -29,11 +29,11 @@
 
 # https://tracker.debian.org/pkg/gdal
 
-set(version        3.0.2+dfsg)
-set(download_hash  SHA256=fbbd4085745e2b2eeb98f92f68a03f4dd7484e02c17e64c6a1c0779cf283c64b)
+set(version        3.0.3+dfsg)
+set(download_hash  SHA256=24577493f12fb1a5bbaf6348211a787ca7ebcc19bb934843f8ad64ed30de355f)
 set(patch_version  ${version}-1)
-set(patch_hash     SHA256=eb53e2bc8193bb6ee167f600e4be04c93a4cb85affefc024987b3a9bcacdf9d1)
-set(base_url       https://snapshot.debian.org/archive/debian/20191104T205643Z/pool/main/g/gdal/)
+set(patch_hash     SHA256=d8f79e9f295ff2fb75daf4d05f9d260b3454f9301baa8ae5c41e06d5ce653d0d)
+set(base_url       https://snapshot.debian.org/archive/debian/20200113T205619Z/pool/main/g/gdal/)
 
 option(USE_SYSTEM_GDAL "Use the system GDAL if possible" ON)
 
@@ -80,7 +80,7 @@ superbuild_package(
   VERSION        ${patch_version}
   
   SOURCE
-    URL            ${base_url}gdal_${patch_version}~exp1.debian.tar.xz
+    URL            ${base_url}gdal_${patch_version}.debian.tar.xz
     URL_HASH       ${patch_hash}
 )
   
