@@ -27,12 +27,12 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(download_version  autoconf-3300100)
-set(version           3.30.1)
-set(download_hash     SHA1=8383f29d53fa1d4383e4c8eb3e087f2ed940a9e0)
+set(version           3.31.0)
+set(download_version  2020/sqlite-autoconf-3310000)
+set(download_hash     SHA1=8488afaa1cb452a1ac7ee4db1505eaef60341ab2)
 set(patch_version     ${version}-1)
-set(patch_hash        SHA256=340a6d04b85e1858f5631c0493389aa4d11a666de3899b6bae8de50b15e555fe)
-set(base_url          https://snapshot.debian.org/archive/debian/20191013T030844Z/pool/main/s/sqlite3)
+set(patch_hash        SHA256=ca79e049f2a312a654ff730ace3da0c54fa9e62dea21ce54aba0d319adb8e8c5)
+set(base_url          https://snapshot.debian.org/archive/debian/20200123T030619Z/pool/main/s/sqlite3/)
 
 option(USE_SYSTEM_SQLITE3 "Use the system sqlite if possible" ON)
 
@@ -58,7 +58,7 @@ superbuild_package(
   VERSION        ${patch_version}
   
   SOURCE
-    URL            ${base_url}/sqlite3_${patch_version}.debian.tar.xz
+    URL            ${base_url}sqlite3_${patch_version}.debian.tar.xz
     URL_HASH       ${patch_hash}
 )
   
@@ -70,7 +70,7 @@ superbuild_package(
     common-licenses
   
   SOURCE
-    URL            https://www.sqlite.org/2019/sqlite-${download_version}.tar.gz
+    URL            https://www.sqlite.org/${download_version}.tar.gz
     URL_HASH       ${download_hash}
   
   USING            USE_SYSTEM_SQLITE3 version patch_version
