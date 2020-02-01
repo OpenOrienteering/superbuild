@@ -39,7 +39,7 @@ jobs:
   timeoutInMinutes: 120
   dependsOn: Source
   variables:
-    IMAGE_NAME: 'macos-10.13'
+    IMAGE_NAME: 'macos-10.14'
     SUPERBUILD_INSTALL_DIR: $(HOME)/superbuild
   pool:
     vmImage: '$(IMAGE_NAME)'
@@ -105,7 +105,7 @@ jobs:
   timeoutInMinutes: 120
   dependsOn: Source
   variables:
-    IMAGE_NAME: 'macos-10.13'
+    IMAGE_NAME: 'macos-10.14'
     SUPERBUILD_INSTALL_DIR: $(HOME)/superbuild
     TARGET: armv7a-linux-androideabi
     TARGET_SUFFIX: -$(TARGET)
@@ -131,7 +131,7 @@ jobs:
   timeoutInMinutes: 120
   dependsOn: Android_armv7
   variables:
-    IMAGE_NAME: 'macos-10.13'
+    IMAGE_NAME: 'macos-10.14'
     SUPERBUILD_INSTALL_DIR: $(HOME)/superbuild
     TARGET: aarch64-linux-android
     TARGET_SUFFIX: -$(TARGET)
@@ -157,7 +157,7 @@ jobs:
   timeoutInMinutes: 120
   dependsOn: Android_x86_64
   variables:
-    IMAGE_NAME: 'macos-10.13'
+    IMAGE_NAME: 'macos-10.14'
     SUPERBUILD_INSTALL_DIR: $(HOME)/superbuild
     TARGET: i686-linux-android
     TARGET_SUFFIX: -$(TARGET)
@@ -183,7 +183,7 @@ jobs:
   timeoutInMinutes: 120
   dependsOn: Source
   variables:
-    IMAGE_NAME: 'macos-10.13'
+    IMAGE_NAME: 'macos-10.14'
     SUPERBUILD_INSTALL_DIR: $(HOME)/superbuild
     TARGET: x86_64-linux-android
     TARGET_SUFFIX: -$(TARGET)
