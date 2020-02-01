@@ -32,7 +32,7 @@ Files: src/assistant/assistant/*
        src/shared/winutils/*
 Copyright: 2016 Klarälvdalens Datakonsult AB, a KDAB Group company
            2016 Tasuku Suzuki <stasuku@gmail.com>
-           2016-2018 The Qt Company Ltd.
+           2016-2020 The Qt Company Ltd.
 License: GPL-3 with Qt-1.0 exception
 
 Files: *.qdoc
