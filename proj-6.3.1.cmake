@@ -27,11 +27,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        6.3.0)
-set(download_hash  SHA256=68ce9ba0005d442c2c1d238a3b9bc6654c358159b4af467b91e8d5b407c79c77)
+set(version        6.3.1)
+set(download_hash  SHA256=6de0112778438dcae30fcc6942dee472ce31399b9e5a2b67e8642529868c86f8)
 set(patch_version  ${version}-1)
-set(patch_hash     SHA256=5ca5082bcafa008761c6ca518d08d7081fb5ff824957665905caca601c639ab2)
-set(base_url       https://snapshot.debian.org/archive/debian/20200102T085356Z/pool/main/p/proj/)
+set(patch_hash     SHA256=3d29b065622cdf52d9002f2805a8d15ecbd46c5e28c6e78501c76eaa9d874d5a)
+set(base_url       https://snapshot.debian.org/archive/debian/20200213T231921Z/pool/main/p/proj/)
 
 set(datumgrid_version  1.8)
 set(datumgrid_hash SHA256=b9838ae7e5f27ee732fb0bfed618f85b36e8bb56d7afb287d506338e9f33861e)
