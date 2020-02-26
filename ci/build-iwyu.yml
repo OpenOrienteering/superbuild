@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2019 Kai Pastor
+# Copyright 2019, 2020 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -31,6 +31,7 @@ steps:
 - bash: |
     set -x
     set -e
+    sudo apt-get remove -y libllvm8   # possibly incompatible
     sudo apt-get install clang-8 libclang-8-dev llvm-8-dev
     cd $(Build.SourcesDirectory)/build
     make help | \
