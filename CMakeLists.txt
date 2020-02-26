@@ -38,6 +38,7 @@ set(documentation
 set(ci
   ci/azure-pipelines.yml
   ci/build.yml
+  ci/build-iwyu.yml
   ci/msys2-shell.sh
   ci/publish.yml
   ci/setup-macos.yml
