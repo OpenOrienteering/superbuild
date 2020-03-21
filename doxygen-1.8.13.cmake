@@ -95,6 +95,8 @@ superbuild_package(
       sed -i -e "/set.ICONV_DIR/d" CMakeLists.txt
     COMMAND
       sed -i -e "/bigobj/d" CMakeLists.txt
+    COMMAND
+      sed -i -e "s/mmacosx-version-min=10.5/mmacosx-version-min=10.11/" CMakeLists.txt
   
   SOURCE_WRITE
     fix-casts.patch fix-casts_patch
