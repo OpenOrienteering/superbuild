@@ -774,6 +774,9 @@ set(CMAKE_VERBOSE_MAKEFILE ON  CACHE BOOL "Enable verbose output from Makefile b
 	if(APPLE)
 		list(APPEND toolchain_content [[
 list(APPEND CMAKE_SYSTEM_IGNORE_PATH
+  /usr/local/bin
+  /usr/local/include
+  /usr/local/lib
   /usr/X11R6/bin
   /usr/X11R6/include
   /usr/X11R6/lib
