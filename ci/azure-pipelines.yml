@@ -41,6 +41,7 @@ jobs:
   variables:
     IMAGE_NAME: 'macos-10.14'
     SUPERBUILD_INSTALL_DIR: $(HOME)/superbuild
+    QT_STYLE_OVERRIDE: fusion
   pool:
     vmImage: '$(IMAGE_NAME)'
   steps:
