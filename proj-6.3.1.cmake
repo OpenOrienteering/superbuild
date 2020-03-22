@@ -105,7 +105,6 @@ superbuild_package(
       -DPROJ_INCLUDE_SUBDIR=include
       -DPROJ_CMAKE_SUBDIR=lib/cmake/proj4
     $<$<NOT:$<BOOL:@CMAKE_CROSSCOMPILING@>>:
-      -DCONVERT_DATA=ON
       -DPROJ_TESTS=ON
       -DUSE_EXTERNAL_GTEST=ON
     >
