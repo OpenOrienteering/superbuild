@@ -157,6 +157,7 @@ superbuild_package(
         --without-python
         --without-xerces
         --without-xml2
+        --without-webp
         --without-zstd
       $<$<STREQUAL:@CMAKE_SYSTEM_NAME@,Windows>:
         --without-crypto
