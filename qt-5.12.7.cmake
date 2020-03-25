@@ -326,7 +326,11 @@ superbuild_package(
   BUILD_CONDITION  ${use_system_qt}
   BUILD [[
     CONFIGURE_COMMAND
-      "@qmake@" "${SOURCE_DIR}"
+      "@qmake@" "${SOURCE_DIR}" --
+        -no-jasper
+        -no-mng
+        -system-tiff
+        -system-webp
     INSTALL_COMMAND
       "$(MAKE)" install INSTALL_ROOT=${DESTDIR}
     COMMAND
@@ -345,6 +349,8 @@ superbuild_package(
   NAME           qtlocation
   VERSION        ${short_version}
   DEPENDS        qtlocation-everywhere-src-${qtlocation_version}
+                 libwebp
+                 tiff
 )
 
 set(module Qt5Location)

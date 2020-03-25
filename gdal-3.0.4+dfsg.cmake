@@ -97,6 +97,7 @@ superbuild_package(
     libjpeg
     liblzma
     libpng
+    libwebp
     openjpeg2
     pcre3
     proj
@@ -138,6 +139,7 @@ superbuild_package(
         "--with-gif=${CMAKE_STAGING_PREFIX}"
         "--with-jpeg=${CMAKE_STAGING_PREFIX}"
         "--with-libtiff=${CMAKE_STAGING_PREFIX}"
+        "--with-webp=${CMAKE_STAGING_PREFIX}"
         $<$<NOT:$<BOOL:@ANDROID@>>:
           "--with-libz=${LIBZ_DIR}"
         >
@@ -159,7 +161,6 @@ superbuild_package(
         --without-python
         --without-xerces
         --without-xml2
-        --without-webp
         --without-zstd
       $<$<STREQUAL:@CMAKE_SYSTEM_NAME@,Windows>:
         --without-crypto
