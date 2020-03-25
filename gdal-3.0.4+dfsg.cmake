@@ -92,6 +92,7 @@ superbuild_package(
     common-licenses
     curl
     expat
+    giflib
     libiconv
     libjpeg
     liblzma
@@ -134,6 +135,7 @@ superbuild_package(
         --with-pcre
         "--with-curl=${CURL_CONFIG}"
         "--with-expat=${EXPAT_DIR}"
+        "--with-gif=${CMAKE_STAGING_PREFIX}"
         "--with-jpeg=${CMAKE_STAGING_PREFIX}"
         "--with-libtiff=${CMAKE_STAGING_PREFIX}"
         $<$<NOT:$<BOOL:@ANDROID@>>:
