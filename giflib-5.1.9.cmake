@@ -27,11 +27,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        5.1.4)
-set(download_hash  SHA256=df27ec3ff24671f80b29e6ab1c4971059c14ac3db95406884fc26574631ba8d5)
-set(patch_version  ${version}-3)
-set(patch_hash     SHA256=767ea03c1948fa203626107ead3d8b08687a3478d6fbe4690986d545fb1d60bf)
-set(base_url       https://snapshot.debian.org/archive/debian-debug/20180606T032514Z/pool/main/g/giflib/)
+set(version        5.1.9)
+set(download_hash  SHA256=292b10b86a87cb05f9dcbe1b6c7b99f3187a106132dd14f1ba79c90f561c3295)
+set(patch_version  ${version}-1)
+set(patch_hash     SHA256=fa7d879571e40ecbea6934f0fa3100a7cba0f7313c2de8ff61d62294970ad86d)
+set(base_url       https://snapshot.debian.org/archive/debian/20191213T092546Z/pool/main/g/giflib/)
 
 option(USE_SYSTEM_LIBGIF "Use the system giflib if possible" ON)
 
@@ -74,22 +74,24 @@ superbuild_package(
   USING            USE_SYSTEM_LIBGIF patch_version
   BUILD_CONDITION  ${test_system_gif}
   BUILD [[
+    # Cannot do out-of-source build of giflib
     CONFIGURE_COMMAND
-      "${SOURCE_DIR}/configure"
-        "--prefix=${CMAKE_INSTALL_PREFIX}"
-        $<$<BOOL:${CMAKE_CROSSCOMPILING}>:
-        --host=${SUPERBUILD_TOOLCHAIN_TRIPLET}
-        >
-        --enable-shared
-        --disable-static
-        --disable-silent-rules
-        --disable-dependency-tracking
+      "${CMAKE_COMMAND}" -E make_directory "${BINARY_DIR}"
+    COMMAND
+      "${CMAKE_COMMAND}" -E copy_directory "${SOURCE_DIR}" "${BINARY_DIR}"
+    BUILD_COMMAND
+      # The doc files exist, don't regenerate them here
+      "$(MAKE)" -C doc --touch
+    COMMAND
+      "$(MAKE)"
+        "PREFIX=${CMAKE_INSTALL_PREFIX}"
         "CC=${SUPERBUILD_CC}"
         "CPPFLAGS=${SUPERBUILD_CPPFLAGS}$<$<BOOL:@ANDROID@>: -DS_IREAD=S_IRUSR -DS_IWRITE=S_IWUSR>"
-        "CFLAGS=${SUPERBUILD_CFLAGS}"
+        "CFLAGS=${SUPERBUILD_CFLAGS} -fPIC"
         "LDFLAGS=${SUPERBUILD_LDFLAGS}"
     INSTALL_COMMAND
       "$(MAKE)" install "DESTDIR=${DESTDIR}${INSTALL_DIR}"
+        "PREFIX=${CMAKE_INSTALL_PREFIX}"
     COMMAND
       "${CMAKE_COMMAND}" -E copy_if_different
         "<SOURCE_DIR>/../giflib-patches-${patch_version}/copyright"
