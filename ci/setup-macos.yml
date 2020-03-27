@@ -35,6 +35,9 @@ steps:
     sudo xcode-select -s /Applications/Xcode_10.3.app/Contents/Developer
     xcode-select --print-path
     
+    xcrun --sdk macosx --show-sdk-path
+    echo "##vso[task.setVariable variable=SDKROOT]$(xcrun --sdk macosx --show-sdk-path)"
+    
     pip install lxml
   displayName: 'Prepare build tools'
 
