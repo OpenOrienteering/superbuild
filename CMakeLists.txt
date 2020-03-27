@@ -67,6 +67,9 @@ list(APPEND SUPERBUILD_HANDLE_ENV
   PATH
   PKG_CONFIG_PATH
 )
+if(APPLE)
+	list(APPEND SUPERBUILD_HANDLE_ENV  SDKROOT)
+endif()
 list(REMOVE_DUPLICATES SUPERBUILD_HANDLE_ENV)
 
 set(SUPERBUILD_STEP_TARGETS "" CACHE STRING
@@ -620,6 +623,7 @@ if(ANDROID)
 elseif(APPLE)
     list(APPEND toolchain_info_var_system
       XCODE_VERSION
+      CMAKE_OSX_SYSROOT
     )
 endif()
 
@@ -644,6 +648,7 @@ set(toolchain_info_var_languages  "Variables for languages"
   CMAKE_C_FLAGS_RELWITHDEBINFO
   CMAKE_C_FLAGS_RELEASE
   CMAKE_C_FLAGS_MINSIZEREL
+  CMAKE_C_IMPLICIT_INCLUDE_DIRECTORIES
   CMAKE_C_IMPLICIT_LINK_DIRECTORIES
   CMAKE_CXX_COMPILER
   CMAKE_CXX_COMPILER_VERSION
@@ -652,6 +657,7 @@ set(toolchain_info_var_languages  "Variables for languages"
   CMAKE_CXX_FLAGS_RELWITHDEBINFO
   CMAKE_CXX_FLAGS_RELEASE
   CMAKE_CXX_FLAGS_MINSIZEREL
+  CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES
   CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES
   CMAKE_INTERNAL_PLATFORM_ABI
   CMAKE_RC_COMPILER
@@ -778,6 +784,8 @@ set(CMAKE_VERBOSE_MAKEFILE ON  CACHE BOOL "Enable verbose output from Makefile b
 	if(APPLE)
 		list(APPEND toolchain_content [[
 list(APPEND CMAKE_SYSTEM_IGNORE_PATH
+  /usr/include
+  /usr/lib
   /usr/local/bin
   /usr/local/include
   /usr/local/lib
@@ -1075,6 +1083,10 @@ function(_sb_make_toolchained_build package toolchain)
 		else()
 			string(REPLACE ";" ":" ${SYSTEM_NAME}_ENV_PATH "${env_path_cmake}")
 		endif()
+	endif()
+	
+	if (APPLE AND NOT DEFINED ${SYSTEM_NAME}_ENV_SDKROOT)
+		set(${SYSTEM_NAME}_ENV_SDKROOT "${CMAKE_OSX_SYSROOT}")
 	endif()
 	
 	set(define_env )
