@@ -83,6 +83,20 @@ steps:
     cmakeArgs: >
       $(CMAKE_WRAPPING)
       --build .
+      --target libjpeg-turbo-1.5.2-2$(TARGET_SUFFIX)
+  timeoutInMinutes: 180
+  displayName: 'Build first target'
+
+- bash: |
+    cat build/default/libjpeg-turbo-1.5.2-2/config.log
+  condition: True
+
+- task: CMake@1
+  inputs:
+    workingDirectory: 'build'
+    cmakeArgs: >
+      $(CMAKE_WRAPPING)
+      --build .
       --target $(PACKAGE_TARGET)
       -- ${{ parameters.buildArgs }}
   timeoutInMinutes: 180
