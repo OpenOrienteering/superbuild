@@ -258,10 +258,10 @@ function(sb_test_build_condition)
 endfunction()
 
 if(NOT SUPERBUILD_CC)
-	set(SUPERBUILD ${CMAKE_C_COMPILER})
+	set(SUPERBUILD_CC ${CMAKE_C_COMPILER})
 endif()
 if(NOT SUPERBUILD_CXX)
-	set(SUPERBUILD ${CMAKE_CXX_COMPILER})
+	set(SUPERBUILD_CXX ${CMAKE_CXX_COMPILER})
 endif()
 
 # Publish some properties to a target, for use in generator expressions.
