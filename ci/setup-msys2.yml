@@ -71,6 +71,7 @@ steps:
     set PATH=%SUPERBUILD_INSTALL_DIR_NATIVE%\usr\bin;%WINDIR%\system32;%WINDIR%;%WINDIR%\system32\wbem
     pacman --noconfirm -S --needed ^
       bison ^
+      diffutils ^
       gzip ^
       make ^
       patch ^
