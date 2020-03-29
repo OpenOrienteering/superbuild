@@ -1,0 +1,76 @@
+From 0168b6fa10fe5604d3bd53c8eeeea466caca10a4 Mon Sep 17 00:00:00 2001
+From: Kai Pastor <dg0yt@darc.de>
+Date: Sun, 29 Mar 2020 20:55:26 +0200
+Subject: [PATCH 3/3] tests/makefile: Improve portability of using `diff`
+
+Fixes running tests on Windows.
+---
+ tests/makefile | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/tests/makefile b/tests/makefile
+index 441b94e..5fb6551 100644
+--- a/tests/makefile
++++ b/tests/makefile
+@@ -53,18 +53,18 @@ gif2rgb-rebuild:
+ 	@$(UTILS)/gif2rgb -c 3 -s 100 100 <gifgrid.rgb | $(UTILS)/gifbuild -d >gifgrid.ico
+ gif2rgb-regress:
+ 	@echo "gif2rgb: Checking idempotency"
+-	@$(UTILS)/gif2rgb -c 3 -s 100 100 <gifgrid.rgb | $(UTILS)/gifbuild -d | diff -u gifgrid.ico -
++	@$(UTILS)/gif2rgb -c 3 -s 100 100 <gifgrid.rgb | $(UTILS)/gifbuild -d | diff --strip-trailing-cr -u gifgrid.ico -
+ 
+ gifbuild-regress:
+ 	@echo "gifbuild: basic sanity check"
+-	@$(UTILS)/gifbuild -d <$(PICS)/treescap.gif | diff -u treescap.ico -
++	@$(UTILS)/gifbuild -d <$(PICS)/treescap.gif | diff --strip-trailing-cr -u treescap.ico -
+ 	@echo "gifbuild: Checking idempotency on an icon file."
+-	@$(UTILS)/gifbuild <$(PICS)/sample.ico | $(UTILS)/gifbuild -d > $@.sample-1.ico; $(UTILS)/gifbuild < $@.sample-1.ico | $(UTILS)/gifbuild -d > $@.sample-2.ico; diff -u $@.sample-1.ico $@.sample-2.ico; rm $@.sample-?.ico
++	@$(UTILS)/gifbuild <$(PICS)/sample.ico | $(UTILS)/gifbuild -d > $@.sample-1.ico; $(UTILS)/gifbuild < $@.sample-1.ico | $(UTILS)/gifbuild -d > $@.sample-2.ico; diff --strip-trailing-cr -u $@.sample-1.ico $@.sample-2.ico; rm $@.sample-?.ico
+ 	@echo "gifbuild: Checking idempotency on an animation."
+ 	@$(UTILS)/gifbuild -d <$(PICS)/fire.gif > $@.fire1.ico
+ 	@$(UTILS)/gifbuild < $@.fire1.ico > $@.fire2.gif
+ 	@$(UTILS)/gifbuild -d < $@.fire2.gif > $@.fire2.ico
+-	@diff -u  $@.fire1.ico  $@.fire2.ico
++	@diff --strip-trailing-cr -u $@.fire1.ico  $@.fire2.ico
+ 	@rm -f $@.fire1.ico  $@.fire2.ico $@.fire2.gif
+ 
+ gifclrmp-regress:
+@@ -73,7 +73,7 @@ gifclrmp-regress:
+ 	    stem=`basename $${test} | sed -e "s/.gif$$//"`; \
+ 	    if echo "gifclrmap: Checking colormap of $${test}" >&2; \
+ 	    $(UTILS)/gifclrmp <$${test} > $@.$${stem}.regress 2>&1; \
+-	    then diff -u $${stem}.map $@.$${stem}.regress; \
++	    then diff --strip-trailing-cr -u $${stem}.map $@.$${stem}.regress; \
+ 	    else echo "*** Nonzero return status on $${test}!"; exit 1; fi; \
+ 	done
+ 	@rm -f $@.*.regress
+@@ -89,7 +89,7 @@ gifecho-rebuild:
+ 	@$(UTILS)/gifecho -t "foobar" | $(UTILS)/gifbuild -d >foobar.ico
+ gifecho-regress:
+ 	@echo "gifecho: Testing gifecho behavior"
+-	@$(UTILS)/gifecho -t "foobar" | $(UTILS)/gifbuild -d | diff -u foobar.ico -
++	@$(UTILS)/gifecho -t "foobar" | $(UTILS)/gifbuild -d | diff --strip-trailing-cr -u foobar.ico -
+ 
+ giffilter-regress:
+ 	@for test in $(GIFS); \
+@@ -107,7 +107,7 @@ giffix-rebuild:
+ 	@head -c $$(( $$(wc -c <$(PICS)/treescap.gif) - 20 )) <$(PICS)/treescap.gif | $(UTILS)/giffix 2>/dev/null | $(UTILS)/gifbuild -d >giffixed.ico
+ giffix-regress:
+ 	@echo "giffix: Testing giffix behavior"
+-	@head -c $$(( $$(wc -c <$(PICS)/treescap.gif) - 20 )) <$(PICS)/treescap.gif | $(UTILS)/giffix 2>/dev/null | $(UTILS)/gifbuild -d | diff -u giffixed.ico -
++	@head -c $$(( $$(wc -c <$(PICS)/treescap.gif) - 20 )) <$(PICS)/treescap.gif | $(UTILS)/giffix 2>/dev/null | $(UTILS)/gifbuild -d | diff --strip-trailing-cr -u giffixed.ico -
+ 
+ gifinto-regress:
+ 	@echo "gifinto: Checking behavior on short files."
+@@ -136,7 +136,7 @@ giftext-regress:
+ 	    stem=`basename $${test} | sed -e "s/.gif$$//"`; \
+ 	    if echo "giftext: Checking text dump of $${test}" >&2; \
+ 	    $(UTILS)/giftext <$${test} > $@.$${stem}.regress 2>&1; \
+-	    then diff -u $${stem}.dmp  $@.$${stem}.regress; \
++	    then diff --strip-trailing-cr -u $${stem}.dmp  $@.$${stem}.regress; \
+ 	    else echo "*** Nonzero return status on $${test}!"; exit 1; fi; \
+ 	done
+ 	@rm -f  $@.*.regress
+-- 
+2.17.1
+

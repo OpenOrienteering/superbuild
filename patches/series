@@ -1,0 +1,3 @@
+0001-Add-CMakeLists.txt-for-downstream-builds.patch
+0002-tests-makefile-Improve-portability-of-using-head.patch
+0003-tests-makefile-Improve-portability-of-using-diff.patch

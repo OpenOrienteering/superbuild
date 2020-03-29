@@ -1,0 +1,30 @@
+From 8d5454b1efc085b6ca71f3c4a2e5f21c9bf2d19d Mon Sep 17 00:00:00 2001
+From: Kai Pastor <dg0yt@darc.de>
+Date: Sun, 29 Mar 2020 15:30:46 +0200
+Subject: [PATCH 2/3] tests/makefile: Improve portability of using `head`
+
+Fixes running tests on macOS.
+---
+ tests/makefile | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tests/makefile b/tests/makefile
+index c3bb9d5..441b94e 100644
+--- a/tests/makefile
++++ b/tests/makefile
+@@ -104,10 +104,10 @@ giffilter-regress:
+ 
+ giffix-rebuild:
+ 	@echo "Rebuilding giffix test."
+-	@head --bytes=-20 <$(PICS)/treescap.gif | $(UTILS)/giffix 2>/dev/null | $(UTILS)/gifbuild -d >giffixed.ico
++	@head -c $$(( $$(wc -c <$(PICS)/treescap.gif) - 20 )) <$(PICS)/treescap.gif | $(UTILS)/giffix 2>/dev/null | $(UTILS)/gifbuild -d >giffixed.ico
+ giffix-regress:
+ 	@echo "giffix: Testing giffix behavior"
+-	@head --bytes=-20 <$(PICS)/treescap.gif | $(UTILS)/giffix 2>/dev/null | $(UTILS)/gifbuild -d | diff -u giffixed.ico -
++	@head -c $$(( $$(wc -c <$(PICS)/treescap.gif) - 20 )) <$(PICS)/treescap.gif | $(UTILS)/giffix 2>/dev/null | $(UTILS)/gifbuild -d | diff -u giffixed.ico -
+ 
+ gifinto-regress:
+ 	@echo "gifinto: Checking behavior on short files."
+-- 
+2.17.1
+
