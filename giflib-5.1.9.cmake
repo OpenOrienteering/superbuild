@@ -32,6 +32,8 @@ set(download_hash  SHA256=292b10b86a87cb05f9dcbe1b6c7b99f3187a106132dd14f1ba79c9
 set(patch_version  ${version}-1)
 set(patch_hash     SHA256=fa7d879571e40ecbea6934f0fa3100a7cba0f7313c2de8ff61d62294970ad86d)
 set(base_url       https://snapshot.debian.org/archive/debian/20191213T092546Z/pool/main/g/giflib/)
+set(openorienteering_version  5-0)
+set(openorienteering_hash     SHA256=62468f100a97af2b7517b152d6cfdf6a790db79dc212376df3acbad2d8e35613)
 
 option(USE_SYSTEM_LIBGIF "Use the system giflib if possible" ON)
 
@@ -58,10 +60,20 @@ superbuild_package(
 )
 
 superbuild_package(
+  NAME           giflib-openorienteering
+  VERSION        ${openorienteering_version}
+  
+  SOURCE
+    URL            https://github.com/OpenOrienteering/superbuild/archive/giflib-openorienteering_${openorienteering_version}.tar.gz
+    URL_HASH       ${openorienteering_hash}
+)
+
+superbuild_package(
   NAME           giflib
-  VERSION        ${patch_version}
+  VERSION        ${patch_version}_${openorienteering_version}
   DEPENDS
     source:giflib-patches-${patch_version}
+    source:giflib-openorienteering-${openorienteering_version}
   
   SOURCE
     URL            ${base_url}giflib_${version}.orig.tar.bz2
@@ -70,37 +82,32 @@ superbuild_package(
       "${CMAKE_COMMAND}"
         -Dpackage=giflib-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
+    COMMAND
+      "${CMAKE_COMMAND}"
+        -Dpackage=giflib-openorienteering-${openorienteering_version}
+        -P "${APPLY_PATCHES_SERIES}"
   
   USING            USE_SYSTEM_LIBGIF patch_version
   BUILD_CONDITION  ${test_system_gif}
   BUILD [[
-    # Cannot do out-of-source build of giflib
-    CONFIGURE_COMMAND
-      "${CMAKE_COMMAND}" -E make_directory "${BINARY_DIR}"
-    COMMAND
-      "${CMAKE_COMMAND}" -E copy_directory "${SOURCE_DIR}" "${BINARY_DIR}"
-    BUILD_COMMAND
-      # The doc files exist, don't regenerate them here
-      "$(MAKE)" -C doc --touch
-    COMMAND
-      "$(MAKE)"
-        "PREFIX=${CMAKE_INSTALL_PREFIX}"
-        "CC=${SUPERBUILD_CC}"
-        "CPPFLAGS=${SUPERBUILD_CPPFLAGS}$<$<BOOL:@ANDROID@>: -DS_IREAD=S_IRUSR -DS_IWRITE=S_IWUSR>"
-        "CFLAGS=${SUPERBUILD_CFLAGS} -fPIC"
-        "LDFLAGS=${SUPERBUILD_LDFLAGS}"
+    CMAKE_ARGS
+      "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
+      -DBUILD_SHARED_LIBS=ON
+      -DGIFLIB_BUILD_UTILS=OFF
     INSTALL_COMMAND
-      "$(MAKE)" install "DESTDIR=${DESTDIR}${INSTALL_DIR}"
-        "PREFIX=${CMAKE_INSTALL_PREFIX}"
+      "${CMAKE_COMMAND}" --build . --target install/strip/fast
     COMMAND
       "${CMAKE_COMMAND}" -E copy_if_different
         "<SOURCE_DIR>/../giflib-patches-${patch_version}/copyright"
         "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/giflib-${patch_version}.txt"
+    $<$<NOT:$<BOOL:@CMAKE_CROSSCOMPILING@>>:
+    TEST_BEFORE_INSTALL
+    >
   ]]
 )
 
 superbuild_package(
   NAME           libgif
   VERSION        ${patch_version}
-  DEPENDS        giflib-${patch_version}
+  DEPENDS        giflib-${patch_version}_${openorienteering_version}
 )
