@@ -71,9 +71,12 @@ superbuild_package(
       "${CMAKE_COMMAND}"
         -Dpackage=libpolyclipping-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
-    # On Windows, shared libraries count as RUNTIME, not LIBRARY.
+    # On Windows, import libraries count as ARCHIVE
     COMMAND
-      sed -i -e [[ s/LIBRARY DESTINATION/RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}\/bin" LIBRARY DESTINATION/ ]] cpp/CMakeLists.txt
+      sed -i -e [[ s/polyclipping LIBRARY DESTINATION/polyclipping ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}" LIBRARY DESTINATION/ ]] cpp/CMakeLists.txt
+    # On Windows, shared libraries count as RUNTIME.
+    COMMAND
+      sed -i -e [[ s/polyclipping ARCHIVE DESTINATION/polyclipping RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}\/bin" ARCHIVE DESTINATION/ ]] cpp/CMakeLists.txt
 )
 
 # Build from a copy of the cpp directory, using ExternalPackage's CMake support
