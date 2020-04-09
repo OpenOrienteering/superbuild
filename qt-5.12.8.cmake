@@ -29,6 +29,8 @@
 
 set(short_version  5.12)
 set(version        5.12.7)
+set(patch_version  ${version}-0)
+set(openorienteering_version ${version}-qtbase-5.12.8-0)
 
 option(USE_SYSTEM_QT "Use the system Qt if possible" ON)
 
@@ -86,31 +88,32 @@ set(qmake          [[$<$<BOOL:${CMAKE_CROSSCOMPILING}>:$${}{HOST_PREFIX}>$<$<NOT
 set(module Qt5Core)
 superbuild_package(
   NAME           qt-${short_version}-openorienteering
-  VERSION        ${version}-0
+  VERSION        ${openorienteering_version}
   
   SOURCE
-    URL            https://github.com/OpenOrienteering/superbuild/archive/qt-${short_version}-openorienteering_${version}-0.tar.gz
-    URL_HASH       SHA256=5778202f2544b5c4ac44346c25ed7269810432ab7a6b304e3acc1b876a4f106f
+    URL            https://github.com/OpenOrienteering/superbuild/archive/qt-${short_version}-openorienteering_${openorienteering_version}.tar.gz
+    URL_HASH       SHA256=b4137288dcd8f833ffcb314c0ee098091eaced3ac83fbea6746b2a5da81186c3
 )
 
 
 
 # qtbase
 
-set(qtbase_version ${version}-0)
+set(qtbase_version       5.12.8)
+set(qtbase_patch_version ${qtbase_version}-0)
 superbuild_package(
   NAME           qtbase
   VERSION        ${short_version}
   DEPENDS
-    qtbase-everywhere-src-${qtbase_version}
+    qtbase-everywhere-src-${qtbase_patch_version}
 )
 
 set(module Qt5Core)
 superbuild_package(
   NAME         qtbase-everywhere-src
-  VERSION      ${qtbase_version}
+  VERSION      ${qtbase_patch_version}
   DEPENDS
-    source:qt-${short_version}-openorienteering-${qtbase_version}
+    source:qt-${short_version}-openorienteering-${openorienteering_version}
     libjpeg-turbo
     libpng
     pcre2
@@ -118,8 +121,8 @@ superbuild_package(
     zlib
   
   SOURCE
-    URL             https://download.qt.io/archive/qt/${short_version}/${version}/submodules/qtbase-everywhere-src-${version}.tar.xz
-    URL_HASH        SHA256=b18939cb25d90aef8721fb12ec34c3632d3490ced958e41f6c7a52064643665d
+    URL             https://download.qt.io/archive/qt/${short_version}/${qtbase_version}/submodules/qtbase-everywhere-src-${qtbase_version}.tar.xz
+    URL_HASH        SHA256=19592fbd0a524a17c35e413988fe494251103619ef7dd49aecdf3170973aabd8
     
     # Don't accidently used bundled copies
     PATCH_COMMAND
@@ -142,7 +145,7 @@ superbuild_package(
       "${CMAKE_COMMAND}" -E remove_directory src/3rdparty/zlib # excluded by -system-zlib
     COMMAND
       "${CMAKE_COMMAND}"
-        -Dpackage=qt-${short_version}-openorienteering-${qtbase_version}/qtbase
+        -Dpackage=qt-${short_version}-openorienteering-${openorienteering_version}/qtbase
         -P "${APPLY_PATCHES_SERIES}"
     COMMAND
       # Enforce make for MSYS. Needed for config.tests outside qtbase, e.g. libtiff in qtimageformats
@@ -150,7 +153,7 @@ superbuild_package(
       sed -i -e "/MAKEFILE_GENERATOR, MINGW/,/mingw32-make/ s/.equals.QMAKE_HOST.os, Windows./\\!isEmpty(QMAKE_SH)|\\!equals(QMAKE_HOST.os, Windows)/"
         mkspecs/features/configure_base.prf
   
-  USING default crosscompiling windows android macos USE_SYSTEM_QT module short_version qtbase_version
+  USING default crosscompiling windows android macos USE_SYSTEM_QT module short_version openorienteering_version qtbase_patch_version
   BUILD_CONDITION  ${use_system_qt}
   BUILD [[
     CONFIGURE_COMMAND 
@@ -252,8 +255,8 @@ superbuild_package(
     >
     COMMAND
       "${CMAKE_COMMAND}" -E copy
-        "<SOURCE_DIR>/../qt-${short_version}-openorienteering-${qtbase_version}/qtbase/copyright"
-        "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/qtbase-${qtbase_version}.txt"
+        "<SOURCE_DIR>/../qt-${short_version}-openorienteering-${openorienteering_version}/qtbase/copyright"
+        "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/qtbase-${qtbase_patch_version}.txt"
   ]]
 )
 
@@ -261,7 +264,7 @@ superbuild_package(
 
 # qtandroidextras
 
-set(qtandroidextras_version ${version}-0)
+set(qtandroidextras_version ${patch_version})
 superbuild_package(
   NAME           qtandroidextras
   VERSION        ${short_version}
@@ -273,14 +276,14 @@ superbuild_package(
   NAME           qtandroidextras-everywhere-src
   VERSION        ${qtandroidextras_version}
   DEPENDS
-    source:qt-${short_version}-openorienteering-${qtandroidextras_version}
+    source:qt-${short_version}-openorienteering-${openorienteering_version}
     qtbase-${short_version}
   
   SOURCE
     URL             https://download.qt.io/archive/qt/${short_version}/${version}/submodules/qtandroidextras-everywhere-src-${version}.tar.xz
     URL_HASH        SHA256=a5acc927bd46ed87627e2ae0f0bfc199189d383a3e17c2f34b8c34ea57b2aea1
   
-  USING qmake USE_SYSTEM_QT module short_version qtandroidextras_version
+  USING qmake USE_SYSTEM_QT module short_version openorienteering_version qtandroidextras_version
   BUILD_CONDITION  ${use_system_qt}
   BUILD [[
     CONFIGURE_COMMAND
@@ -289,7 +292,7 @@ superbuild_package(
       "$(MAKE)" install INSTALL_ROOT=${DESTDIR}
     COMMAND
       "${CMAKE_COMMAND}" -E copy
-        "<SOURCE_DIR>/../qt-${short_version}-openorienteering-${qtandroidextras_version}/qtandroidextras/copyright"
+        "<SOURCE_DIR>/../qt-${short_version}-openorienteering-${openorienteering_version}/qtandroidextras/copyright"
         "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/qtandroidextras-${qtandroidextras_version}.txt"
   ]]
 )
@@ -298,7 +301,7 @@ superbuild_package(
 
 # qtimageformats
 
-set(qtimageformats_version ${version}-0)
+set(qtimageformats_version ${patch_version})
 superbuild_package(
   NAME           qtimageformats
   VERSION        ${short_version}
@@ -310,7 +313,7 @@ superbuild_package(
   NAME           qtimageformats-everywhere-src
   VERSION        ${qtimageformats_version}
   DEPENDS        
-    source:qt-${short_version}-openorienteering-${qtimageformats_version}
+    source:qt-${short_version}-openorienteering-${openorienteering_version}
     qtbase-${short_version}
     tiff
   
@@ -322,7 +325,7 @@ superbuild_package(
     PATCH_COMMAND
       "${CMAKE_COMMAND}" -E remove_directory src/3rdparty/libtiff
   
-  USING qmake USE_SYSTEM_QT module short_version qtimageformats_version
+  USING qmake USE_SYSTEM_QT module short_version openorienteering_version qtimageformats_version
   BUILD_CONDITION  ${use_system_qt}
   BUILD [[
     CONFIGURE_COMMAND
@@ -335,7 +338,7 @@ superbuild_package(
       "$(MAKE)" install INSTALL_ROOT=${DESTDIR}
     COMMAND
       "${CMAKE_COMMAND}" -E copy
-        "<SOURCE_DIR>/../qt-${short_version}-openorienteering-${qtimageformats_version}/qtimageformats/copyright"
+        "<SOURCE_DIR>/../qt-${short_version}-openorienteering-${openorienteering_version}/qtimageformats/copyright"
         "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/qtimageformats-${qtimageformats_version}.txt"
   ]]
 )
@@ -344,7 +347,7 @@ superbuild_package(
 
 # qtlocation
 
-set(qtlocation_version ${version}-0)
+set(qtlocation_version ${patch_version})
 superbuild_package(
   NAME           qtlocation
   VERSION        ${short_version}
@@ -358,7 +361,7 @@ superbuild_package(
   NAME           qtlocation-everywhere-src
   VERSION        ${qtlocation_version}
   DEPENDS
-    source:qt-${short_version}-openorienteering-${qtlocation_version}
+    source:qt-${short_version}-openorienteering-${openorienteering_version}
     qtbase-${short_version}
     qtserialport-${short_version}
   
@@ -366,7 +369,7 @@ superbuild_package(
     URL             https://download.qt.io/archive/qt/${short_version}/${version}/submodules/qtlocation-everywhere-src-${version}.tar.xz
     URL_HASH        SHA256=d1e905b80befda3c9aaad92ea984e6dbf722568b5c91e8d15b027bc5bc22781f
     
-  USING qmake USE_SYSTEM_QT module short_version qtlocation_version
+  USING qmake USE_SYSTEM_QT module short_version openorienteering_version qtlocation_version
   BUILD_CONDITION  ${use_system_qt}
   BUILD [[
     CONFIGURE_COMMAND
@@ -375,7 +378,7 @@ superbuild_package(
       "$(MAKE)" install INSTALL_ROOT=${DESTDIR}
     COMMAND
       "${CMAKE_COMMAND}" -E copy
-        "<SOURCE_DIR>/../qt-${short_version}-openorienteering-${qtlocation_version}/qtlocation/copyright"
+        "<SOURCE_DIR>/../qt-${short_version}-openorienteering-${openorienteering_version}/qtlocation/copyright"
         "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/qtlocation-${qtlocation_version}.txt"
   ]]
 )
@@ -384,7 +387,7 @@ superbuild_package(
 
 # qtsensors
 
-set(qtsensors_version ${version}-0)
+set(qtsensors_version ${patch_version})
 superbuild_package(
   NAME           qtsensors
   VERSION        ${short_version}
@@ -397,14 +400,14 @@ superbuild_package(
   NAME           qtsensors-everywhere-src
   VERSION        ${qtsensors_version}
   DEPENDS
-    source:qt-${short_version}-openorienteering-${qtsensors_version}
+    source:qt-${short_version}-openorienteering-${openorienteering_version}
     qtbase-${short_version}
   
   SOURCE
     URL             https://download.qt.io/archive/qt/${short_version}/${version}/submodules/qtsensors-everywhere-src-${version}.tar.xz
     URL_HASH        SHA256=2b9aea9f4e2f681b4067f2b9d97c5073c135e41d26601c71f18f199bc980e740
   
-  USING qmake USE_SYSTEM_QT module short_version qtsensors_version
+  USING qmake USE_SYSTEM_QT module short_version openorienteering_version qtsensors_version
   BUILD_CONDITION  ${use_system_qt}
   BUILD [[
     CONFIGURE_COMMAND
@@ -413,7 +416,7 @@ superbuild_package(
       "$(MAKE)" install INSTALL_ROOT=${DESTDIR}
     COMMAND
       "${CMAKE_COMMAND}" -E copy
-        "<SOURCE_DIR>/../qt-${short_version}-openorienteering-${qtsensors_version}/qtsensors/copyright"
+        "<SOURCE_DIR>/../qt-${short_version}-openorienteering-${openorienteering_version}/qtsensors/copyright"
         "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/qtsensors-${qtsensors_version}.txt"
   ]]
 )
@@ -422,7 +425,7 @@ superbuild_package(
 
 # qtserialport
 
-set(qtserialport_version ${version}-0)
+set(qtserialport_version ${patch_version})
 superbuild_package(
   NAME           qtserialport
   VERSION        ${short_version}
@@ -434,14 +437,14 @@ superbuild_package(
   NAME           qtserialport-everywhere-src
   VERSION        ${qtserialport_version}
   DEPENDS
-    source:qt-${short_version}-openorienteering-${qtserialport_version}
+    source:qt-${short_version}-openorienteering-${openorienteering_version}
     qtbase-${short_version}
   
   SOURCE
     URL             https://download.qt.io/archive/qt/${short_version}/${version}/submodules/qtserialport-everywhere-src-${version}.tar.xz
     URL_HASH        SHA256=224c282ebed750f46b72dfe18260c3d26fbb74e928dec64bd8c51e7beed8721f
   
-  USING qmake USE_SYSTEM_QT module short_version qtserialport_version
+  USING qmake USE_SYSTEM_QT module short_version openorienteering_version qtserialport_version
   BUILD_CONDITION  ${use_system_qt}
   BUILD [[
     CONFIGURE_COMMAND
@@ -450,7 +453,7 @@ superbuild_package(
       "$(MAKE)" install INSTALL_ROOT=${DESTDIR}
     COMMAND
       "${CMAKE_COMMAND}" -E copy
-        "<SOURCE_DIR>/../qt-${short_version}-openorienteering-${qtserialport_version}/qtserialport/copyright"
+        "<SOURCE_DIR>/../qt-${short_version}-openorienteering-${openorienteering_version}/qtserialport/copyright"
         "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/qtserialport-${qtserialport_version}.txt"
   ]]
 )
@@ -459,7 +462,7 @@ superbuild_package(
 
 # qttools
 
-set(qttools_version ${version}-0)
+set(qttools_version ${patch_version})
 superbuild_package(
   NAME           qttools
   VERSION        ${short_version}
@@ -471,14 +474,14 @@ superbuild_package(
   NAME           qttools-everywhere-src
   VERSION        ${qttools_version}
   DEPENDS
-    source:qt-${short_version}-openorienteering-${qttools_version}
+    source:qt-${short_version}-openorienteering-${openorienteering_version}
     qtbase-${short_version}
   
   SOURCE
     URL             https://download.qt.io/archive/qt/${short_version}/${version}/submodules/qttools-everywhere-src-${version}.tar.xz
     URL_HASH        SHA256=860a97114d518f83c0a9ab3742071da16bb018e6eb387179d5764a8dcca03948
   
-  USING qmake USE_SYSTEM_QT module short_version qttools_version
+  USING qmake USE_SYSTEM_QT module short_version openorienteering_version qttools_version
   BUILD_CONDITION  ${use_system_qt}
   BUILD [[
     CONFIGURE_COMMAND
@@ -510,7 +513,7 @@ superbuild_package(
     >
     COMMAND
       "${CMAKE_COMMAND}" -E copy
-        "<SOURCE_DIR>/../qt-${short_version}-openorienteering-${qttools_version}/qttools/copyright"
+        "<SOURCE_DIR>/../qt-${short_version}-openorienteering-${openorienteering_version}/qttools/copyright"
         "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/qttools-${qttools_version}.txt"
   ]]
 )
@@ -519,7 +522,7 @@ superbuild_package(
 
 # qttranslations
 
-set(qttranslations_version ${version}-0)
+set(qttranslations_version ${patch_version})
 superbuild_package(
   NAME           qttranslations
   VERSION        ${short_version}
@@ -531,7 +534,7 @@ superbuild_package(
   NAME           qttranslations-everywhere-src
   VERSION        ${qttranslations_version}
   DEPENDS
-    source:qt-${short_version}-openorienteering-${qttranslations_version}
+    source:qt-${short_version}-openorienteering-${openorienteering_version}
     qtbase-${short_version}
     qttools-${short_version}
   
@@ -539,7 +542,7 @@ superbuild_package(
     URL             https://download.qt.io/archive/qt/${short_version}/${version}/submodules/qttranslations-everywhere-src-${version}.tar.xz
     URL_HASH        SHA256=2c8d1169f1f20ba32639181f1853b4159940cbaaac41adaa018b6f43ca31323f
   
-  USING qmake USE_SYSTEM_QT module short_version qttranslations_version
+  USING qmake USE_SYSTEM_QT module short_version openorienteering_version qttranslations_version
   BUILD_CONDITION  ${use_system_qt}
   BUILD [[
     CONFIGURE_COMMAND
@@ -548,7 +551,7 @@ superbuild_package(
       "$(MAKE)" install INSTALL_ROOT=${DESTDIR}
     COMMAND
       "${CMAKE_COMMAND}" -E copy
-        "<SOURCE_DIR>/../qt-${short_version}-openorienteering-${qttranslations_version}/qttranslations/copyright"
+        "<SOURCE_DIR>/../qt-${short_version}-openorienteering-${openorienteering_version}/qttranslations/copyright"
         "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/qttranslations-${qttranslations_version}.txt"
   ]]
 )
@@ -559,30 +562,31 @@ superbuild_package(
 
 find_package(Git QUIET)
 find_package(PythonInterp 3 QUIET)
-if(GIT_EXECUTABLE AND PYTHONINTERP_FOUND)
+if(GIT_EXECUTABLE AND PYTHONINTERP_FOUND
+   AND "${openorienteering_version}" STREQUAL "${patch_version}")
     superbuild_package(
       NAME           qt-${short_version}-openorienteering
       VERSION        git
       DEPENDS
-        qttools-everywhere-src-${version}-0  # for qtattributionsscanner
-        source:qtandroidextras-everywhere-src-${version}-0
-        source:qtbase-everywhere-src-${version}-0
-        source:qtimageformats-everywhere-src-${version}-0
-        source:qtlocation-everywhere-src-${version}-0
-        source:qtsensors-everywhere-src-${version}-0
-        source:qtserialport-everywhere-src-${version}-0
-        source:qttools-everywhere-src-${version}-0
-        source:qttranslations-everywhere-src-${version}-0
+        qttools-everywhere-src-${patch_version}  # for qtattributionsscanner
+        source:qtandroidextras-everywhere-src-${patch_version}
+        source:qtbase-everywhere-src-${patch_version}
+        source:qtimageformats-everywhere-src-${patch_version}
+        source:qtlocation-everywhere-src-${patch_version}
+        source:qtsensors-everywhere-src-${patch_version}
+        source:qtserialport-everywhere-src-${patch_version}
+        source:qttools-everywhere-src-${patch_version}
+        source:qttranslations-everywhere-src-${patch_version}
       
       SOURCE
         GIT_REPOSITORY https://github.com/OpenOrienteering/superbuild.git
         GIT_TAG        qt-${short_version}-openorienteering
       
-      USING version PYTHON_EXECUTABLE
+      USING patch_version PYTHON_EXECUTABLE
       BUILD [[
         CMAKE_ARGS
           "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
-          "-DVERSION=${version}-0"
+          "-DVERSION=${patch_version}"
           "-DPYTHON_EXECUTABLE=${PYTHON_EXECUTABLE}"
         BUILD_COMMAND
           "${CMAKE_COMMAND}" --build . --target update-copyright
