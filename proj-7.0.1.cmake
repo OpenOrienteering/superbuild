@@ -27,11 +27,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        6.3.1)
-set(download_hash  SHA256=6de0112778438dcae30fcc6942dee472ce31399b9e5a2b67e8642529868c86f8)
+set(version        7.0.1)
+set(download_hash  SHA256=a7026d39c9c80d51565cfc4b33d22631c11e491004e19020b3ff5a0791e1779f)
 set(patch_version  ${version}-1)
-set(patch_hash     SHA256=3d29b065622cdf52d9002f2805a8d15ecbd46c5e28c6e78501c76eaa9d874d5a)
-set(base_url       https://snapshot.debian.org/archive/debian/20200213T231921Z/pool/main/p/proj/)
+set(patch_hash     SHA256=393bbdedcfd3e0dfd1f9c0a3248f1918d28d5c8ccb0a77e56501f60a089f6e6a)
+set(base_url       https://snapshot.debian.org/archive/debian/20200501T154658Z/pool/main/p/proj/)
 
 set(datumgrid_version  1.8)
 set(datumgrid_hash SHA256=b9838ae7e5f27ee732fb0bfed618f85b36e8bb56d7afb287d506338e9f33861e)
@@ -79,8 +79,10 @@ superbuild_package(
     source:proj-datumgrid-${datumgrid_version}
     source:proj-patches-${patch_version}
     host:sqlite3
+    curl
     googletest
     sqlite3
+    tiff
   
   SOURCE
     URL            ${base_url}proj_${version}.orig.tar.gz
@@ -95,22 +97,21 @@ superbuild_package(
   BUILD [[
     CMAKE_ARGS
       "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
-      -DBUILD_LIBPROJ_SHARED=ON
+      -DBUILD_SHARED_LIBS=ON
       -DUSE_THREAD=ON
-      -DJNI_SUPPORT=OFF
       -DPROJ_BIN_SUBDIR=bin
       -DPROJ_LIB_SUBDIR=lib
       -DPROJ_DATA_SUBDIR=share/proj
       -DPROJ_DOC_SUBDIR=share/doc/proj
       -DPROJ_INCLUDE_SUBDIR=include
-      -DPROJ_CMAKE_SUBDIR=lib/cmake/proj4
+      -DPROJ_CMAKE_SUBDIR=lib/cmake
     $<$<NOT:$<BOOL:@CMAKE_CROSSCOMPILING@>>:
-      -DPROJ_TESTS=ON
+      -DBUILD_TESTING=ON
       -DUSE_EXTERNAL_GTEST=ON
     >
     $<$<BOOL:@CMAKE_CROSSCOMPILING@>:
       -DCMAKE_PROGRAM_PATH=${HOST_DIR}/bin # for sqlite3
-      -DPROJ_TESTS=OFF
+      -DBUILD_TESTING=OFF
     >
     $<$<NOT:$<OR:$<BOOL:@CMAKE_CROSSCOMPILING@>,$<BOOL:@MSYS@>>>:
     TEST_COMMAND
