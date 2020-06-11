@@ -665,6 +665,7 @@ set(toolchain_info_var_languages  "Variables for languages"
 
 list(APPEND toolchain_info_groups toolchain_info_var_configure)
 set(toolchain_info_var_configure "Variables for traditional `configure`"
+  SUPERBUILD_TOOLCHAIN_TRIPLET
   SUPERBUILD_CC
   SUPERBUILD_CXX
   SUPERBUILD_CPPFLAGS

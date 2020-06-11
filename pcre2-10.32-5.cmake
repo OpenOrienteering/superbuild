@@ -90,7 +90,7 @@ superbuild_package(
       "${CMAKE_COMMAND}" --build . --target install/strip/fast
     COMMAND
       "${CMAKE_COMMAND}" -E copy
-        "<SOURCE_DIR>/../pcre2-${patch_version}/debian/copyright"
+        "<SOURCE_DIR>/debian/copyright"
         "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/pcre2-${patch_version}.txt"
   ]]
 )
