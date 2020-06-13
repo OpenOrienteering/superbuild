@@ -81,6 +81,7 @@ superbuild_package(
     host:sqlite3
     curl
     googletest
+    pkg-config
     sqlite3
     tiff
   
