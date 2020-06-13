@@ -95,6 +95,7 @@ superbuild_package(
     openjpeg2
     pcre3
     pkg-config
+    poppler
     proj
     sqlite3
     tiff
@@ -133,6 +134,7 @@ superbuild_package(
         --with-jpeg
         --with-liblzma
         --with-libtiff
+        --with-poppler
         --with-webp
         --with-libz
         --with-openjpeg
