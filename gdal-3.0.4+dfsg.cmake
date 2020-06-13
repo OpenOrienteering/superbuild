@@ -60,12 +60,6 @@ set(test_system_gdal [[
 		endif()
 		get_filename_component(EXPAT_DIR "${EXPAT_INCLUDE_DIR}" DIRECTORY CACHE)
 		
-		find_path(LIBZ_INCLUDE_DIR NAMES zlib.h QUIET)
-		if(NOT LIBZ_INCLUDE_DIR)
-			message(FATAL_ERROR "Could not find zlib.h")
-		endif()
-		get_filename_component(LIBZ_DIR "${LIBZ_INCLUDE_DIR}" DIRECTORY CACHE)
-		
 		find_path(SQLITE3_INCLUDE_DIR NAMES sqlite3.h QUIET)
 		if(NOT SQLITE3_INCLUDE_DIR)
 			message(FATAL_ERROR "Could not find sqlite3.h")
@@ -100,6 +94,7 @@ superbuild_package(
     libwebp
     openjpeg2
     pcre3
+    pkg-config
     proj
     sqlite3
     tiff
@@ -132,26 +127,23 @@ superbuild_package(
         --with-hide-internal-symbols
         --with-rename-internal-libtiff-symbols
         --with-threads
-        --with-liblzma
-        --with-pcre
         "--with-curl=${CURL_CONFIG}"
         "--with-expat=${EXPAT_DIR}"
-        "--with-gif=${CMAKE_STAGING_PREFIX}"
-        "--with-jpeg=${CMAKE_STAGING_PREFIX}"
-        "--with-libtiff=${CMAKE_STAGING_PREFIX}"
-        "--with-webp=${CMAKE_STAGING_PREFIX}"
-        $<$<NOT:$<BOOL:@ANDROID@>>:
-          "--with-libz=${LIBZ_DIR}"
-        >
-        "--with-openjpeg"
-          "OPENJPEG_CFLAGS=-I${CMAKE_STAGING_PREFIX}/include/openjpeg2"
-          "OPENJPEG_LIBS=-lopenjp2"
-        "--with-png=${CMAKE_STAGING_PREFIX}"
-        "--with-proj=${CMAKE_STAGING_PREFIX}"
+        --with-gif
+        --with-jpeg
+        --with-liblzma
+        --with-libtiff
+        --with-webp
+        --with-libz
+        --with-openjpeg
+        --with-pcre
+        --with-png
+        --with-proj
         "--with-sqlite3=${SQLITE3_DIR}"
         --without-geos
         --without-java
         --without-jpeg12
+        --without-libkml
         --without-netcdf
         --without-odbc
         --without-ogdi
@@ -171,7 +163,6 @@ superbuild_package(
         "CFLAGS=${SUPERBUILD_CFLAGS}"
         "CXXFLAGS=${SUPERBUILD_CXXFLAGS}"
         "LDFLAGS=${SUPERBUILD_LDFLAGS}"
-        "PKG_CONFIG="
     BUILD_COMMAND
       "$(MAKE)"
     INSTALL_COMMAND
