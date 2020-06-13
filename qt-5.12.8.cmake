@@ -114,6 +114,7 @@ superbuild_package(
   VERSION      ${qtbase_patch_version}
   DEPENDS
     source:qt-${short_version}-openorienteering-${openorienteering_version}
+    freetype
     libjpeg-turbo
     libpng
     pcre2
