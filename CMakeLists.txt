@@ -65,7 +65,9 @@ list(APPEND SUPERBUILD_HANDLE_ENV
   LIBS
   LD_LIBRARY_PATH
   PATH
+  PKG_CONFIG
   PKG_CONFIG_PATH
+  PKG_CONFIG_SYSROOT_DIR
 )
 if(APPLE)
 	list(APPEND SUPERBUILD_HANDLE_ENV  SDKROOT)
@@ -1084,6 +1086,18 @@ function(_sb_make_toolchained_build package toolchain)
 		else()
 			string(REPLACE ";" ":" ${SYSTEM_NAME}_ENV_PATH "${env_path_cmake}")
 		endif()
+	endif()
+	
+	if(NOT DEFINED ${SYSTEM_NAME}_ENV_PKG_CONFIG)
+		if(NOT "${SYSTEM_NAME}" STREQUAL "default")
+			set(${SYSTEM_NAME}_ENV_PKG_CONFIG "${SYSTEM_NAME}-pkg-config")
+		elseif(ENV{PKG_CONFIG})
+			set(${SYSTEM_NAME}_ENV_PKG_CONFIG "$ENV{PKG_CONFIG}")
+		endif()
+	endif()
+	
+	if(NOT DEFINED ${SYSTEM_NAME}_ENV_PKG_CONFIG_SYSROOT_DIR)
+		set(${SYSTEM_NAME}_ENV_PKG_CONFIG_SYSROOT_DIR "${install_dir}")
 	endif()
 	
 	if (APPLE AND NOT DEFINED ${SYSTEM_NAME}_ENV_SDKROOT)
