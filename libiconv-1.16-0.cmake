@@ -35,7 +35,7 @@ set(base_url       https://ftp.gnu.org/pub/gnu/libiconv)
 option(USE_SYSTEM_LIBICONV "Use the system libiconv if possible" ON)
 
 set(test_system_libiconv [[
-    if(NOT WIN32)
+	if(NOT WIN32 AND NOT ANDROID)
 		set(BUILD_CONDITION 0)
 	elseif(USE_SYSTEM_LIBICONV)
 		enable_language(C)
