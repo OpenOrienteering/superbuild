@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016-2019 Kai Pastor
+# Copyright 2016-2020 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -27,12 +27,12 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version           3.31.1)
-set(download_version  2020/sqlite-autoconf-3310100)
-set(download_hash     SHA1=0c30f5b22152a8166aa3bebb0f4bc1f3e9cc508b)
-set(patch_version     ${version}-1)
-set(patch_hash        SHA256=1f7fc3fef2826b4ca778763e8bb80a43d759f7e42f49499d09aae65e06f728c8)
-set(base_url          https://snapshot.debian.org/archive/debian/20200201T090139Z/pool/main/s/sqlite3/)
+set(version           3.32.2)
+set(download_version  2020/sqlite-autoconf-3320200)
+set(download_hash     SHA1=429e3f2d0b16a95ad1025a97b2a328d0b4037575)
+set(patch_version     ${version}-2)
+set(patch_hash        SHA256=c6dff4a12116e369fbdbeba4ad4f532b673bd87405fcf9ad9c1dd906062bc46d)
+set(base_url          https://snapshot.debian.org/archive/debian/20200606T204857Z/pool/main/s/sqlite3/)
 
 option(USE_SYSTEM_SQLITE3 "Use the system sqlite if possible" ON)
 
