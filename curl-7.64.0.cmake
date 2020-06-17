@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2017-2019 Kai Pastor
+# Copyright 2017-2020 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -29,9 +29,9 @@
 
 set(version        7.64.0)
 set(download_hash  SHA256=cb90d2eb74d4e358c1ed1489f8e3af96b50ea4374ad71f143fa4595e998d81b5)
-set(patch_version  ${version}-4)
-set(patch_hash     SHA256=15618c3b4e0000dd65d6708d9ca362a7f33327fb4362ac8802028504051aba0c)
-set(base_url       https://snapshot.debian.org/archive/debian/20190615T034431Z/pool/main/c/curl)
+set(patch_version  ${version}-4+deb10u1)
+set(patch_hash     SHA256=911407ad8d73d0592db7f1a015656089563bb7dab279ec33bff855adf56bcf1b)
+set(base_url       https://snapshot.debian.org/archive/debian/20200225T210858Z/pool/main/c/curl/)
 
 option(USE_SYSTEM_CURL "Use the system curl if possible" ON)
 
