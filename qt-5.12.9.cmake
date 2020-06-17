@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016-2019 Kai Pastor
+# Copyright 2016-2020 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -30,7 +30,7 @@
 set(short_version  5.12)
 set(version        5.12.7)
 set(patch_version  ${version}-0)
-set(openorienteering_version ${version}-qtbase-5.12.8-0)
+set(openorienteering_version ${version}-qtbase-5.12.9-0)
 
 option(USE_SYSTEM_QT "Use the system Qt if possible" ON)
 
@@ -92,14 +92,14 @@ superbuild_package(
   
   SOURCE
     URL            https://github.com/OpenOrienteering/superbuild/archive/qt-${short_version}-openorienteering_${openorienteering_version}.tar.gz
-    URL_HASH       SHA256=b4137288dcd8f833ffcb314c0ee098091eaced3ac83fbea6746b2a5da81186c3
+    URL_HASH       SHA256=03af9d83105bc563ebafbd285e6df6f872b71081ee19c64daa5b3908c6d6fc7e
 )
 
 
 
 # qtbase
 
-set(qtbase_version       5.12.8)
+set(qtbase_version       5.12.9)
 set(qtbase_patch_version ${qtbase_version}-0)
 superbuild_package(
   NAME           qtbase
@@ -123,7 +123,7 @@ superbuild_package(
   
   SOURCE
     URL             https://download.qt.io/archive/qt/${short_version}/${qtbase_version}/submodules/qtbase-everywhere-src-${qtbase_version}.tar.xz
-    URL_HASH        SHA256=19592fbd0a524a17c35e413988fe494251103619ef7dd49aecdf3170973aabd8
+    URL_HASH        SHA256=331dafdd0f3e8623b51bd0da2266e7e7c53aa8e9dc28a8eb6f0b22609c5d337e
     
     # Don't accidently used bundled copies
     PATCH_COMMAND
