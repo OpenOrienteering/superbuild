@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016-2019 Kai Pastor
+# Copyright 2016-2020 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -29,11 +29,11 @@
 
 # https://tracker.debian.org/pkg/tiff
 
-set(version        4.0.10)
-set(download_hash  SHA256=2c52d11ccaf767457db0c46795d9c7d1a8d8f76f68b0b800a3dfe45786b996e4)
-set(patch_version  ${version}-4)
-set(patch_hash     SHA256=eed80359456ae1437426be3894ed594ac6d6051306afee6093abdc65a07887b0)
-set(base_url       https://snapshot.debian.org/archive/debian/20190203T151428Z/pool/main/t/tiff)
+set(version        4.1.0+git191117)
+set(download_hash  SHA256=67e1d045e994adb7144b0cca228d70dd6d520aaf8c75c342064bc0fd601e6e42)
+set(patch_version  ${version}-2+deb10u1)
+set(patch_hash     SHA256=e9dcc77d338663f6be84efe32ae5d4ec9b48923c731aa939f37aa909e60d9f10)
+set(base_url       https://snapshot.debian.org/archive/debian/20200125T212854Z/pool/main/t/tiff/)
 
 option(USE_SYSTEM_LIBTIFF "Use the system libtiff if possible" ON)
 
@@ -61,24 +61,25 @@ set(test_system_tiff [[
 
 superbuild_package(
   NAME           tiff-patches
-  VERSION        ${patch_version}
+  VERSION        ${version}-2+deb10u1
   
   SOURCE
-    URL            ${base_url}/tiff_${patch_version}.debian.tar.xz
+    URL            ${base_url}tiff_${version}-2~deb10u1.debian.tar.xz
     URL_HASH       ${patch_hash}
 )
   
 superbuild_package(
   NAME           tiff
-  VERSION        ${patch_version}openorienteering1
+  VERSION        ${patch_version}+openorienteering1
   DEPENDS
     source:tiff-patches-${patch_version}
     libjpeg
     liblzma
+    libwebp
     zlib
   
   SOURCE
-    URL            ${base_url}/tiff_${version}.orig.tar.gz
+    URL            ${base_url}tiff_${version}.orig.tar.xz
     URL_HASH       ${download_hash}
     PATCH_COMMAND
       "${CMAKE_COMMAND}"
@@ -97,9 +98,9 @@ superbuild_package(
   BUILD [[
     CMAKE_ARGS
       "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
+      "-DCMAKE_BUILD_TYPE:STRING=$<CONFIG>"
       # We don't provide all possible sources (yet)
       "-Djbig:BOOL=OFF"
-      "-Dwebp:BOOL=OFF"
       "-Dzstd:BOOL=OFF"
       # GNUInstallDirs doesn't work with CMAKE_STAGING_PREFIX
       -UCMAKE_STAGING_PREFIX

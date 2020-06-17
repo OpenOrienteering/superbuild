@@ -52,7 +52,6 @@ superbuild_package(
     giflib
     libjpeg-turbo
     libpng
-    tiff
     zlib
   
   SOURCE
