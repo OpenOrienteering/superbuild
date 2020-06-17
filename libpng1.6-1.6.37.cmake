@@ -97,6 +97,7 @@ superbuild_package(
   BUILD [[
     CMAKE_ARGS
       "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
+      "-DCMAKE_BUILD_TYPE:STRING=$<CONFIG>"
       "-DPNG_STATIC=0"
     INSTALL_COMMAND
       "${CMAKE_COMMAND}" --build . --target install/strip/fast
