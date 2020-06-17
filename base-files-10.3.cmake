@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2017-2019 Kai Pastor
+# Copyright 2017-2020 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -27,8 +27,9 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version  9.9)
-set(download_hash  SHA256=c941e091eea9d2949b6ed3b8d37ea1d086b50b10d564103d52fafcd129ac1931)
+set(version  10.3)
+set(download_hash  SHA256=732b93d5d44ada6418a623fa2ace5a184decfacdbe214c05a10ab70938517542)
+set(base_url       https://snapshot.debian.org/archive/debian/20190514T025749Z/pool/main/b/base-files/)
 
 set(cmakelists_txt [[
 cmake_minimum_required(VERSION 3.0)
@@ -48,7 +49,7 @@ superbuild_package(
   NAME           base-files
   VERSION        ${version}
   SOURCE
-    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_06}/pool/main/b/base-files/base-files_${version}.tar.xz
+    URL            ${base_url}base-files_${version}.tar.xz
     URL_HASH       ${download_hash}
   SOURCE_WRITE
     CMakeLists.txt cmakelists_txt
