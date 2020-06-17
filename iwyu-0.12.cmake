@@ -66,6 +66,7 @@ superbuild_package(
   BUILD [[
     CMAKE_ARGS
       "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
+      "-DCMAKE_BUILD_TYPE:STRING=$<CONFIG>"
       "-DCMAKE_PREFIX_PATH=${IWYU_LLVM_ROOT}"
     INSTALL_COMMAND
       "${CMAKE_COMMAND}" --build . --target install/strip/fast
