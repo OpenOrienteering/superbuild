@@ -33,13 +33,16 @@ set(patch_version  ${version}-1)
 set(patch_hash     SHA256=6ecdd3463718e8922b53fca8d2fd37db4ba178f078b5e3ccd38c1a6efffb94ad)
 set(base_url       https://snapshot.debian.org/archive/debian/20200421T214331Z/pool/main/p/pkg-config/)
 
-option(USE_SYSTEM_PKG_CONFIG "Use the system pkg-config" OFF)
+option(USE_SYSTEM_PKG_CONFIG "Use the system pkg-config" ON)
 
-set(build_condition [[
-	if (USE_SYSTEM_PKG_CONFIG)
-		set(BUILD_CONDITION 0)
-	else()
-		set(BUILD_CONDITION 1)
+set(test_system_pkg-config [[
+	if(USE_SYSTEM_PKG_CONFIG)
+		find_program(PKG_CONFIG_EXECUTABLE NAMES pkg-config ONLY_CMAKE_FIND_ROOT_PATH QUIET)
+		string(FIND "${PKG_CONFIG_EXECUTABLE}" "${CMAKE_STAGING_PREFIX}/" staging_prefix_start)
+		if(PKG_CONFIG_EXECUTABLE AND NOT staging_prefix_start EQUAL 0)
+			message(STATUS "Found pkg-config: ${PKG_CONFIG_EXECUTABLE}")
+			set(BUILD_CONDITION 0)
+		endif()
 	endif()
 ]])
 
@@ -55,6 +58,8 @@ file(DOWNLOAD
 superbuild_package(
   NAME           pkg-config
   VERSION        ${patch_version}
+  DEPENDS
+    pkg-config-wrapper
   
   SOURCE
     URL            ${base_url}pkg-config_${version}.orig.tar.gz
@@ -73,17 +78,13 @@ superbuild_package(
       ${CMAKE_COMMAND} -E tar xf unpatched.tar
   
   USING            USE_SYSTEM_PKG_CONFIG patch_version
-  BUILD_CONDITION  ${build_condition}
+  BUILD_CONDITION  ${test_system_pkg-config}
   BUILD [[
     CONFIGURE_COMMAND
       "${SOURCE_DIR}/configure"
         "--prefix=${TOOLCHAIN_DIR}"
-        "--with-pc-path=${CMAKE_STAGING_PREFIX}/lib/pkgconfig:${CMAKE_STAGING_PREFIX}/share/pkgconfig"
         "--with-internal-glib"
         "--disable-host-tool"
-        $<$<NOT:$<STREQUAL:@SUPERBUILD_TOOLCHAIN_TRIPLET@,>>:
-        "--program-prefix=${SUPERBUILD_TOOLCHAIN_TRIPLET}-"
-        >
     INSTALL_COMMAND
       "$(MAKE)" install "DESTDIR=${DESTDIR}"
     COMMAND
