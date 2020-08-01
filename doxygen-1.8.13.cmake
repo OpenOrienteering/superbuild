@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016-2019 Kai Pastor
+# Copyright 2016-2020 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -29,6 +29,9 @@
 
 set(version        1.8.13)
 set(download_hash  SHA256=af667887bd7a87dc0dbf9ac8d86c96b552dfb8ca9c790ed1cbffaa6131573f6b)
+set(patch_version  ${version}-10)
+set(patch_hash     SHA256=e4fb3fa4266998c4192dcdbb1efb563360f1f009d9a80d445721d526de4f9482)
+set(base_url       https://snapshot.debian.org/archive/debian/20180312T232337Z/pool/main/d/doxygen/)
 
 option(USE_SYSTEM_DOXYGEN "Use the system DOXYGEN if possible" ON)
 
@@ -80,13 +83,24 @@ string(REPLACE ";" "\\\;" fix-casts_patch [[
 
 
 superbuild_package(
-  NAME           doxygen
-  VERSION        ${version}
-  DEPENDS        libiconv
-                 zlib
+  NAME           doxygen-patches
+  VERSION        ${patch_version}
   
   SOURCE
-    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_06}/pool/main/d/doxygen/doxygen_${version}.orig.tar.gz
+    URL            ${base_url}/doxygen_${patch_version}.debian.tar.xz
+    URL_HASH       ${patch_hash}
+)
+
+superbuild_package(
+  NAME           doxygen
+  VERSION        ${patch_version}
+  DEPENDS
+    source:doxygen-patches-${patch_version}
+    libiconv
+    zlib
+  
+  SOURCE
+    URL            ${base_url}doxygen_${version}.orig.tar.gz
     URL_HASH       ${download_hash}
 
     PATCH_COMMAND
@@ -101,7 +115,7 @@ superbuild_package(
   SOURCE_WRITE
     fix-casts.patch fix-casts_patch
   
-  USING            USE_SYSTEM_DOXYGEN
+  USING            USE_SYSTEM_DOXYGEN patch_version
   BUILD_CONDITION  ${test_system_doxygen}
   BUILD [[
     CMAKE_ARGS
@@ -109,5 +123,9 @@ superbuild_package(
       -Denglish_only=1
     INSTALL_COMMAND
       "${CMAKE_COMMAND}" --build . --target install/strip/fast
+    COMMAND
+      "${CMAKE_COMMAND}" -E copy
+        "<SOURCE_DIR>/../doxygen-patches-${patch_version}/copyright"
+        "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/doxygen-${patch_version}.txt"
   ]]
 )
