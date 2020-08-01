@@ -85,15 +85,6 @@ set(SUPERBUILD_DISABLE_DEPENDENCIES FALSE CACHE BOOL
   "Disable dependencies between binary packages")
 mark_as_advanced(SUPERBUILD_DISABLE_DEPENDENCIES)
 
-# Base URLs for source and patch tarballs
-set(SUPERBUILD_RELEASE_BASE_URL_2017_06 "https://github.com/OpenOrienteering/superbuild/releases/download/2017.06")
-set(SUPERBUILD_RELEASE_BASE_URL_2017_11 "https://github.com/OpenOrienteering/superbuild/releases/download/2017.11")
-set(SUPERBUILD_DEBIAN_BASE_URL_2017_03 "http://snapshot.debian.org/archive/debian/20170325T152634Z")
-set(SUPERBUILD_DEBIAN_BASE_URL_2017_06 "http://snapshot.debian.org/archive/debian/20170604T033458Z")
-set(SUPERBUILD_DEBIAN_BASE_URL_2017_11 "http://snapshot.debian.org/archive/debian/20171110T094433Z")
-set(SUPERBUILD_DEBIAN_BASE_URL_2018_02 "http://snapshot.debian.org/archive/debian/20180209T230438Z")
-set(SUPERBUILD_DEBIAN_SECURITY_URL_2017_11 "http://snapshot.debian.org/archive/debian-security/20171027T200949Z")
-set(SUPERBUILD_DEBIAN_SECURITY_URL_2018_02 "http://snapshot.debian.org/archive/debian-security/20180210T023041Z")
 
 include(CMakeParseArguments)
 include(ExternalProject)
