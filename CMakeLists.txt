@@ -198,7 +198,7 @@ if(EXISTS "${dir}/patches/series")
 		endif()
 		message(STATUS "Applying ${line}")
 		execute_process(
-		  COMMAND patch -N -p1
+		  COMMAND patch -N -p1 --binary
 		  INPUT_FILE "${dir}/patches/${line}"
 		  RESULT_VARIABLE exit_code
 		  OUTPUT_VARIABLE output
