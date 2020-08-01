@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016-2019 Kai Pastor
+# Copyright 2016-2020 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -31,6 +31,7 @@ set(version        1.5.2)
 set(download_hash  SHA256=9098943b270388727ae61de82adec73cf9f0dbb240b3bc8b172595ebf405b528)
 set(patch_version  ${version}-2)
 set(patch_hash     SHA256=964a2d747f8e74cbd558f343afd11b7dfe37212a611eeca863f1908eba66f728)
+set(base_url       https://snapshot.debian.org/archive/debian/20170825T152508Z/pool/main/libj/libjpeg-turbo/)
 
 option(USE_SYSTEM_LIBJPEG "Use the system libjpeg if possible" ON)
 
@@ -65,7 +66,7 @@ superbuild_package(
   VERSION        ${patch_version}
   
   SOURCE
-    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_11}/pool/main/libj/libjpeg-turbo/libjpeg-turbo_${patch_version}.debian.tar.xz
+    URL            ${base_url}libjpeg-turbo_${patch_version}.debian.tar.xz
     URL_HASH       ${patch_hash}
 )
   
@@ -77,7 +78,7 @@ superbuild_package(
   
   SOURCE
     DOWNLOAD_NAME  libjpeg-turbo_${version}.orig.tar.gz
-    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_11}/pool/main/libj/libjpeg-turbo/libjpeg-turbo_${version}.orig.tar.gz
+    URL            ${base_url}libjpeg-turbo_${version}.orig.tar.gz
     URL_HASH       ${download_hash}
     PATCH_COMMAND
       "${CMAKE_COMMAND}"
