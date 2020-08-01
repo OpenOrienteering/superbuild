@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016-2019 Kai Pastor
+# Copyright 2016-2020 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -29,8 +29,9 @@
 
 set(version        6.4.2)
 set(download_hash  SHA256=69a2fadc3c0b6c06c3f77e92067b65e28e398a75d1260e9114c283a04e76c463)
-set(patch_version  ${version}-3)
-set(patch_hash     SHA256=96b0a1bd0187f069cd3865e209b8f257da210ca541f9cb4f654173ae90fb3bec)
+set(patch_version  ${version}-7)
+set(patch_hash     SHA256=eb5337f173e6b7a465fb81b4b1295b925e1711c9902c670dfee2679654537944)
+set(base_url       https://snapshot.debian.org/archive/debian/20200731T211026Z/pool/main/libp/libpolyclipping/)
 
 option(USE_SYSTEM_POLYCLIPPING "Use the system libpolyclipping if possible" ON)
 
@@ -52,7 +53,7 @@ superbuild_package(
   VERSION        ${patch_version}
   
   SOURCE
-    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_11}/pool/main/libp/libpolyclipping/libpolyclipping_${patch_version}.debian.tar.xz
+    URL            ${base_url}libpolyclipping_${patch_version}.debian.tar.xz
     URL_HASH       ${patch_hash}
 )
   
@@ -65,7 +66,7 @@ superbuild_package(
     common-licenses
   
   SOURCE
-    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_11}/pool/main/libp/libpolyclipping/libpolyclipping_${version}.orig.tar.bz2
+    URL            ${base_url}libpolyclipping_${version}.orig.tar.bz2
     URL_HASH       ${download_hash}
     PATCH_COMMAND
       "${CMAKE_COMMAND}"
@@ -99,14 +100,10 @@ superbuild_package(
     CMAKE_ARGS
       -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
       -DCMAKE_BUILD_TYPE:STRING=$<CONFIG>
-      -DBUILD_SHARED_LIBS:BOOL=ON # install fails for static lib
-      --no-warn-unused-cli
-      # polyclipping uses CMAKE_{INSTALL,STAGING}_PREFIX incorrectly
-      -UCMAKE_STAGING_PREFIX
       # VERSION is needed in the pkgconfig file
-      -DVERSION=${version}
+      -DVERSION=${version} --no-warn-unused-cli
     INSTALL_COMMAND
-      "${CMAKE_COMMAND}" --build . --target install/strip/fast -- "DESTDIR=${DESTDIR}${INSTALL_DIR}"
+      "${CMAKE_COMMAND}" --build . --target install/strip/fast
     COMMAND
       "${CMAKE_COMMAND}" -E copy
         "<SOURCE_DIR>/../libpolyclipping-patches-${patch_version}/copyright"
