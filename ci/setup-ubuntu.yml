@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2019 Kai Pastor
+# Copyright 2019-2020 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -50,6 +50,7 @@ steps:
     cp /usr/share/doc/libpng16-16/copyright    ${DEST}/libpng-${IMAGE_NAME}.txt
     cp /usr/share/doc/libtiff5/copyright       ${DEST}/tiff-${IMAGE_NAME}.txt
     cp /usr/share/doc/mingw-w64-x86-64-dev/copyright  ${DEST}/mingw-w64-x86-64-${IMAGE_NAME}.txt
+    cp /usr/share/doc/sqlite3/copyright        ${DEST}/sqlite3-${IMAGE_NAME}.txt
     cp /usr/share/doc/zlib1g/copyright         ${DEST}/zlib-${IMAGE_NAME}.txt
     
     # Stop Mapper's DEB packaging from failing (due to dependencies from superbuild)
