@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2017-2019 Kai Pastor
+# Copyright 2017-2020 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -27,8 +27,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        3.7.2)
-set(download_hash  SHA256=dc1246c4e6d168ea4d6e042cfba577c1acd65feea27e56f5ff37df920c30cae0)
+set(version        3.16.3)
+set(download_hash  SHA256=e54f16df9b53dac30fd626415833a6e75b0e47915393843da1825b096ee60668)
+set(patch_version  ${version}-3)
+set(patch_hash     SHA256=c377b41d9a03325fdb000efff639442da7a4f6cfeb5654403676fdd241416299)
+set(base_url       https://snapshot.debian.org/archive/debian/20200509T144303Z/pool/main/c/cmake/)
 
 option(USE_SYSTEM_CMAKE "Use the system CMake if possible" ON)
 
@@ -41,24 +44,38 @@ set(test_system_cmake [[
 ]])
 
 superbuild_package(
+  NAME           cmake-patches
+  VERSION        ${patch_version}
+  
+  SOURCE
+    URL            ${base_url}/cmake_${patch_version}.debian.tar.xz
+    URL_HASH       ${patch_hash}
+)
+  
+superbuild_package(
   NAME           cmake
-  VERSION        ${version}
-  DEPENDS        curl
+  VERSION        ${patch_version}
+  DEPENDS        source:cmake-patches-${patch_version}
+                 curl
                  expat
                  xz-utils
                  zlib
   
   SOURCE
-    URL            ${SUPERBUILD_DEBIAN_BASE_URL_2017_06}/pool/main/c/cmake/cmake_${version}.orig.tar.gz
+    URL            ${base_url}cmake_${version}.orig.tar.gz
     URL_HASH       ${download_hash}
   
   USING            USE_SYSTEM_CMAKE
-                   version
+                   patch_version
   BUILD_CONDITION  ${test_system_cmake}
   BUILD [[
     CMAKE_ARGS
       "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
     INSTALL_COMMAND
-      "${CMAKE_COMMAND}" --build . --target install/strip/fast"
+      "${CMAKE_COMMAND}" --build . --target install/strip/fast
+    COMMAND
+      "${CMAKE_COMMAND}" -E copy
+        "<SOURCE_DIR>/../cmake-patches-${patch_version}/copyright"
+        "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/cmake-${patch_version}.txt"
   ]]
 )
