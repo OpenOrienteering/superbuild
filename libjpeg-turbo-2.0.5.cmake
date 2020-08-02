@@ -27,11 +27,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        1.5.2)
-set(download_hash  SHA256=9098943b270388727ae61de82adec73cf9f0dbb240b3bc8b172595ebf405b528)
-set(patch_version  ${version}-2)
-set(patch_hash     SHA256=964a2d747f8e74cbd558f343afd11b7dfe37212a611eeca863f1908eba66f728)
-set(base_url       https://snapshot.debian.org/archive/debian/20170825T152508Z/pool/main/libj/libjpeg-turbo/)
+set(version        2.0.5)
+set(download_hash  SHA256=16f8f6f2715b3a38ab562a84357c793dd56ae9899ce130563c72cd93d8357b5d)
+set(patch_version  ${version}-1.1)
+set(patch_hash     SHA256=d4370be8fabaef3be0007a75df92f964986f03d648c5f97cbeb750067f53a493)
+set(base_url       https://snapshot.debian.org/archive/debian/20200802T025122Z/pool/main/libj/libjpeg-turbo/)
 
 option(USE_SYSTEM_LIBJPEG "Use the system libjpeg if possible" ON)
 
@@ -48,19 +48,6 @@ set(test_system_jpeg [[
 	endif()
 ]])
 
-find_program(NASM_EXECUTABLE NAMES nasm)
-if(NASM_EXECUTABLE)
-	execute_process(
-	  COMMAND "${NASM_EXECUTABLE}" -v
-	  OUTPUT_VARIABLE NASM_VERSION
-	)
-	if(NOT NASM_VERSION MATCHES "version"
-	   OR NASM_VERSION MATCHES "version [01]\.")
-		unset(NASM_EXECUTABLE CACHE)
-		set(NASM_EXECUTABLE NASM_EXECUTABLE-NOTFOUND)
-	endif()
-endif()
-
 superbuild_package(
   NAME           libjpeg-turbo-patches
   VERSION        ${patch_version}
@@ -75,6 +62,7 @@ superbuild_package(
   VERSION        ${patch_version}
   DEPENDS
     source:libjpeg-turbo-patches-${patch_version}
+    host:nasm
   
   SOURCE
     DOWNLOAD_NAME  libjpeg-turbo_${version}.orig.tar.gz
@@ -84,40 +72,20 @@ superbuild_package(
       "${CMAKE_COMMAND}"
         -Dpackage=libjpeg-turbo-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
-    COMMAND
-      sed -e "/^PKG_PROG_PKG_CONFIG/d" -i -- configure
   
-  USING            USE_SYSTEM_LIBJPEG NASM_EXECUTABLE patch_version
+  USING            USE_SYSTEM_LIBJPEG patch_version
   BUILD_CONDITION  ${test_system_jpeg}
   BUILD [[
-    CONFIGURE_COMMAND
-      "${SOURCE_DIR}/configure"
-        "--prefix=${CMAKE_INSTALL_PREFIX}"
-        $<$<BOOL:@CMAKE_CROSSCOMPILING@>:
-          --host=${SUPERBUILD_TOOLCHAIN_TRIPLET}
-        >
-        $<$<NOT:$<BOOL:@ANDROID@>>:
-        --disable-static
-        --enable-shared
-        >$<$<BOOL:@ANDROID@>:
-        # Static only. There may be an interfering libjeg.so on the device.
-        --enable-static
-        --disable-shared
-        --with-pic
-        >
-        --disable-silent-rules
-        --without-12bit
-        $<$<NOT:$<STREQUAL:@NASM_EXECUTABLE@,NASM_EXECUTABLE-NOTFOUND>>:
-        "NASM=${NASM_EXECUTABLE}"
-        >$<$<STREQUAL:@NASM_EXECUTABLE@,NASM_EXECUTABLE-NOTFOUND>:
-        --without-simd
-        >
-        "CC=${SUPERBUILD_CC}"
-        "CPPFLAGS=${SUPERBUILD_CPPFLAGS}"
-        "CFLAGS=${SUPERBUILD_CFLAGS}"
-        "LDFLAGS=${SUPERBUILD_LDFLAGS}"
+    CMAKE_ARGS
+      "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
+      "-DCMAKE_BUILD_TYPE:STRING=$<CONFIG>"
+      -DENABLE_SHARED=ON
+      -DENABLE_STATIC=OFF
+      $<$<BOOL:@ANDROID@>:
+        -DCMAKE_ASM_FLAGS="--target=${SUPERBUILD_TOOLCHAIN_TRIPLET}${ANDROID_NATIVE_API_LEVEL}"
+      >
     INSTALL_COMMAND
-      "$(MAKE)" install "DESTDIR=${DESTDIR}${INSTALL_DIR}"
+      "${CMAKE_COMMAND}" --build . --target install/strip/fast
     COMMAND
       "${CMAKE_COMMAND}" -E copy
         "<SOURCE_DIR>/../libjpeg-turbo-patches-${patch_version}/copyright"
