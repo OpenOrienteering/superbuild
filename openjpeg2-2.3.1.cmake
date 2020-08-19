@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2019 Kai Pastor
+# Copyright 2019-2020 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -45,6 +45,13 @@ set(test_system_openjpeg2 [[
 			set(BUILD_CONDITION 0)
 		endif()
 	endif()
+	if(CMAKE_C_COMPILER_ID MATCHES "Clang")
+		set(extra_flags "-Wno-implicit-function-declaration" PARENT_SCOPE)
+	elseif(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+		set(extra_flags "-Wno-clobbered" PARENT_SCOPE)
+	else()
+		set(extra_flags "" PARENT_SCOPE)
+	endif()
 ]])
 
 superbuild_package(
@@ -73,11 +80,12 @@ superbuild_package(
         -Dpackage=openjpeg2-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
   
-  USING            USE_SYSTEM_OPENJPEG patch_version version
+  USING            USE_SYSTEM_OPENJPEG patch_version version extra_flags
   BUILD_CONDITION  ${test_system_openjpeg2}
   BUILD [[
     CMAKE_ARGS
       "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
+      "-DCMAKE_C_FLAGS=${CMAKE_C_FLAGS} ${extra_flags}"
       "-DCMAKE_BUILD_TYPE:STRING=$<CONFIG>"
       "-DOPENJPEG_INSTALL_DATA_DIR=share/openjpeg2"
       "-DOPENJPEG_INSTALL_INCLUDE_DIR=include/openjpeg2"

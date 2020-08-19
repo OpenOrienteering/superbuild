@@ -66,6 +66,9 @@ set(test_system_gdal [[
 		endif()
 		get_filename_component(SQLITE3_DIR "${SQLITE3_INCLUDE_DIR}" DIRECTORY CACHE)
 	endif(BUILD_CONDITION)
+	
+	set(extra_cflags   "-Wno-strict-overflow -Wno-null-dereference" PARENT_SCOPE)
+	set(extra_cxxflags "-Wno-strict-overflow -Wno-null-dereference -Wno-old-style-cast" PARENT_SCOPE)
 ]])
 
 
@@ -109,7 +112,7 @@ superbuild_package(
         -Dpackage=gdal-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
   
-  USING            USE_SYSTEM_GDAL patch_version
+  USING            USE_SYSTEM_GDAL patch_version extra_cflags extra_cxxflags
   BUILD_CONDITION  ${test_system_gdal}
   BUILD [[
     # Cannot do out-of-source build of gdal
@@ -162,8 +165,8 @@ superbuild_package(
         "CC=${SUPERBUILD_CC}"
         "CXX=${SUPERBUILD_CXX}"
         "CPPFLAGS=${SUPERBUILD_CPPFLAGS}"
-        "CFLAGS=${SUPERBUILD_CFLAGS}"
-        "CXXFLAGS=${SUPERBUILD_CXXFLAGS}"
+        "CFLAGS=${SUPERBUILD_CFLAGS} ${extra_cflags}"
+        "CXXFLAGS=${SUPERBUILD_CXXFLAGS} ${extra_cxxflags}"
         "LDFLAGS=${SUPERBUILD_LDFLAGS}"
     BUILD_COMMAND
       "$(MAKE)"

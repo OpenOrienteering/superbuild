@@ -46,6 +46,7 @@ set(test_system_curl [[
 			set(BUILD_CONDITION 0)
 		endif()
 	endif()
+	set(extra_flags "-Wno-old-style-cast" PARENT_SCOPE)
 ]])
 
 superbuild_package(
@@ -72,7 +73,7 @@ superbuild_package(
         -Dpackage=curl-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
   
-  USING            USE_SYSTEM_CURL patch_version
+  USING            USE_SYSTEM_CURL patch_version extra_flags
   BUILD_CONDITION  ${test_system_curl}
   BUILD [[
     CONFIGURE_COMMAND
@@ -117,7 +118,8 @@ superbuild_package(
       > # Android
         "CC=${SUPERBUILD_CC}"
         "CPPFLAGS=${SUPERBUILD_CPPFLAGS}"
-        "CFLAGS=${SUPERBUILD_CFLAGS}"
+        "CFLAGS=${SUPERBUILD_CFLAGS} ${extra_flags}"
+        "CXXFLAGS=${SUPERBUILD_CXXFLAGS} ${extra_flags}"
         "LDFLAGS=${SUPERBUILD_LDFLAGS}"
     INSTALL_COMMAND
       "$(MAKE)" install "DESTDIR=${DESTDIR}${INSTALL_DIR}"

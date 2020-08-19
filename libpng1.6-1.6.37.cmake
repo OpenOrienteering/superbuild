@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016-2019 Kai Pastor
+# Copyright 2016-2020 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -55,6 +55,11 @@ set(test_system_png [[
 			endif()
 		endif()
 	endif()
+	if(CMAKE_C_COMPILER_ID MATCHES "Clang")
+		set(extra_flags "-Wno-macro-redefined" PARENT_SCOPE)
+	else()
+		set(extra_flags "" PARENT_SCOPE)
+	endif()
 ]])
 
 superbuild_package(
@@ -92,11 +97,12 @@ superbuild_package(
       # MSYS2 on Windows doesn't handle symlinks well.
       sed -i -e "s, AND NOT MSYS,," CMakeLists.txt
   
-  USING            USE_SYSTEM_LIBPNG patch_version
+  USING            USE_SYSTEM_LIBPNG patch_version extra_flags
   BUILD_CONDITION  ${test_system_png}
   BUILD [[
     CMAKE_ARGS
       "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
+      "-DCMAKE_C_FLAGS=${CMAKE_C_FLAGS} ${extra_flags}"
       "-DCMAKE_BUILD_TYPE:STRING=$<CONFIG>"
       "-DPNG_STATIC=0"
     INSTALL_COMMAND

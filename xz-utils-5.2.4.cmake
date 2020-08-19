@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016-2019 Kai Pastor
+# Copyright 2016-2020 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -49,6 +49,13 @@ set(test_system_lzma [[
 			set(BUILD_CONDITION 0)
 		endif()
 	endif()
+	if(CMAKE_C_COMPILER_ID MATCHES "Clang")
+		set(extra_flags "-Wno-format-nonliteral" PARENT_SCOPE)
+	elseif(MINGW)
+		set(extra_flags "-Wno-maybe-uninitialized" PARENT_SCOPE)
+	else()
+		set(extra_flags "" PARENT_SCOPE)
+	endif()
 ]])
 
 superbuild_package(
@@ -76,7 +83,7 @@ superbuild_package(
         -Dpackage=xz-utils-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
   
-  USING            USE_SYSTEM_LZMA patch_version
+  USING            USE_SYSTEM_LZMA patch_version extra_flags
   BUILD_CONDITION  ${test_system_lzma}
   BUILD [[
     CONFIGURE_COMMAND
@@ -90,7 +97,7 @@ superbuild_package(
         --disable-lzma-links
         "CC=${SUPERBUILD_CC}"
         "CPPFLAGS=${SUPERBUILD_CPPFLAGS}"
-        "CFLAGS=${SUPERBUILD_CFLAGS}"
+        "CFLAGS=${SUPERBUILD_CFLAGS} ${extra_flags}"
         "LDFLAGS=${SUPERBUILD_LDFLAGS}"
     INSTALL_COMMAND
       "$(MAKE)" install "DESTDIR=${DESTDIR}${INSTALL_DIR}"

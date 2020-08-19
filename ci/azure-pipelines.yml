@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2019 Kai Pastor
+# Copyright 2019-2020 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -53,6 +53,7 @@ jobs:
           -DCMAKE_FIND_FRAMEWORK=LAST
           -DCMAKE_FIND_APPBUNDLE=LAST
           -DUSE_SYSTEM_LZMA=OFF
+          -DUSE_SYSTEM_SQLITE3=OFF
           -DMapper_GIT_GDAL_DATA_DIR=$(SUPERBUILD_INSTALL_DIR)/share/gdal
         buildArgs: -j5
     - template: publish.yml
@@ -121,6 +122,7 @@ jobs:
           -D$(TARGET)_INSTALL_DIR=$(SUPERBUILD_INSTALL_DIR)/$(TARGET)
           -D$(TARGET)_INSTALL_PREFIX=/usr
           -D$(TARGET)_TOOLCHAIN_DIR=$(SUPERBUILD_INSTALL_DIR)/$(TARGET)/toolchain
+          -DUSE_SYSTEM_SQLITE3=OFF
           -DMapper_GIT_GDAL_DATA_DIR=$(SUPERBUILD_INSTALL_DIR)/$(TARGET)/usr/share/gdal
           -DANDROID_SDK_INSTALL_ROOT=$(HOME)
           -DANDROID_NDK_INSTALL_ROOT=$(HOME)
@@ -147,6 +149,7 @@ jobs:
           -D$(TARGET)_INSTALL_DIR=$(SUPERBUILD_INSTALL_DIR)/$(TARGET)
           -D$(TARGET)_INSTALL_PREFIX=/usr
           -D$(TARGET)_TOOLCHAIN_DIR=$(SUPERBUILD_INSTALL_DIR)/$(TARGET)/toolchain
+          -DUSE_SYSTEM_SQLITE3=OFF
           -DMapper_GIT_GDAL_DATA_DIR=$(SUPERBUILD_INSTALL_DIR)/$(TARGET)/usr/share/gdal
           -DANDROID_SDK_INSTALL_ROOT=$(HOME)
           -DANDROID_NDK_INSTALL_ROOT=$(HOME)
@@ -173,6 +176,7 @@ jobs:
           -D$(TARGET)_INSTALL_DIR=$(SUPERBUILD_INSTALL_DIR)/$(TARGET)
           -D$(TARGET)_INSTALL_PREFIX=/usr
           -D$(TARGET)_TOOLCHAIN_DIR=$(SUPERBUILD_INSTALL_DIR)/$(TARGET)/toolchain
+          -DUSE_SYSTEM_SQLITE3=OFF
           -DMapper_GIT_GDAL_DATA_DIR=$(SUPERBUILD_INSTALL_DIR)/$(TARGET)/usr/share/gdal
           -DANDROID_SDK_INSTALL_ROOT=$(HOME)
           -DANDROID_NDK_INSTALL_ROOT=$(HOME)
@@ -199,6 +203,7 @@ jobs:
           -D$(TARGET)_INSTALL_DIR=$(SUPERBUILD_INSTALL_DIR)/$(TARGET)
           -D$(TARGET)_INSTALL_PREFIX=/usr
           -D$(TARGET)_TOOLCHAIN_DIR=$(SUPERBUILD_INSTALL_DIR)/$(TARGET)/toolchain
+          -DUSE_SYSTEM_SQLITE3=OFF
           -DMapper_GIT_GDAL_DATA_DIR=$(SUPERBUILD_INSTALL_DIR)/$(TARGET)/usr/share/gdal
           -DANDROID_SDK_INSTALL_ROOT=$(HOME)
           -DANDROID_NDK_INSTALL_ROOT=$(HOME)

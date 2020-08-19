@@ -44,6 +44,13 @@ set(test_system_doxygen [[
 			set(BUILD_CONDITION 0)
 		endif()
 	endif()
+	if(CMAKE_C_COMPILER_ID MATCHES "Clang")
+		set(extra_flags "-Wno-tautological-constant-out-of-range-compare -Wno-deprecated-declarations" PARENT_SCOPE)
+	elseif(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+		set(extra_flags "-Wno-return-type -Wno-deprecated" PARENT_SCOPE)
+	else()
+		set(extra_flags "" PARENT_SCOPE)
+	endif()
 ]])
 
 
@@ -115,11 +122,13 @@ superbuild_package(
   SOURCE_WRITE
     fix-casts.patch fix-casts_patch
   
-  USING            USE_SYSTEM_DOXYGEN patch_version
+  USING            USE_SYSTEM_DOXYGEN patch_version extra_flags
   BUILD_CONDITION  ${test_system_doxygen}
   BUILD [[
     CMAKE_ARGS
       "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
+      "-DCMAKE_C_FLAGS=${CMAKE_C_FLAGS} ${extra_flags}"
+      "-DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS} ${extra_flags}"
       -Denglish_only=1
     INSTALL_COMMAND
       "${CMAKE_COMMAND}" --build . --target install/strip/fast

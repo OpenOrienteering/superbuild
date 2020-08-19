@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2019 Kai Pastor
+# Copyright 2019-2020 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -47,6 +47,13 @@ set(test_system_libiconv [[
 			set(BUILD_CONDITION 0)
 		endif()
 	endif()
+	if(CMAKE_C_COMPILER_ID MATCHES "Clang")
+		set(extra_flags "-Wno-parentheses-equality" PARENT_SCOPE)
+	elseif(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+		set(extra_flags "-Wno-attributes -Wno-pointer-to-int-cast" PARENT_SCOPE)
+	else()
+		set(extra_flags "" PARENT_SCOPE)
+	endif()
 ]])
 
 superbuild_package(
@@ -60,6 +67,7 @@ superbuild_package(
   USING
     USE_SYSTEM_LIBICONV
     patch_version
+    extra_flags
   
   BUILD_CONDITION  ${test_system_libiconv}
   BUILD [[
@@ -73,7 +81,7 @@ superbuild_package(
         --disable-static
         "CC=${SUPERBUILD_CC}"
         "CPPFLAGS=${SUPERBUILD_CPPFLAGS}"
-        "CFLAGS=${SUPERBUILD_CFLAGS}"
+        "CFLAGS=${SUPERBUILD_CFLAGS} ${extra_flags}"
         "LDFLAGS=${SUPERBUILD_LDFLAGS}"
     INSTALL_COMMAND
       "$(MAKE)" install "DESTDIR=${DESTDIR}${INSTALL_DIR}"
