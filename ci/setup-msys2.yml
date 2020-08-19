@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2019 Kai Pastor
+# Copyright 2019-2020 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -31,7 +31,7 @@ steps:
 - script: |
     echo ##vso[task.setVariable variable=CHERE_INVOKING]enabled_from_arguments
     echo ##vso[task.setVariable variable=MSYSCON]defterm
-    echo ##vso[task.setVariable variable=CMAKE_WRAPPING]-E env $(SUPERBUILD_INSTALL_DIR_NATIVE)\usr\bin\bash.exe ../ci/msys2-shell.sh cmake
+    echo ##vso[task.setVariable variable=CMAKE_WRAPPING]-E env $(SUPERBUILD_INSTALL_DIR_NATIVE)\usr\bin\bash.exe ../ci/shell.sh cmake
     if msys-%MINGW%==msys-mingw32 (
       echo ##vso[task.setVariable variable=MSYSTEM]MINGW32
       echo ##vso[task.setVariable variable=MSYSTEM_CARCH]i686
