@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2019 Kai Pastor
+# Copyright 2019-2020 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -42,7 +42,7 @@ steps:
 - bash: |
     echo "##vso[task.setVariable variable=PACKAGE_TARGET]$(openorienteering.superbuild.target)${TARGET_SUFFIX}" \
       | sed "s,-package${TARGET_SUFFIX}$,${TARGET_SUFFIX}-package,"
-    echo "##vso[task.setVariable variable=CMAKE_WRAPPING]${CMAKE_WRAPPING}"
+    echo "##vso[task.setVariable variable=CMAKE_WRAPPING]${CMAKE_WRAPPING:=-E env bash ${BUILD_SOURCESDIRECTORY}/ci/shell.sh cmake}"
     echo "##vso[task.setVariable variable=TARGET_SUFFIX]${TARGET_SUFFIX}"
     echo "##vso[task.setVariable variable=CTEST_OUTPUT_ON_FAILURE]1"
     env

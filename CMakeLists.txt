@@ -39,11 +39,12 @@ set(ci
   ci/azure-pipelines.yml
   ci/build.yml
   ci/build-iwyu.yml
-  ci/msys2-shell.sh
+  ci/filter-stderr.sed
   ci/publish.yml
   ci/setup-macos.yml
   ci/setup-msys2.yml
   ci/setup-ubuntu.yml
+  ci/shell.sh
   ci/source.yml
 )
 
