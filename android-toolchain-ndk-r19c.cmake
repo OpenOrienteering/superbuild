@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016-2019 Kai Pastor
+# Copyright 2016-2020 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -92,8 +92,8 @@ set(ANDROID_KEYSTORE_ALIAS "ANDROID_KEYSTORE_ALIAS-NOTFOUND" CACHE STRING
 )
 if(CMAKE_BUILD_TYPE MATCHES Rel)
 	if(NOT ANDROID_KEYSTORE_URL OR NOT ANDROID_KEYSTORE_ALIAS)
-		# Warn here, fail on build - don't block other toolchains
-		message(WARNING "You must configure ANDROID_KEYSTORE_URL and ANDROID_KEYSTORE_ALIAS for signing Android release packages.")
+		# Message here, failure on build - don't block other toolchains
+		message(STATUS "You must configure ANDROID_KEYSTORE_URL and ANDROID_KEYSTORE_ALIAS for signing Android release packages.")
 	endif()
 endif()
 

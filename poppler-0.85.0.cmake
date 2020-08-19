@@ -58,6 +58,12 @@ set(test_system_poppler [[
 	endif()
 	set(poppler_font_configuration "${font_configuration}" CACHE STRING
 	  "Poppler font configuration" FORCE)
+	
+	if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+		set(extra_flags "-Wno-zero-as-null-pointer-constant -Wno-unused-private-field" PARENT_SCOPE)
+	else()
+		set(extra_flags "-Wno-zero-as-null-pointer-constant -Wno-unused-function" PARENT_SCOPE)
+	endif()
 ]])
 
 set(license_txt [[
@@ -84,6 +90,21 @@ Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 For cpp/tests/pdf_fuzzer.cc, the following license applies:
 --cut--
 ]])
+
+set(cpp_macros_diff [[
+WITH_FONTCONFIGURATION_WIN32 is either undefined or 1.
+--- a/poppler/GlobalParams.cc
++++ b/poppler/GlobalParams.cc
+@@ -1002,7 +1002,7 @@
+   return path;
+ }
+ 
+-#elif WITH_FONTCONFIGURATION_WIN32
++#elif defined(WITH_FONTCONFIGURATION_WIN32)
+ #include "GlobalParamsWin.cc"
+ 
+ GooString *GlobalParams::findBase14FontFile(const GooString *base14Name, const GfxFont *font) {]]
+)
 
 superbuild_package(
   NAME           poppler-patches
@@ -114,6 +135,8 @@ superbuild_package(
     tiff
     zlib
   
+  SOURCE_WRITE
+    cpp_macros.diff  cpp_macros_diff
   SOURCE
     URL            ${base_url}poppler_${version}.orig.tar.xz
     URL_HASH       ${download_hash}
@@ -121,12 +144,15 @@ superbuild_package(
       "${CMAKE_COMMAND}"
         -Dpackage=poppler-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
+    COMMAND
+      patch -N -p1 < cpp_macros.diff
   
-  USING            version patch_version
+  USING            version patch_version extra_flags
   BUILD_CONDITION  ${test_system_poppler}
   BUILD [[
     CMAKE_ARGS
       "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
+      "-DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS} ${extra_flags}"
       "-DCMAKE_BUILD_TYPE:STRING=$<CONFIG>"
       -DBUILD_SHARED_LIBS=ON
       -DENABLE_UNSTABLE_API_ABI_HEADERS=ON # needed by GDAL

@@ -44,6 +44,11 @@ set(test_system_pkg-config [[
 			set(BUILD_CONDITION 0)
 		endif()
 	endif()
+	if(CMAKE_C_COMPILER_ID MATCHES "Clang")
+		set(extra_flags "-Wno-int-conversion -Wno-unused-value -Wno-unused-function -Wno-tautological-constant-out-of-range-compare -Wno-deprecated-declarations -Wno-return-type" PARENT_SCOPE)
+	else()
+		set(extra_flags "" PARENT_SCOPE)
+	endif()
 ]])
 
 set(download_pkg-config_diff_cmake "${PROJECT_BINARY_DIR}/download-pkg-config_${patch_version}.diff.cmake")
@@ -77,7 +82,7 @@ superbuild_package(
       # Restore unchanged m4 files, or we will need aclocal.
       ${CMAKE_COMMAND} -E tar xf unpatched.tar
   
-  USING            USE_SYSTEM_PKG_CONFIG patch_version
+  USING            USE_SYSTEM_PKG_CONFIG patch_version extra_flags
   BUILD_CONDITION  ${test_system_pkg-config}
   BUILD [[
     CONFIGURE_COMMAND
@@ -85,6 +90,7 @@ superbuild_package(
         "--prefix=${TOOLCHAIN_DIR}"
         "--with-internal-glib"
         "--disable-host-tool"
+        "CFLAGS=${extra_flags}"
     INSTALL_COMMAND
       "$(MAKE)" install "DESTDIR=${DESTDIR}"
     COMMAND

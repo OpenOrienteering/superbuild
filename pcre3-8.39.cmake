@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016-2019 Kai Pastor
+# Copyright 2016-2020 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -47,6 +47,11 @@ set(test_system_pcre3 [[
 			set(BUILD_CONDITION 0)
 		endif()
 	endif()
+	if(CMAKE_C_COMPILER_ID MATCHES "Clang")
+		set(extra_flags "-Wno-unknown-attributes" PARENT_SCOPE)
+	else()
+		set(extra_flags "" PARENT_SCOPE)
+	endif()
 ]])
 
 superbuild_package(
@@ -74,11 +79,12 @@ superbuild_package(
     COMMAND
       sed -i -e "/INSTALL/ s,DESTINATION man,DESTINATION share/man," CMakeLists.txt
   
-  USING            USE_SYSTEM_PCRE3 patch_version
+  USING            USE_SYSTEM_PCRE3 patch_version extra_flags
   BUILD_CONDITION  ${test_system_pcre3}
   BUILD [[
     CMAKE_ARGS
       "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
+      "-DCMAKE_C_FLAGS=${CMAKE_C_FLAGS} ${extra_flags}"
       "-DCMAKE_BUILD_TYPE:STRING=$<CONFIG>"
       "-DBUILD_SHARED_LIBS:BOOL=ON"
       "-DPCRE_BUILD_PCRE16:BOOL=ON"

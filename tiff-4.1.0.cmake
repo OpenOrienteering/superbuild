@@ -59,6 +59,8 @@ set(test_system_tiff [[
 	endif()
 ]])
 
+set(extra_flags "-Wno-unused-parameter -Wno-unused-but-set-variable -Wno-tautological-constant-out-of-range-compare")
+
 superbuild_package(
   NAME           tiff-patches
   VERSION        ${version}-2+deb10u1
@@ -92,6 +94,9 @@ superbuild_package(
     COMMAND
 	  # Also on MinGW, rpcndr.h already defines `boolean`
       sed -e "s/ && !defined.__MINGW32__.//" -i -- test/raw_decode.c
+    COMMAND
+	  # Cannot silence warnings via CMAKE_C_FLAGS parameter
+      sed -e "s/  -W$/-W ${extra_flags}/" -i -- CMakeLists.txt
   
   USING            USE_SYSTEM_LIBTIFF patch_version
   BUILD_CONDITION  ${test_system_tiff}
