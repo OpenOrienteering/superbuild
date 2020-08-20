@@ -27,11 +27,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        0.71.0)
-set(download_hash  SHA256=badbecd2dddf63352fd85ec08a9c2ed122fdadacf2a34fcb4cc227c4d01f2cf9)
-set(patch_version  ${version}-6)
-set(patch_hash     SHA256=424211d7f70b91048c35abbbbee17fff753bda001807985f35f27783dcc26658)
-set(base_url       https://snapshot.debian.org/archive/debian/20191004T143824Z/pool/main/p/poppler/)
+set(version        0.85.0)
+set(download_hash  SHA256=2bc875eb323002ae6b287e09980473518e2b2ed6b5b7d2e1089e36a6cd00d94b)
+set(patch_version  ${version}-2)
+set(patch_hash     SHA256=fac2272d63ab19c8fedcabd246e246c1652522fecdd8a241dfbbb6d18c6cf603)
+set(base_url       https://snapshot.debian.org/archive/debian/20200818T145101Z/pool/main/p/poppler/)
 
 option(USE_SYSTEM_POPPLER "Use the system Poppler if possible" ON)
 
@@ -60,13 +60,44 @@ set(test_system_poppler [[
 	  "Poppler font configuration" FORCE)
 ]])
 
+set(license_txt [[
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 2 of the License or
+   (at your option) version 3 of the License.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+On Debian systems, the complete text of the GNU General
+Public License version 2 can be found in "/usr/share/common-licenses/GPL-2".
+
+On Debian systems, the complete text of the GNU General
+Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
+
+
+For cpp/tests/pdf_fuzzer.cc, the following license applies:
+--cut--
+]])
+
 superbuild_package(
   NAME           poppler-patches
   VERSION        ${patch_version}
   
+  SOURCE_WRITE
+    license.txt    license_txt
   SOURCE
     URL            ${base_url}poppler_${patch_version}.debian.tar.xz
     URL_HASH       ${patch_hash}
+  PATCH_COMMAND
+    sed -e "/^License:/r license.txt" -i -- copyright
+  COMMAND
+    sed -e "/--cut--/,/pdf_fuzzer/d" -i -- copyright
 )
   
 superbuild_package(
@@ -98,8 +129,8 @@ superbuild_package(
       "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
       "-DCMAKE_BUILD_TYPE:STRING=$<CONFIG>"
       -DBUILD_SHARED_LIBS=ON
+      -DENABLE_UNSTABLE_API_ABI_HEADERS=ON # needed by GDAL
       -DENABLE_SPLASH=ON
-      -DENABLE_XPDF_HEADERS=ON # needed by GDAL
       -DENABLE_LIBOPENJPEG=openjpeg2
       -DENABLE_DCTDECODER=libjpeg
       -DENABLE_GLIB=OFF
@@ -107,6 +138,7 @@ superbuild_package(
       -DENABLE_QT5=OFF
       -DBUILD_QT5_TESTS=OFF
       -DENABLE_LIBCURL=OFF
+      -DRUN_GPERF_IF_PRESENT=OFF
       -DCMAKE_DISABLE_FIND_PACKAGE_NSS3=ON
       ${poppler_font_configuration}
       $<$<BOOL:@ANDROID@>:
