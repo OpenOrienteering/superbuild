@@ -56,7 +56,7 @@ set(test_system_doxygen [[
 
 # Fix mingw64 builds
 # https://github.com/msys2/MINGW-packages/blob/b99b3d396d8d3dfcee41548d1b96729464bde4e5/mingw-w64-doxygen/fix-casts.patch
-string(REPLACE ";" "\\\;" fix-casts_patch [[
+set(fix-casts_patch [[
 --- doxygen-1.8.6/qtools/qcstring.cpp.orig	2013-05-19 19:12:31.000000000 +0400
 +++ doxygen-1.8.6/qtools/qcstring.cpp	2014-04-04 06:54:07.313800000 +0400
 @@ -476,7 +476,7 @@
