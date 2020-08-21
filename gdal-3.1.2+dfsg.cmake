@@ -71,6 +71,38 @@ set(test_system_gdal [[
 	set(extra_cxxflags "-Wno-strict-overflow -Wno-null-dereference -Wno-old-style-cast" PARENT_SCOPE)
 ]])
 
+set(external_libs_diff [[
+Disable obsolete test for private libtiff feature.
+Fix test for libjpeg feature.
+Cf. https://github.com/OSGeo/gdal/issues/2881
+--- a/configure
++++ b/configure
+@@ -29777,6 +29777,7 @@
+ fi
+ 
+ 
++ if false ; then
+   if test "$TIFF_SETTING" = "external" ; then
+                 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for _TIFFsetDoubleArray in -ltiff" >&5
+ $as_echo_n "checking for _TIFFsetDoubleArray in -ltiff... " >&6; }
+@@ -29821,6 +29822,7 @@
+ fi
+ 
+   fi
++ fi
+ 
+   if test "$TIFF_SETTING" = "external" ; then
+     LIBS="-ltiff $LIBS"
+@@ -30205,7 +30207,7 @@
+     echo '#include <stdio.h>' >> conftest.c
+     echo '#include "jpeglib.h"' >> conftest.c
+     echo 'int main() { jpeg_component_info *comptr=0; int i; i = comptr->width_in_blocks; }' >> conftest.c
+-    if test -z "`${CC} -o conftest conftest.c 2>&1`" ; then
++    if test -z "`${CC} ${CPPFLAGS} ${CFLAGS} -c conftest.c 2>&1`" ; then
+       { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+ $as_echo "yes" >&6; }
+     else]]
+)
 
 superbuild_package(
   NAME           gdal-patches
@@ -104,6 +136,8 @@ superbuild_package(
     tiff
     zlib
   
+  SOURCE_WRITE
+    external_libs.diff  external_libs_diff
   SOURCE
     URL            ${base_url}gdal_${version}.orig.tar.xz
     URL_HASH       ${download_hash}
@@ -111,6 +145,8 @@ superbuild_package(
       "${CMAKE_COMMAND}"
         -Dpackage=gdal-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
+    COMMAND
+      patch -N -p1 < external_libs.diff
   
   USING            USE_SYSTEM_GDAL patch_version extra_cflags extra_cxxflags
   BUILD_CONDITION  ${test_system_gdal}
