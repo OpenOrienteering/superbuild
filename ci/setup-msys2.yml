@@ -50,7 +50,7 @@ steps:
   displayName: 'Download MSYS2 base artifacts'
 
 - script: |
-    choco install msys2 --x86 --params="/InstallDir:%SUPERBUILD_INSTALL_DIR_NATIVE% /NoUpdate /NoPath"
+    choco install msys2 --params="/InstallDir:%SUPERBUILD_INSTALL_DIR_NATIVE% /NoUpdate /NoPath"
   condition: not(variables['openorienteering.superbuild.msysBuildId'])
   displayName: 'Install MSYS2'
 
@@ -72,6 +72,7 @@ steps:
     pacman --noconfirm -S --needed ^
       bison ^
       diffutils ^
+      flex ^
       gzip ^
       make ^
       patch ^
