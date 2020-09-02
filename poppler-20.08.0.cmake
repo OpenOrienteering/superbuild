@@ -27,11 +27,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        0.85.0)
-set(download_hash  SHA256=2bc875eb323002ae6b287e09980473518e2b2ed6b5b7d2e1089e36a6cd00d94b)
-set(patch_version  ${version}-2)
-set(patch_hash     SHA256=fac2272d63ab19c8fedcabd246e246c1652522fecdd8a241dfbbb6d18c6cf603)
-set(base_url       https://snapshot.debian.org/archive/debian/20200818T145101Z/pool/main/p/poppler/)
+set(version        20.08.0)
+set(download_hash  SHA256=ae65fef04bbf63259a6352e7b620719115d4fb97f5079b0b8b00a8eb0c86eca5)
+set(patch_version  ${version}-1)
+set(patch_hash     SHA256=f5447a3fafa65d0a4a448b06ab7ad0f771d0a3a565cbf2aeba6c3e9029d4af70)
+set(base_url       https://snapshot.debian.org/archive/debian/20200902T144444Z/pool/main/p/poppler/)
 
 option(USE_SYSTEM_POPPLER "Use the system Poppler if possible" ON)
 
@@ -96,14 +96,14 @@ WITH_FONTCONFIGURATION_WIN32 is either undefined or 1.
 --- a/poppler/GlobalParams.cc
 +++ b/poppler/GlobalParams.cc
 @@ -1002,7 +1002,7 @@
-   return path;
+     return path;
  }
  
 -#elif WITH_FONTCONFIGURATION_WIN32
 +#elif defined(WITH_FONTCONFIGURATION_WIN32)
- #include "GlobalParamsWin.cc"
+ #    include "GlobalParamsWin.cc"
  
- GooString *GlobalParams::findBase14FontFile(const GooString *base14Name, const GfxFont *font) {]]
+ GooString *GlobalParams::findBase14FontFile(const GooString *base14Name, const GfxFont *font)]]
 )
 
 superbuild_package(
