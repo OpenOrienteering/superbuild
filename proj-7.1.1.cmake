@@ -65,7 +65,6 @@ superbuild_package(
   
   SOURCE_WRITE
     portability.sed  portability_sed
-    target_clones.patch  target_clones_patch
   SOURCE
     URL            ${base_url}proj_${patch_version}.debian.tar.xz
     URL_HASH       ${patch_hash}

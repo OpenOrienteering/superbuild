@@ -29,11 +29,11 @@
 
 # https://tracker.debian.org/pkg/gdal
 
-set(version        3.1.2+dfsg)
-set(download_hash  SHA256=43404740d8fe0112dded6e73005f950927ac09cb76f44729675ef181e74b00b1)
-set(patch_version  ${version}-1)
-set(patch_hash     SHA256=9701f5bade9c327e9cb7033a4a9c2ffa99f899f80ad67843b968ebf8e80fdc63)
-set(base_url       https://snapshot.debian.org/archive/debian/20200707T204641Z/pool/main/g/gdal/)
+set(version        3.1.3~rc1+dfsg)
+set(download_hash  SHA256=b8f1776183ab25e7e99c8aa36f1274b484bf3e51ec2de8786a2da0309e6fd774)
+set(patch_version  3.1.3-rc1+dfsg-1+exp1)
+set(patch_hash     SHA256=176d31d5e9a4a622f5a73949ac5edf77de4945fe4f9766df91650e5a7d6432a0)
+set(base_url       https://snapshot.debian.org/archive/debian/20200901T150453Z/pool/main/g/gdal/)
 
 option(USE_SYSTEM_GDAL "Use the system GDAL if possible" ON)
 
@@ -71,45 +71,12 @@ set(test_system_gdal [[
 	set(extra_cxxflags "-Wno-strict-overflow -Wno-null-dereference -Wno-old-style-cast" PARENT_SCOPE)
 ]])
 
-set(external_libs_diff [[
-Disable obsolete test for private libtiff feature.
-Fix test for libjpeg feature.
-Cf. https://github.com/OSGeo/gdal/issues/2881
---- a/configure
-+++ b/configure
-@@ -29777,6 +29777,7 @@
- fi
- 
- 
-+ if false ; then
-   if test "$TIFF_SETTING" = "external" ; then
-                 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for _TIFFsetDoubleArray in -ltiff" >&5
- $as_echo_n "checking for _TIFFsetDoubleArray in -ltiff... " >&6; }
-@@ -29821,6 +29822,7 @@
- fi
- 
-   fi
-+ fi
- 
-   if test "$TIFF_SETTING" = "external" ; then
-     LIBS="-ltiff $LIBS"
-@@ -30205,7 +30207,7 @@
-     echo '#include <stdio.h>' >> conftest.c
-     echo '#include "jpeglib.h"' >> conftest.c
-     echo 'int main() { jpeg_component_info *comptr=0; int i; i = comptr->width_in_blocks; }' >> conftest.c
--    if test -z "`${CC} -o conftest conftest.c 2>&1`" ; then
-+    if test -z "`${CC} ${CPPFLAGS} ${CFLAGS} -c conftest.c 2>&1`" ; then
-       { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
- $as_echo "yes" >&6; }
-     else]]
-)
-
 superbuild_package(
   NAME           gdal-patches
   VERSION        ${patch_version}
   
   SOURCE
-    URL            ${base_url}gdal_${patch_version}.debian.tar.xz
+    URL            ${base_url}gdal_3.1.3~rc1+dfsg-1~exp1.debian.tar.xz
     URL_HASH       ${patch_hash}
 )
   
@@ -136,8 +103,6 @@ superbuild_package(
     tiff
     zlib
   
-  SOURCE_WRITE
-    external_libs.diff  external_libs_diff
   SOURCE
     URL            ${base_url}gdal_${version}.orig.tar.xz
     URL_HASH       ${download_hash}
@@ -145,8 +110,6 @@ superbuild_package(
       "${CMAKE_COMMAND}"
         -Dpackage=gdal-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
-    COMMAND
-      patch -N -p1 < external_libs.diff
   
   USING            USE_SYSTEM_GDAL patch_version extra_cflags extra_cxxflags
   BUILD_CONDITION  ${test_system_gdal}
