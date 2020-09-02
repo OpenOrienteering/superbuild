@@ -27,11 +27,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        7.1.0)
-set(download_hash  SHA256=876151e2279346f6bdbc63bd59790b48733496a957bccd5e51b640fdd26eaa8d)
+set(version        7.1.1)
+set(download_hash  SHA256=324e7abb5569fb5f787dadf1d4474766915c485a188cf48cf07153b99156b5f9)
 set(patch_version  ${version}-1)
-set(patch_hash     SHA256=0f185bc63d2023cac1906304a5d95c6a8005ccd829016a6227ae169bd3ec7462)
-set(base_url       https://snapshot.debian.org/archive/debian/20200701T145157Z/pool/main/p/proj/)
+set(patch_hash     SHA256=2e37382de22a36fcb9e859aaa0d9eb5979fcd45eb55773c6602793144be9578a)
+set(base_url       https://snapshot.debian.org/archive/debian/20200901T150453Z/pool/main/p/proj/)
 
 option(USE_SYSTEM_PROJ "Use the system PROJ4 if possible" ON)
 
@@ -56,48 +56,6 @@ s/^\(xz -dc\) [^ ]*xzi/\1 tmp.xzi/
 $ i \
 rm -f tmp.xzi
 ]])
-
-set(target_clones_patch [==[
-From 7ab3ee73706c128fd82cc497c86229ba05e6df2c Mon Sep 17 00:00:00 2001
-From: Kai Pastor <dg0yt@darc.de>
-Date: Tue, 7 Jul 2020 19:55:05 +0200
-Subject: [PATCH] CMake build: Check "target_clones" before use
-
-gcc's "target_clones" and "ifunc" function attributes rely on
-extensions to the ELF standard. Using them on MinGW causes "error:
-the call requires 'ifunc', which is not supported by this target".
-Amends 5396b72.
----
- src/lib_proj.cmake | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
-
-diff --git a/src/lib_proj.cmake b/src/lib_proj.cmake
-index abc9cc4b..59cb9572 100644
---- a/src/lib_proj.cmake
-+++ b/src/lib_proj.cmake
-@@ -303,7 +303,18 @@ source_group("CMake Files" FILES CMakeLists.txt)
- # Embed PROJ_LIB data files location
- add_definitions(-DPROJ_LIB="${CMAKE_INSTALL_PREFIX}/${DATADIR}")
- 
--add_definitions(-DTARGET_CLONES_FMA_ALLOWED)
-+# The gcc "target_clones" function attribute relies on an extension
-+# to the ELF standard. It must not be used on MinGW.
-+include(CheckCXXSourceCompiles)
-+set(CMAKE_REQUIRED_QUIET TRUE)
-+check_cxx_source_compiles([[
-+  __attribute__((target_clones("fma","default")))
-+  int clonable() { return 0; }
-+  int main() { return clonable(); }
-+]] TARGET_CLONES_FMA_ALLOWED)
-+if(TARGET_CLONES_FMA_ALLOWED)
-+  add_definitions(-DTARGET_CLONES_FMA_ALLOWED)
-+endif()
- 
- #################################################
- ## targets: libproj and proj_config.h
--- 
-2.17.1
-]==])
 
 superbuild_package(
   NAME           proj-patches
@@ -148,11 +106,9 @@ superbuild_package(
     URL            ${base_url}proj_${version}.orig.tar.gz
     URL_HASH       ${download_hash}
     PATCH_COMMAND
-      patch -p1 < ../proj-patches-${patch_version}/target_clones.patch
-    #COMMAND
-    #  "${CMAKE_COMMAND}"
-    #    -Dpackage=proj-patches-${patch_version}
-    #    -P "${APPLY_PATCHES_SERIES}"
+      "${CMAKE_COMMAND}"
+        -Dpackage=proj-patches-${patch_version}
+        -P "${APPLY_PATCHES_SERIES}"
   
   USING            USE_SYSTEM_PROJ patch_version
   BUILD_CONDITION  ${test_system_proj}
