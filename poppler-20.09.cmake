@@ -27,11 +27,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        20.08.0)
-set(download_hash  SHA256=ae65fef04bbf63259a6352e7b620719115d4fb97f5079b0b8b00a8eb0c86eca5)
-set(patch_version  ${version}-1)
-set(patch_hash     SHA256=f5447a3fafa65d0a4a448b06ab7ad0f771d0a3a565cbf2aeba6c3e9029d4af70)
-set(base_url       https://snapshot.debian.org/archive/debian/20200902T144444Z/pool/main/p/poppler/)
+set(version        20.09.0)
+set(download_hash  SHA256=4ed6eb5ddc4c37f2435c9d78ff9c7c4036455aea3507d1ce8400070aab745363)
+set(patch_version  ${version}-2)
+set(patch_hash     SHA256=7b66737be636ecc438bce63f4aa3f32d6b526f08ea3b8e59bb3917740fed48bc)
+set(base_url       https://snapshot.debian.org/archive/debian/20200903T205123Z/pool/main/p/poppler/)
 
 option(USE_SYSTEM_POPPLER "Use the system Poppler if possible" ON)
 
@@ -66,59 +66,13 @@ set(test_system_poppler [[
 	endif()
 ]])
 
-set(license_txt [[
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 2 of the License or
-   (at your option) version 3 of the License.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-On Debian systems, the complete text of the GNU General
-Public License version 2 can be found in "/usr/share/common-licenses/GPL-2".
-
-On Debian systems, the complete text of the GNU General
-Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
-
-
-For cpp/tests/pdf_fuzzer.cc, the following license applies:
---cut--
-]])
-
-set(cpp_macros_diff [[
-WITH_FONTCONFIGURATION_WIN32 is either undefined or 1.
---- a/poppler/GlobalParams.cc
-+++ b/poppler/GlobalParams.cc
-@@ -1002,7 +1002,7 @@
-     return path;
- }
- 
--#elif WITH_FONTCONFIGURATION_WIN32
-+#elif defined(WITH_FONTCONFIGURATION_WIN32)
- #    include "GlobalParamsWin.cc"
- 
- GooString *GlobalParams::findBase14FontFile(const GooString *base14Name, const GfxFont *font)]]
-)
-
 superbuild_package(
   NAME           poppler-patches
   VERSION        ${patch_version}
   
-  SOURCE_WRITE
-    license.txt    license_txt
   SOURCE
     URL            ${base_url}poppler_${patch_version}.debian.tar.xz
     URL_HASH       ${patch_hash}
-  PATCH_COMMAND
-    sed -e "/^License:/r license.txt" -i -- copyright
-  COMMAND
-    sed -e "/--cut--/,/pdf_fuzzer/d" -i -- copyright
 )
   
 superbuild_package(
@@ -135,8 +89,6 @@ superbuild_package(
     tiff
     zlib
   
-  SOURCE_WRITE
-    cpp_macros.diff  cpp_macros_diff
   SOURCE
     URL            ${base_url}poppler_${version}.orig.tar.xz
     URL_HASH       ${download_hash}
@@ -144,10 +96,8 @@ superbuild_package(
       "${CMAKE_COMMAND}"
         -Dpackage=poppler-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
-    COMMAND
-      patch -N -p1 < cpp_macros.diff
   
-  USING            version patch_version extra_flags
+  USING            USE_SYSTEM_POPPLER patch_version extra_flags
   BUILD_CONDITION  ${test_system_poppler}
   BUILD [[
     CMAKE_ARGS
