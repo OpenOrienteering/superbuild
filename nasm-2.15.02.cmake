@@ -92,7 +92,7 @@ superbuild_package(
         >
         "CC=${SUPERBUILD_CC}"
         "CPPFLAGS=${SUPERBUILD_CPPFLAGS}"
-        "CFLAGS=${SUPERBUILD_CFLAGS}"
+        "CFLAGS=${SUPERBUILD_CFLAGS} -Wno-format"
         "LDFLAGS=${SUPERBUILD_LDFLAGS}"
     INSTALL_COMMAND
       "$(MAKE)" install "DESTDIR=${DESTDIR}${INSTALL_DIR}"
