@@ -85,5 +85,5 @@ steps:
       --build .
       --target $(PACKAGE_TARGET)
       -- ${{ parameters.buildArgs }}
-  timeoutInMinutes: 180
+  timeoutInMinutes: 210
   displayName: 'Build'
