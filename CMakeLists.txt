@@ -527,7 +527,7 @@ if(MSYS)
 elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
 	file(TO_NATIVE_PATH "${libdir}" libdir)
 else()
-	string(REPLACE "\;" ":" libdir "${libdir}")
+	string(REPLACE ";" ":" libdir "${libdir}")
 endif()
 file(GENERATE
   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/superbuild-${SYSTEM_NAME}-pkg-config
