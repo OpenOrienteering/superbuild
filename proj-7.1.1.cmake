@@ -81,9 +81,9 @@ superbuild_package(
     COMMAND
       "${CMAKE_COMMAND}" -E chdir "<SOURCE_DIR>/data"
         sh "<SOURCE_DIR>/datumgrids.shar" -c
-	COMMAND
-      "${CMAKE_COMMAND}" -E chdir "<SOURCE_DIR>/data"
-        sh "<SOURCE_DIR>/datumgrids-ch.shar" -c
+    #COMMAND
+    #  "${CMAKE_COMMAND}" -E chdir "<SOURCE_DIR>/data"
+    #    sh "<SOURCE_DIR>/datumgrids-ch.shar" -c
     INSTALL_COMMAND ""
   ]]
 )
