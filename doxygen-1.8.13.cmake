@@ -103,6 +103,7 @@ superbuild_package(
   VERSION        ${patch_version}
   DEPENDS
     source:doxygen-patches-${patch_version}
+    host:bison
     libiconv
     zlib
   
