@@ -35,7 +35,7 @@ endif()
 
 set(Mapper_GIT_TAGS "master;dev" CACHE STRING "Mapper (git): The git branch names, commit IDs and tags")
 set(Mapper_GIT_LICENSING_PROVIDER "superbuild" CACHE STRING "Mapper (git): Provider for 3rd-party licensing information")
-set(Mapper_GIT_QT_VERSION 5.12 CACHE STRING "Mapper (git): Qt version")
+set(Mapper_GIT_QT_VERSION 5.15 CACHE STRING "Mapper (git): Qt version")
 option(Mapper_GIT_ENABLE_POSITIONING "Mapper: Enable positioning" OFF)
 option(Mapper_GIT_MANUAL_PDF "Mapper (git): Provide the manual as PDF file (needs pdflatex)" OFF)
 set(Mapper_GIT_GDAL_DATA_DIR "NOTFOUND" CACHE STRING "Mapper (git): GDAL data directory")
