@@ -68,7 +68,7 @@ superbuild_package(
       -DWEBP_BUILD_ANIM_UTILS=OFF
       -DWEBP_BUILD_CWEBP=OFF
       -DWEBP_BUILD_DWEBP=OFF
-      -DWEBP_BUILD_GIF2WEBP=OFF
+      -DWEBP_BUILD_GIF2WEBP=ON # Required for libwebpmux, which is required for qtimageformats
       -DWEBP_BUILD_IMG2WEBP=OFF
       -DWEBP_BUILD_VWEBP=OFF
       -DWEBP_BUILD_WEBPINFO=OFF
