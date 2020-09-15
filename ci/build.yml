@@ -57,9 +57,6 @@ steps:
       -DCMAKE_BUILD_TYPE=Release
       -DSUPERBUILD_DOWNLOAD_DIR=$(Build.SourcesDirectory)/download
       -DUSE_SYSTEM_PCRE2=FALSE
-      -DMapper_GIT_QT_VERSION=5.12
-      -DMapper_GIT_LICENSING_PROVIDER=superbuild
-      -DMapper_GIT_ENABLE_POSITIONING=ON
       -DMapper_GIT_ENABLE_INSTALL=OFF
       -Ddefault_INSTALL_DIR=
       -Ddefault_INSTALL_PREFIX=$(SUPERBUILD_INSTALL_DIR)
