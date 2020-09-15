@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016-2019 Kai Pastor
+# Copyright 2016-2020 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -36,7 +36,7 @@ endif()
 set(Mapper_GIT_TAGS "master;dev" CACHE STRING "Mapper (git): The git branch names, commit IDs and tags")
 set(Mapper_GIT_LICENSING_PROVIDER "superbuild" CACHE STRING "Mapper (git): Provider for 3rd-party licensing information")
 set(Mapper_GIT_QT_VERSION 5.12 CACHE STRING "Mapper (git): Qt version")
-option(Mapper_GIT_ENABLE_POSITIONING "Mapper: Enable positioning" OFF)
+option(Mapper_GIT_ENABLE_POSITIONING "Mapper: Enable positioning" ON)
 option(Mapper_GIT_MANUAL_PDF "Mapper (git): Provide the manual as PDF file (needs pdflatex)" OFF)
 set(Mapper_GIT_GDAL_DATA_DIR "NOTFOUND" CACHE STRING "Mapper (git): GDAL data directory")
 option(Mapper_GIT_ENABLE_INSTALL "Mapper (git): Enable installation step" ON)
