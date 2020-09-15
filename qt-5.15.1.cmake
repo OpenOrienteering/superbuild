@@ -297,11 +297,11 @@ superbuild_package(
 # qtimageformats
 
 set(module Qt5Gui)
-set(qtimageformats_version       5.14.2)
-set(qtimageformats_download_hash SHA256=733eca0165c15e046b106039c989dac7f6bc2ecf215396d965ed065369264f8c)
-set(qtimageformats_patch_version ${qtimageformats_version}-2)
-set(qtimageformats_patch_hash    SHA256=46408be45f66551ccf67f4e69daad76a4a166cf9edd527d553a6bf8243b453d5)
-set(qtimageformats_base_url      https://snapshot.debian.org/archive/debian/20200624T145103Z/pool/main/q/qtimageformats-opensource-src/)
+set(qtimageformats_version       5.15.1)
+set(qtimageformats_download_hash SHA256=75e72b4c11df97af3ff64ed26df16864ce1220a1cc730e49074ab9d72f658568)
+set(qtimageformats_patch_version ${qtimageformats_version}-1)
+set(qtimageformats_patch_hash    SHA256=8c0d588299addf1e5f1c6af2c208881892530efd05058e9d8cb06d235934f64d)
+set(qtimageformats_base_url      https://snapshot.debian.org/archive/debian/20200913T204208Z/pool/main/q/qtimageformats-opensource-src/)
 
 superbuild_package(
   NAME           qtimageformats
