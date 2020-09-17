@@ -572,13 +572,17 @@ superbuild_package(
   BUILD_CONDITION  ${use_system_qt}
   BUILD [[
     CONFIGURE_COMMAND
-      "${CMAKE_COMMAND}" -E make_directory src/assistant
-    COMMAND
-      "${CMAKE_COMMAND}" -E chdir src/assistant "@qmake@" "${SOURCE_DIR}/src/assistant"
+      "@qmake@" "${SOURCE_DIR}"
     COMMAND
       "${CMAKE_COMMAND}" -E make_directory src/linguist
     COMMAND
       "${CMAKE_COMMAND}" -E chdir src/linguist "@qmake@" "${SOURCE_DIR}/src/linguist"
+    $<$<NOT:$<BOOL:@ANDROID@>>:COMMAND
+    COMMAND
+      "${CMAKE_COMMAND}" -E make_directory src/assistant
+    COMMAND
+      "${CMAKE_COMMAND}" -E chdir src/assistant "@qmake@" "${SOURCE_DIR}/src/assistant"
+    >
     BUILD_COMMAND
       "$(MAKE)" -C src/linguist
     $<$<NOT:$<BOOL:@ANDROID@>>:COMMAND
