@@ -43,6 +43,13 @@ set(test_system_libwebp [[
 			set(BUILD_CONDITION 0)
 		endif()
 	endif()
+	if(CMAKE_C_COMPILER_ID MATCHES "Clang")
+		set(extra_flags "-Wno-unused-command-line-argument" PARENT_SCOPE)
+	elseif(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+		set(extra_flags "" PARENT_SCOPE)
+	else()
+		set(extra_flags "" PARENT_SCOPE)
+	endif()
 ]])
 
 superbuild_package(
@@ -58,12 +65,14 @@ superbuild_package(
     URL            https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-${version}.tar.gz
     URL_HASH       ${download_hash}
   
-  USING            USE_SYSTEM_LIBWEBP patch_version
+  USING            USE_SYSTEM_LIBWEBP patch_version extra_flags
   BUILD_CONDITION  ${test_system_libwebp}
   BUILD [[
     CMAKE_ARGS
       "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
       "-DCMAKE_BUILD_TYPE:STRING=$<CONFIG>"
+      "-DCMAKE_C_FLAGS=${CMAKE_C_FLAGS} ${extra_flags}"
+      "-DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS} ${extra_flags}"
       -DBUILD_SHARED_LIBS=ON
       -DWEBP_BUILD_ANIM_UTILS=OFF
       -DWEBP_BUILD_CWEBP=OFF
