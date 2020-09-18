@@ -50,8 +50,19 @@ set(qt_modules
 add_custom_target(update-copyright)
 
 foreach(module ${qt_modules})
-    set(module_source_dir "${CMAKE_CURRENT_LIST_DIR}/../${module}-everywhere-src-${VERSION}")
+    if(NOT DEFINED "${module}")
+        set(${module} "${module}-everywhere-src-${VERSION}")
+    endif()
+    
+    if(NOT ${module})
+        message(STATUS "Skipping '${module}' (disabled).")
+        continue()
+    endif()
+    
+    set(module_source_dir "${CMAKE_CURRENT_LIST_DIR}/../${${module}}")
     if(NOT EXISTS "${module_source_dir}")
+       message(SEND_ERROR "No '${module}' sources in ${module_source_dir}")
+       message(SEND_ERROR "  Set '${module}' either to 'OFF' or to the name of the module directory.")
        continue()
     endif()
     
@@ -73,6 +84,9 @@ foreach(module ${qt_modules})
       COMMAND
         "${CMAKE_COMMAND}" -E chdir "${module_source_dir}"
           "${PYTHON_EXECUTABLE}" "${CMAKE_CURRENT_LIST_DIR}/update-copyright"
+      COMMAND
+        sed -e "/# Id:/,10 s/# Id:.*/# Id: ${${module}}/" -i --
+          "${module_source_dir}/debian/copyright"
       COMMAND
         "${CMAKE_COMMAND}" -E copy_if_different "${module_source_dir}/debian/copyright" "${copyright_file}"
       VERBATIM

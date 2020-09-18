@@ -1,6 +1,7 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: @module@-everywhere-src
 Source: https://download.qt.io/archive/qt/*/submodules/
+# Id: DEBIAN_OR_UPSTREAM_MODULE_NAME-VERSION-REVISION
 
 # This file contains attribution for all source components used in the
 # distributed binaries, and even for some source components not used in the
