@@ -30,7 +30,7 @@
 
 cmake_minimum_required(VERSION 3.2)
 
-project(qt-5.12-openorienteering VERSION 5.12.0 LANGUAGES NONE)
+project(qt-5.15-openorienteering VERSION 5.15.1 LANGUAGES NONE)
 
 set(VERSION ${PROJECT_VERSION} CACHE STRING "The Qt version")
 
