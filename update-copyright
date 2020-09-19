@@ -51,6 +51,7 @@ author_map = {
     re.compile('^Intel Corporation'): 'Intel Corporation',
     re.compile('^Ivan Komissarov'): 'Ivan Komissarov <ABBAPOH@gmail.com>',
     re.compile('KDAB'): 'Klarälvdalens Datakonsult AB, a KDAB Group company',
+    re.compile('Klarälvdalens Datakonsult AB.'): 'Klarälvdalens Datakonsult AB, a KDAB Group company',
     re.compile('^Konstantin Ritt'): 'Konstantin Ritt',
     re.compile('^Lorn Potter'): 'Lorn Potter',
     re.compile('Martsum .*tmartsum\[at\]gmail.com'): 'Thorbjørn Lund Martsum <tmartsum@gmail.com>',
@@ -68,6 +69,7 @@ licenses_map = {
     'GPL': 'GPL-3',
     'GPL-EXCEPT': 'GPL-3 with Qt-1.0 exception',
     'LGPL': 'LGPL-3 or GPL-2',
+    'LGPL21': 'LGPL-2.1-or-3 with Qt-1.1 exception', # Legacy, used by Debian mkspecs/gnukfreebsd+g++
     'LGPL3': 'LGPL-3 or GPL-2', # Legacy, used in Qt Location
     'MIT': 'MIT',
 }
