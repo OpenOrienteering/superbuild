@@ -1,6 +1,7 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: qtandroidextras-everywhere-src
 Source: https://download.qt.io/archive/qt/*/submodules/
+# Id: qtandroidextras-everywhere-src-5.15.1
 
 # This file contains attribution for all source components used in the
 # distributed binaries, and even for some source components not used in the
@@ -20,6 +21,7 @@ License: LGPL-3 or GPL-2
 Files: src/androidextras/android/*
        src/jar/src/org/qtproject/qt5/android/extras/*
 Copyright: 2017 BogDan Vatra
+           2019 Klarälvdalens Datakonsult AB, a KDAB Group company
            2016 The Qt Company Ltd.
 License: LGPL-3 or GPL-2
 

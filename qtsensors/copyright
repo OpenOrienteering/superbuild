@@ -1,6 +1,7 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: qtsensors-everywhere-src
 Source: https://download.qt.io/archive/qt/*/submodules/
+# Id: qtsensors-opensource-src-5.15.1-1
 
 # This file contains attribution for all source components used in the
 # distributed binaries, and even for some source components not used in the
@@ -57,7 +58,7 @@ License: LGPL-3 or GPL-2
 Files: src/sensors/*
 Copyright: 2016 BlackBerry Limited (formerly Research In Motion)
            2016 Canonical, Ltd.
-           2016 The Qt Company Ltd.
+           2016-2019 The Qt Company Ltd.
 License: LGPL-3 or GPL-2
 
 ## END AUTO GENERATED BLOCK

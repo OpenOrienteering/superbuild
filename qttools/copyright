@@ -1,6 +1,7 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: qttools-everywhere-src
 Source: https://download.qt.io/archive/qt/*/submodules/
+# Id: qttools-opensource-src-5.15.1-1
 
 # This file contains attribution for all source components used in the
 # distributed binaries, and even for some source components not used in the
@@ -14,7 +15,7 @@ Source: https://download.qt.io/archive/qt/*/submodules/
 # Filepath patterns
 
 Files: *
-Copyright: 2016-2018 The Qt Company Ltd.
+Copyright: 2016-2020 The Qt Company Ltd.
 License: LGPL-3 or GPL-2
 
 Files: src/assistant/assistant/*
@@ -33,6 +34,7 @@ Files: src/assistant/assistant/*
 Copyright: 2016 Klarälvdalens Datakonsult AB, a KDAB Group company
            2016 Tasuku Suzuki <stasuku@gmail.com>
            2016-2020 The Qt Company Ltd.
+           2019 Thibaut Cuvelier
 License: GPL-3 with Qt-1.0 exception
 
 Files: *.qdoc
@@ -69,7 +71,11 @@ Copyright: 2016 Sune Vuorela <sune@kde.org>
            2016-2018 The Qt Company Ltd.
 License: BSD-3-clause
 
-Files: src/assistant/qcollectiongenerator/main.c
+Files: src/assistant/help/qfilternamedialog.cpp
+       src/assistant/help/qfilternamedialog_p.h
+       src/assistant/help/qoptionswidget.cpp
+       src/assistant/help/qoptionswidget_p.h
+       src/assistant/qcollectiongenerator/main.c
        src/assistant/qhelpgenerator/main.cpp
        src/kmap2qmap/main.cpp
        src/qev/qev.cpp
@@ -77,12 +83,16 @@ Files: src/assistant/qcollectiongenerator/main.c
        src/windeployqt/main.cpp
 Copyright: 2016 Intel Corporation
            2016 Klarälvdalens Datakonsult AB, a KDAB Group company
-           2016-2018 The Qt Company Ltd.
+           2016-2020 The Qt Company Ltd.
 License: GPL-3 with Qt-1.0 exception
 
-Files: src/qdoc/clangcodeparser.cpp
+Files: src/assistant/assistant/helpdocsettings.cpp
+       src/assistant/assistant/helpdocsettings.h
+       src/assistant/assistant/helpdocsettingswidget.cpp
+       src/assistant/assistant/helpdocsettingswidget.h
+       src/qdoc/clangcodeparser.cpp
        src/qdoc/clangcodeparser.h
-Copyright: 2018 The Qt Company Ltd.
+Copyright: 2019-2020 The Qt Company Ltd.
 License: LGPL-3 or GPL-2
 
 ## END AUTO GENERATED BLOCK

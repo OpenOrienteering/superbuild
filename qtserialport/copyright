@@ -1,6 +1,7 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: qtserialport-everywhere-src
 Source: https://download.qt.io/archive/qt/*/submodules/
+# Id: qtserialport-opensource-src-5.14.2-2
 
 # This file contains attribution for all source components used in the
 # distributed binaries, and even for some source components not used in the
@@ -19,16 +20,10 @@ License: LGPL-3 or GPL-2
 
 Files: src/serialport/*
 Copyright: 2012 Andre Hartmann <aha_1980@gmx.de>
-           2011-2016 Denis Shienkov <denis.shienkov@gmail.com>
+           2011-2019 Denis Shienkov <denis.shienkov@gmail.com>
            2012-2013 Laszlo Papp <lpapp@kde.org>
            2011 Sergey Belyashov <Sergey.Belyashov@gmail.com>
            2016 The Qt Company Ltd.
-License: LGPL-3 or GPL-2
-
-# Per-file overrides
-
-Files: config.tests/ntddmodm/main.cpp
-Copyright: 2015 Denis Shienkov <denis.shienkov@gmail.com>
 License: LGPL-3 or GPL-2
 
 ## END AUTO GENERATED BLOCK
