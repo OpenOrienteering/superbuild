@@ -89,11 +89,12 @@ superbuild_package(
 
 
 # qtbase
+# qtbase-opensource-src from Debian lacks src/3rdparty/gradle/gradle/wrapper/gradle-wrapper.jar
 
 set(module Qt5Core)
-set(qtbase_version       ${version}+dfsg)
-set(qtbase_download_hash SHA256=00f7d3c4d7fb8e8921020f8366f907b0fb2ac25ee5e1487ba61ac6cd2c98e36d)
-set(qtbase_patch_version ${qtbase_version}-1)
+set(qtbase_version       ${version})
+set(qtbase_download_hash SHA256=33960404d579675b7210de103ed06a72613bfc4305443e278e2d32a3eb1f3d8c)
+set(qtbase_patch_version ${qtbase_version}+dfsg-1)
 set(qtbase_patch_hash    SHA256=dd93864111f57b1ffe23d3c62fd2a0d8aa5efdb47ae617ae5546be4bf3f07edd)
 set(qtbase_base_url      https://snapshot.debian.org/archive/debian/20200910T144906Z/pool/main/q/qtbase-opensource-src/)
 
@@ -101,7 +102,7 @@ superbuild_package(
   NAME           qtbase
   VERSION        ${short_version}
   DEPENDS
-    qtbase-opensource-src-${qtbase_patch_version}
+    qtbase-everywhere-src-${qtbase_patch_version}
 )
 
 superbuild_package(
@@ -114,7 +115,7 @@ superbuild_package(
 )
 
 superbuild_package(
-  NAME         qtbase-opensource-src
+  NAME         qtbase-everywhere-src
   VERSION      ${qtbase_patch_version}
   DEPENDS
     source:${qt_openorienteering}
@@ -127,7 +128,7 @@ superbuild_package(
     zlib
   
   SOURCE
-    URL             ${qtbase_base_url}qtbase-opensource-src_${qtbase_version}.orig.tar.xz
+    URL             https://download.qt.io/archive/qt/${short_version}/${qtbase_version}/submodules/qtbase-everywhere-src-${qtbase_version}.tar.xz
     URL_HASH        ${qtbase_download_hash}
     
     PATCH_COMMAND
@@ -759,7 +760,7 @@ if(GIT_EXECUTABLE AND PYTHONINTERP_FOUND)
       DEPENDS
         qttools-opensource-src-${qttools_patch_version}  # for qtattributionsscanner
         source:qtandroidextras-everywhere-src-${qtandroidextras_version}
-        source:qtbase-opensource-src-${qtbase_patch_version}
+        source:qtbase-everywhere-src-${qtbase_patch_version}
         source:qtimageformats-opensource-src-${qtimageformats_patch_version}
         source:qtlocation-opensource-src-${qtlocation_patch_version}
         source:qtsensors-opensource-src-${qtsensors_patch_version}
@@ -775,7 +776,7 @@ if(GIT_EXECUTABLE AND PYTHONINTERP_FOUND)
         patch_version
         PYTHON_EXECUTABLE
         qtandroidextras_version
-        qtbase_patch_version
+        qtbase_version
         qtimageformats_patch_version
         qtlocation_patch_version
         qtsensors_patch_version
@@ -788,7 +789,7 @@ if(GIT_EXECUTABLE AND PYTHONINTERP_FOUND)
           "-DVERSION=${patch_version}"
           "-DPYTHON_EXECUTABLE=${PYTHON_EXECUTABLE}"
           "-Dqtandroidextras=qtandroidextras-everywhere-src-${qtandroidextras_version}"
-          "-Dqtbase=qtbase-opensource-src-${qtbase_patch_version}"
+          "-Dqtbase=qtbase-everywhere-src-${qtbase_patch_version}"
           "-Dqtimageformats=qtimageformats-opensource-src-${qtimageformats_patch_version}"
           "-Dqtlocation=qtlocation-opensource-src-${qtlocation_patch_version}"
           "-Dqtsensors=qtsensors-opensource-src-${qtsensors_patch_version}"
