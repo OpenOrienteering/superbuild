@@ -255,6 +255,8 @@ superbuild_package(
           -android-sdk   "${ANDROID_SDK_ROOT}"
           -android-arch  "${ANDROID_ABI}"
           -android-ndk-platform "${ANDROID_PLATFORM}"
+          $<$<STREQUAL:@ANDROID_ABI@,x86>:-no-avx -no-avx2 -no-avx512 -no-sse4.1 -no-sse4.2>
+          $<$<STREQUAL:@ANDROID_ABI@,x86_64>:-no-avx -no-avx2 -no-avx512>
         >
       >
       -I "${CMAKE_STAGING_PREFIX}/include"
