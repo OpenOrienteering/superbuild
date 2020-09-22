@@ -75,7 +75,7 @@ string(CONFIGURE [[
 
 # OpenOrienteering modifications
 
-set(qt_openorienteering_version ${version}-0)
+set(qt_openorienteering_version ${version}-1)
 set(qt_openorienteering         "qt-${short_version}-openorienteering-${qt_openorienteering_version}")
 superbuild_package(
   NAME           qt-${short_version}-openorienteering
@@ -83,7 +83,7 @@ superbuild_package(
   
   SOURCE
     URL            https://github.com/OpenOrienteering/superbuild/archive/qt-${short_version}-openorienteering_${qt_openorienteering_version}.tar.gz
-    URL_HASH       SHA256=98f24c910b94a6f5c7c4adecffe081a2a0354a540359b5058c0d9ead7f08b8fa
+    URL_HASH       SHA256=8fd04999d18948c9b6cbb455baa10701d515ef3497fb856f472cf297abcce177
 )
 
 
@@ -112,6 +112,9 @@ superbuild_package(
   SOURCE
     URL            ${qtbase_base_url}qtbase-opensource-src_${qtbase_patch_version}.debian.tar.xz
     URL_HASH       ${qtbase_patch_hash}
+    
+    PATCH_COMMAND
+      sed -e "/gnukfreebsd\\|armv4/d" -i -- patches/series
 )
 
 superbuild_package(
@@ -135,6 +138,10 @@ superbuild_package(
       "${CMAKE_COMMAND}"
         -Dpackage=qtbase-opensource-src-patches-${qtbase_patch_version}
         -P "${APPLY_PATCHES_SERIES}"
+    COMMAND
+      "${CMAKE_COMMAND}"
+        -Dpackage=${qt_openorienteering}/qtbase
+        -P "${APPLY_PATCHES_SERIES}"
     # Don't accidently used bundled copies
     COMMAND
       "${CMAKE_COMMAND}" -E remove_directory src/3rdparty/angle # excluded by -opengl desktop
@@ -153,10 +160,7 @@ superbuild_package(
     COMMAND
       "${CMAKE_COMMAND}" -E remove_directory src/3rdparty/xcb # requires -qt-xcb
     COMMAND
-      # Enforce make for MSYS. Needed for config.tests outside qtbase, e.g. libtiff in qtimageformats
-      # Cf. https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-qt5/0025-qt-5.8.0-force-using-make-on-msys.patch
-      sed -i -e "/MAKEFILE_GENERATOR, MINGW/,/mingw32-make/ s/.equals.QMAKE_HOST.os, Windows./\\!isEmpty(QMAKE_SH)|\\!equals(QMAKE_HOST.os, Windows)/"
-        mkspecs/features/configure_base.prf
+      "${CMAKE_COMMAND}" -E remove_directory src/3rdparty/zlib # excluded by -system-zlib
   
   USING
     USE_SYSTEM_QT
@@ -778,7 +782,7 @@ if(GIT_EXECUTABLE AND PYTHONINTERP_FOUND)
         patch_version
         PYTHON_EXECUTABLE
         qtandroidextras_version
-        qtbase_version
+        qtbase_patch_version
         qtimageformats_patch_version
         qtlocation_patch_version
         qtsensors_patch_version
