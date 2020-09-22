@@ -1,7 +1,7 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: qtbase-everywhere-src
 Source: https://download.qt.io/archive/qt/*/submodules/
-# Id: qtbase-opensource-src-5.15.1+dfsg-1
+# Id: qtbase-everywhere-src-5.15.1+dfsg-1
 
 # This file contains attribution for all source components used in the
 # distributed binaries, and even for some source components not used in the
@@ -229,10 +229,6 @@ Copyright: 2016-2019 Intel Corporation
            2016-2018 The Qt Company Ltd.
 License: GPL-3 with Qt-1.0 exception
 
-Files: mkspecs/gnukfreebsd-g++/qplatformdefs.h
-Copyright: 2014 Digia Plc and/or its subsidiary(-ies).
-License: LGPL-2.1-or-3 with Qt-1.1 exception
-
 Files: bin/syncqt.pl
        config.tests/arch/arch.cpp
        config.tests/avx512/avx512.cpp
@@ -240,11 +236,9 @@ Files: bin/syncqt.pl
        mkspecs/features/data/unix/findclasslist.pl
        mkspecs/haiku-g++/qplatformdefs.h
        src/3rdparty/pcre2/import_from_pcre2_tarball.sh
-       src/3rdparty/zlib/import_from_zlib_tarball.sh
        src/opengl/qtopenglglobal.h
        util/qfloat16-tables/gen_qfloat16_tables.cpp
-Copyright: 2017 André Klitzing
-           2016-2019 Intel Corporation
+Copyright: 2016-2019 Intel Corporation
            2014-2020 Klarälvdalens Datakonsult AB, a KDAB Group company
            2016 The Qt Company Ltd.
            2016 by Southwest Research Institute (R)
@@ -2104,6 +2098,51 @@ License: MIT (harfbuzz-ng)
  ON AN "AS IS" BASIS, AND THE COPYRIGHT HOLDER HAS NO OBLIGATION TO
  PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
+Files: src/3rdparty/iaccessible2/*
+Copyright: 2000, 2006 Sun Microsystems, Inc.
+           2006 IBM Corporation
+           2007, 2010, 2012, 2013 Linux Foundation
+           IAccessible2 is a trademark of the Linux Foundation. The IAccessible2 mark may be used in accordance with the Linux Foundation Trademark Policy to indicate compliance with the IAccessible2 specification.
+License: BSD-3-clause (iaccessible2)
+ Copyright (c) 2013 Linux Foundation
+ All rights reserved.
+ .
+ .
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ .
+  1. Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+ .
+  2. Redistributions in binary form must reproduce the above
+     copyright notice, this list of conditions and the following
+     disclaimer in the documentation and/or other materials
+     provided with the distribution.
+ .
+  3. Neither the name of the Linux Foundation nor the names of its
+     contributors may be used to endorse or promote products
+     derived from this software without specific prior written
+     permission.
+ .
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+ CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+ INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ .
+ This BSD License conforms to the Open Source Initiative "Simplified
+ BSD License" as published at:
+ http://www.opensource.org/licenses/bsd-license.php
+
 Files: src/3rdparty/icc/sRGB2014.icc
 Copyright: International Color Consortium, 2015
 License: ICC License (icc-sRGB-color-profile)
@@ -2599,36 +2638,11 @@ License: MIT (VulkanMemoryAllocator)
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
 
-Files: src/3rdparty/zlib/*
-Copyright: 1995-2017 Jean-loup Gailly and Mark Adler
-License: Zlib
-   This software is provided 'as-is', without any express or implied
-   warranty.  In no event will the authors be held liable for any damages
-   arising from the use of this software.
- .
-   Permission is granted to anyone to use this software for any purpose,
-   including commercial applications, and to alter it and redistribute it
-   freely, subject to the following restrictions:
- .
-   1. The origin of this software must not be misrepresented; you must not
-      claim that you wrote the original software. If you use this software
-      in a product, an acknowledgment in the product documentation would be
-      appreciated but is not required.
-   2. Altered source versions must be plainly marked as such, and must not be
-      misrepresented as being the original software.
-   3. This notice may not be removed or altered from any source distribution.
- .
-   Jean-loup Gailly        Mark Adler
-   jloup@gzip.org          madler@alumni.caltech.edu
- .
- If you use the zlib library in a product, we would appreciate *not* receiving
- lengthy legal documents to sign.  The sources are provided for free but without
- warranty of any kind.  The library has been entirely written by Jean-loup
- Gailly and Mark Adler; it does not include third-party code.
- .
- If you redistribute modified sources, we would appreciate that you include in
- the file ChangeLog history information documenting your changes.  Please read
- the FAQ for more information on the distribution of modified source versions.
+Files: src/3rdparty/wintab/*
+Copyright: 1991-1998 by LCS/Telegraphics.
+License: public-domain
+ The text and information contained in this file may be freely used,
+ copied, or distributed without compensation or licensing restrictions.
 
 Files: src/corelib/codecs/qbig5codec.cpp
 Copyright: 2000  Ming-Che Chuang
@@ -3844,47 +3858,6 @@ License: MIT
  CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT
  OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
  THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-License: LGPL-2.1-or-3 with Qt-1.1 exception
- GNU Lesser General Public License:
- This file may be used under the terms of the GNU Lesser General Public
- License version 2.1 or version 3 as published by the Free Software
- Foundation and appearing in the file LICENSE.LGPLv21 and LICENSE.LGPLv3
- included in the packaging of this file. Please review the following
- information to ensure the GNU Lesser General Public License requirements
- will be met: https://www.gnu.org/licenses/lgpl.html.
- .
- In addition, as a special exception, The Qt Company gives you certain
- additional rights. These rights are described in The Qt Company Qt LGPL
- Exception version 1.1, included in the file LGPL_EXCEPTION.txt in this
- package.
- .
- On Debian systems, the complete text of the GNU Lesser General Public
- License version 2.1 can be found in `/usr/share/common-licenses/LGPL-2.1`.
- The complete text of the GNU Lesser General Public License version 3 can be
- found in `/usr/share/common-licenses/LGPL-3`.
- .
- The Qt Company LGPL Exception version 1.1:
- As an additional permission to the GNU Lesser General Public License version
- 2.1, the object code form of a "work that uses the Library" may incorporate
- material from a header file that is part of the Library.  You may distribute
- such object code under terms of your choice, provided that:
-     (i)   the header files of the Library have not been modified; and
-     (ii)  the incorporated material is limited to numerical parameters, data
-           structure layouts, accessors, macros, inline functions and
-           templates; and
-     (iii) you comply with the terms of Section 6 of the GNU Lesser General
-           Public License version 2.1.
- .
- Moreover, you may apply this exception to a modified version of the Library,
- provided that such modification does not involve copying material from the
- Library into the modified Library's header files unless such material is
- limited to (i) numerical parameters; (ii) data structure layouts;
- (iii) accessors; and (iv) small macros, templates and inline functions of
- five lines or less in length.
- .
- Furthermore, you are not required to apply this additional permission to a
- modified version of the Library.
 
 License: LGPL-3
  This program is free software: you can redistribute it and/or modify
