@@ -71,6 +71,81 @@ set(test_system_gdal [[
 	set(extra_cxxflags "-Wno-strict-overflow -Wno-null-dereference -Wno-old-style-cast" PARENT_SCOPE)
 ]])
 
+set(libjpeg_patch [[
+--- a/configure
++++ b/configure
+@@ -1247,6 +1247,7 @@
+ CXXCPP
+ PKG_CONFIG
+ bashcompdir
++LIBJPEG_SUFFIX
+ PQ_CFLAGS
+ PQ_LIBS
+ OGDI_CFLAGS
+@@ -30093,13 +30093,13 @@
+ 
+ elif test "$with_jpeg" = "yes" -o "$with_jpeg" = "" ; then
+ 
+-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for jpeg_read_scanlines in -ljpeg" >&5
+-$as_echo_n "checking for jpeg_read_scanlines in -ljpeg... " >&6; }
++  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for jpeg_read_scanlines in -ljpeg${LIBJPEG_SUFFIX}" >&5
++$as_echo_n "checking for jpeg_read_scanlines in -ljpeg${LIBJPEG_SUFFIX}... " >&6; }
+ if ${ac_cv_lib_jpeg_jpeg_read_scanlines+:} false; then :
+   $as_echo_n "(cached) " >&6
+ else
+   ac_check_lib_save_LIBS=$LIBS
+-LIBS="-ljpeg  $LIBS"
++LIBS="-ljpeg${LIBJPEG_SUFFIX} $LIBS"
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+@@ -30172,7 +30172,7 @@
+   fi
+ 
+   if test "$JPEG_SETTING" = "external" ; then
+-    LIBS="-ljpeg $LIBS"
++    LIBS="-ljpeg${LIBJPEG_SUFFIX} $LIBS"
+     echo "using pre-installed libjpeg."
+   else
+     echo "using internal jpeg code."
+@@ -30187,7 +30187,7 @@
+ else
+ 
+   JPEG_SETTING=external
+-  LIBS="-L$with_jpeg -L$with_jpeg/lib -ljpeg $LIBS"
++  LIBS="-L$with_jpeg -L$with_jpeg/lib -ljpeg${LIBJPEG_SUFFIX} $LIBS"
+   EXTRA_INCLUDES="-I$with_jpeg -I$with_jpeg/include $EXTRA_INCLUDES"
+ 
+   echo "using libjpeg from $with_jpeg."
+@@ -31550,7 +31550,7 @@
+   $as_echo_n "(cached) " >&6
+ else
+   ac_check_lib_save_LIBS=$LIBS
+-LIBS="-lmfhdfalt -ldfalt -ljpeg -lz $LIBS"
++LIBS="-lmfhdfalt -ldfalt -ljpeg${LIBJPEG_SUFFIX} -lz $LIBS"
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+@@ -31596,7 +31596,7 @@
+   $as_echo_n "(cached) " >&6
+ else
+   ac_check_lib_save_LIBS=$LIBS
+-LIBS="-lmfhdfalt -ldfalt -lsz -ljpeg -lz $LIBS"
++LIBS="-lmfhdfalt -ldfalt -lsz -ljpeg${LIBJPEG_SUFFIX} -lz $LIBS"
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+@@ -40801,7 +40801,7 @@
+         PDFIUM_LIB="-L$with_pdfium/lib -lpdfium"
+     fi
+ 
+-    PDFIUM_LIB="$PDFIUM_LIB -ljpeg -lpng -lz -llcms2 -lpthread -lm -lstdc++"
++    PDFIUM_LIB="$PDFIUM_LIB -ljpeg${LIBJPEG_SUFFIX} -lpng -lz -llcms2 -lpthread -lm -lstdc++"
+ 
+     if test ! -z "`uname | grep Darwin`" ; then
+         PDFIUM_LIB="-stdlib=libstdc++ $PDFIUM_LIB"
+]])
+
 superbuild_package(
   NAME           gdal-patches
   VERSION        ${patch_version}
@@ -103,6 +178,8 @@ superbuild_package(
     tiff
     zlib
   
+  SOURCE_WRITE
+    libjpeg.patch  libjpeg_patch
   SOURCE
     URL            ${base_url}gdal_${version}.orig.tar.xz
     URL_HASH       ${download_hash}
@@ -110,6 +187,8 @@ superbuild_package(
       "${CMAKE_COMMAND}"
         -Dpackage=gdal-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
+    COMMAND
+      patch -p1 < libjpeg.patch
   
   USING            USE_SYSTEM_GDAL patch_version extra_cflags extra_cxxflags
   BUILD_CONDITION  ${test_system_gdal}
@@ -120,6 +199,9 @@ superbuild_package(
     COMMAND
       "${CMAKE_COMMAND}" -E copy_directory "${SOURCE_DIR}" "${BINARY_DIR}"
     COMMAND
+      $<$<BOOL:@ANDROID@>:
+        "${CMAKE_COMMAND}" -E env LIBJPEG_SUFFIX=-turbo  # needs libjpeg patch
+      >
       "${BINARY_DIR}/configure"
         "--prefix=${CMAKE_INSTALL_PREFIX}"
         $<$<BOOL:@CMAKE_CROSSCOMPILING@>:

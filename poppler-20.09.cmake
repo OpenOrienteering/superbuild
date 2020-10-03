@@ -118,6 +118,7 @@ superbuild_package(
       -DCMAKE_DISABLE_FIND_PACKAGE_NSS3=ON
       ${poppler_font_configuration}
       $<$<BOOL:@ANDROID@>:
+        -DJPEG_NAMES=jpeg-turbo
         -D_FILE_OFFSET_BITS=
       >
    INSTALL_COMMAND
