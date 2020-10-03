@@ -48,6 +48,55 @@ set(test_system_jpeg [[
 	endif()
 ]])
 
+set(suffix_patch [[
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -189,6 +189,13 @@
+ report_option(ENABLE_SHARED "Shared libraries")
+ report_option(ENABLE_STATIC "Static libraries")
+ 
++if(NOT MSVC)
++  set(LIBJPEG_SUFFIX "" CACHE STRING "Suffix to be added the library name")
++  report_option(LIBJPEG_SUFFIX "Library name suffix")
++else()
++  set(LIBJPEG_SUFFIX "")
++endif()
++
+ if(WITH_12BIT)
+   set(WITH_ARITH_DEC 0)
+   set(WITH_ARITH_ENC 0)
+@@ -566,7 +573,7 @@
+   add_library(jpeg-static STATIC ${JPEG_SOURCES} $<TARGET_OBJECTS:simd>
+     ${SIMD_OBJS})
+   if(NOT MSVC)
+-    set_target_properties(jpeg-static PROPERTIES OUTPUT_NAME jpeg)
++    set_target_properties(jpeg-static PROPERTIES OUTPUT_NAME jpeg${LIBJPEG_SUFFIX})
+   endif()
+ endif()
+ 
+--- a/release/libjpeg.pc.in
++++ b/release/libjpeg.pc.in
+@@ -6,5 +6,5 @@
+ Name: libjpeg
+ Description: A SIMD-accelerated JPEG codec that provides the libjpeg API
+ Version: @VERSION@
+-Libs: -L${libdir} -ljpeg
++Libs: -L${libdir} -ljpeg@LIBJPEG_SUFFIX@
+ Cflags: -I${includedir}
+--- a/sharedlib/CMakeLists.txt
++++ b/sharedlib/CMakeLists.txt
+@@ -38,6 +38,9 @@
+ add_library(jpeg SHARED ${JPEG_SRCS} ${DEFFILE} $<TARGET_OBJECTS:simd>
+   ${SIMD_OBJS})
+ 
++if(NOT MSVC)
++  set_target_properties(jpeg PROPERTIES OUTPUT_NAME jpeg${LIBJPEG_SUFFIX})
++endif()
+ set_target_properties(jpeg PROPERTIES SOVERSION ${SO_MAJOR_VERSION}
+   VERSION ${SO_MAJOR_VERSION}.${SO_AGE}.${SO_MINOR_VERSION})
+ if(APPLE AND (NOT CMAKE_OSX_DEPLOYMENT_TARGET OR
+]])
+
 superbuild_package(
   NAME           libjpeg-turbo-patches
   VERSION        ${patch_version}
@@ -64,6 +113,8 @@ superbuild_package(
     source:libjpeg-turbo-patches-${patch_version}
     host:nasm
   
+  SOURCE_WRITE
+    suffix.patch   suffix_patch
   SOURCE
     DOWNLOAD_NAME  libjpeg-turbo_${version}.orig.tar.gz
     URL            ${base_url}libjpeg-turbo_${version}.orig.tar.gz
@@ -72,6 +123,8 @@ superbuild_package(
       "${CMAKE_COMMAND}"
         -Dpackage=libjpeg-turbo-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
+    COMMAND
+      patch -p1 < suffix.patch
   
   USING            USE_SYSTEM_LIBJPEG patch_version
   BUILD_CONDITION  ${test_system_jpeg}
@@ -82,8 +135,7 @@ superbuild_package(
       -DENABLE_SHARED=ON
       -DENABLE_STATIC=OFF
       $<$<BOOL:@ANDROID@>:
-        -DENABLE_SHARED=OFF
-        -DENABLE_STATIC=ON
+        -DLIBJPEG_SUFFIX=-turbo  # needs suffix patch
         -DCMAKE_ASM_FLAGS="--target=${SUPERBUILD_TOOLCHAIN_TRIPLET}${ANDROID_NATIVE_API_LEVEL}"
       >
     INSTALL_COMMAND

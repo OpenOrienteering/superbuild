@@ -57,7 +57,6 @@ superbuild_package(
   VERSION        ${patch_version}
   DEPENDS
     giflib
-    libjpeg
     libpng
     zlib
   
@@ -84,6 +83,7 @@ superbuild_package(
       -DWEBP_BUILD_WEBPMUX=OFF
       -DWEBP_BUILD_EXTRAS=OFF
       -DWEBP_BUILD_WEBP_JS=OFF
+      -DCMAKE_DISABLE_FIND_PACKAGE_JPEG=ON
       -DCMAKE_DISABLE_FIND_PACKAGE_TIFF=ON # Our libtiff depends on libwebp.
     INSTALL_COMMAND
       "${CMAKE_COMMAND}" --build . --target install/strip/fast

@@ -107,6 +107,9 @@ superbuild_package(
       # We don't provide all possible sources (yet)
       "-Djbig:BOOL=OFF"
       "-Dzstd:BOOL=OFF"
+      $<$<BOOL:@ANDROID@>:
+        -DJPEG_NAMES=jpeg-turbo
+      >
       # GNUInstallDirs doesn't work with CMAKE_STAGING_PREFIX
       -UCMAKE_STAGING_PREFIX
     INSTALL_COMMAND
