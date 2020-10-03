@@ -115,7 +115,7 @@ superbuild_package(
   DEPENDS
     source:qt-${short_version}-openorienteering-${openorienteering_version}
     freetype
-    libjpeg-turbo
+    libjpeg
     libpng
     pcre2
     sqlite3

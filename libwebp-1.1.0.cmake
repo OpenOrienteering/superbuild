@@ -57,7 +57,7 @@ superbuild_package(
   VERSION        ${patch_version}
   DEPENDS
     giflib
-    libjpeg-turbo
+    libjpeg
     libpng
     zlib
   
