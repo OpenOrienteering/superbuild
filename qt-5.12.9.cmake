@@ -118,6 +118,7 @@ superbuild_package(
     libjpeg
     libpng
     pcre2
+    pkg-config
     sqlite3
     zlib
   
@@ -172,6 +173,11 @@ superbuild_package(
          --unset=CFLAGS
          --unset=CXXFLAGS
          --unset=LDFLAGS
+         $<@android@:
+           # Required to satisfy qconfigure.pri
+           PKG_CONFIG_SYSROOT_DIR=set-but-not-used
+           PKG_CONFIG_LIBDIR=set-but-not-used
+         >
          # fall through
     >
     "${SOURCE_DIR}/configure"
@@ -221,7 +227,6 @@ superbuild_package(
         -opengl desktop
       >
       $<@crosscompiling@:
-        -no-pkg-config
         -hostprefix "${HOST_PREFIX}"
         #-hostdatadir "${HOST_PREFIX}/share/qt5"
         $<@windows@:
@@ -231,6 +236,7 @@ superbuild_package(
           -no-feature-systemtrayicon # Workaround missing ChangeWindowMessageFilterEx symbol
         >
         $<@android@:
+          -pkg-config
           $<$<STREQUAL:@CMAKE_CXX_COMPILER_ID@,GNU>:
             -xplatform     android-g++
           >$<$<STREQUAL:@CMAKE_CXX_COMPILER_ID@,Clang>:
