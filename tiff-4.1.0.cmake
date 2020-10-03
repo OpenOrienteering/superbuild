@@ -51,7 +51,7 @@ set(test_system_tiff [[
 				get_target_property(tiff_location TIFF::TIFF "IMPORTED_LOCATION")
 			endif()
 			string(FIND "${tiff_location}" "${CMAKE_STAGING_PREFIX}/" staging_prefix_start)
-			if(NOT staging_prefix_start EQUAL 0)
+			if(EXISTS "${tiff_location}" AND NOT staging_prefix_start EQUAL 0)
 				message(STATUS "Found ${SYSTEM_NAME} libtiff: ${tiff_location}")
 				set(BUILD_CONDITION 0)
 			endif()

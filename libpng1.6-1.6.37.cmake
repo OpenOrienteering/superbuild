@@ -49,7 +49,7 @@ set(test_system_png [[
 				get_target_property(png_location PNG::PNG "IMPORTED_LOCATION")
 			endif()
 			string(FIND "${png_location}" "${CMAKE_STAGING_PREFIX}/" staging_prefix_start)
-			if(NOT staging_prefix_start EQUAL 0)
+			if(EXISTS "${png_location}" AND NOT staging_prefix_start EQUAL 0)
 				message(STATUS "Found ${SYSTEM_NAME} libpng: ${png_location}")
 				set(BUILD_CONDITION 0)
 			endif()
