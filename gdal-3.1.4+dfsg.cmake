@@ -29,11 +29,11 @@
 
 # https://tracker.debian.org/pkg/gdal
 
-set(version        3.1.3+dfsg)
-set(download_hash  SHA256=b8f1776183ab25e7e99c8aa36f1274b484bf3e51ec2de8786a2da0309e6fd774)
+set(version        3.1.4+dfsg)
+set(download_hash  SHA256=4e7de7eb64189fef6555f450c781e1b264386fce1846ff29cb63def458add67d)
 set(patch_version  ${version}-1)
-set(patch_hash     SHA256=50314f747a4813566d0005b677f83eab50c5e2b32ce23e513830724d86ae5640)
-set(base_url       https://snapshot.debian.org/archive/debian/20200907T144157Z/pool/main/g/gdal/)
+set(patch_hash     SHA256=da1f77fd2f491d847b4e8e9a0e3177c4a21c120916392e3abcfef31f7fbe0bb1)
+set(base_url       https://snapshot.debian.org/archive/debian/20201024T083840Z/pool/main/g/gdal/)
 
 option(USE_SYSTEM_GDAL "Use the system GDAL if possible" ON)
 
