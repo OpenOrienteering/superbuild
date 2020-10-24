@@ -27,11 +27,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        2.10.1)
-set(download_hash  SHA256=3a60d391fd579440561bf0e7f31af2222bc610ad6ce4d9d7bd2165bca8669110)
-set(patch_version  ${version}-2)
-set(patch_hash     SHA256=3d1405fe90e17ee290e06f4fd65a16ff38d9f9604aff12c40a0574edb3dbbe62)
-set(base_url       https://snapshot.debian.org/archive/debian/20191015T150039Z/pool/main/f/freetype/)
+set(version        2.10.2+dfsg)
+set(download_hash  SHA256=c1f32cbb42a1519ae7d69046d84d359f44bfdea15c800c4f0b60a36c78b46d70)
+set(patch_version  ${version}-4)
+set(patch_hash     SHA256=5bebdcf8e764b5a4a6a5f4f4201abb7b3356599cadaed3aae37f344ef346341f)
+set(base_url       https://snapshot.debian.org/archive/debian/20201021T155324Z/pool/main/f/freetype/)
 
 option(USE_SYSTEM_FREETYPE "Use the system Freetype if possible" ON)
 
@@ -75,7 +75,7 @@ superbuild_package(
   SOURCE_WRITE
     series.sed     series_sed
   SOURCE
-    URL            ${base_url}freetype_${version}.orig.tar.gz
+    URL            ${base_url}freetype_${version}.orig.tar.xz
     URL_HASH       ${download_hash}
     PATCH_COMMAND
       sed -f "<SOURCE_DIR>/series.sed" -i --
