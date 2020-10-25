@@ -94,9 +94,9 @@ superbuild_package(
       -DBUILD_SHARED_LIBS=ON
       -DFT_WITH_PNG=ON
       -DFT_WITH_ZLIB=ON
-      -DENABLE_QT5=OFF
-      -DCMAKE_DISABLE_FIND_PACKAGE_HarfBuzz=ON
+      -DCMAKE_DISABLE_FIND_PACKAGE_BrotliDec=ON
       -DCMAKE_DISABLE_FIND_PACKAGE_BZip2=ON
+      -DCMAKE_DISABLE_FIND_PACKAGE_HarfBuzz=ON
     INSTALL_COMMAND
       "${CMAKE_COMMAND}" --build . --target install/strip/fast
     COMMAND
