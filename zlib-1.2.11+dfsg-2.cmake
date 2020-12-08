@@ -106,3 +106,101 @@ superbuild_package(
         "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/zlib-${patch_version}.txt"
   ]]
 )
+
+
+
+option(USE_SYSTEM_MINIZIP "Use the system Minizip if possible" ON)
+
+set(test_system_minizip [[
+	if(${USE_SYSTEM_MINIZIP})
+		enable_language(C)
+		find_library(MINIZIP_LIBRARY NAMES minizip QUIET)
+		find_path(MINIZIP_INCLUDE_DIR NAMES minizip/mztools.h QUIET)
+		string(FIND "${MINIZIP_LIBRARY}" "${CMAKE_STAGING_PREFIX}/" staging_prefix_start)
+		if(MINIZIP_LIBRARY AND MINIZIP_INCLUDE_DIR AND NOT staging_prefix_start EQUAL 0)
+			message(STATUS "Found ${SYSTEM_NAME} Minizip: ${MINIZIP_LIBRARY}")
+			set(BUILD_CONDITION 0)
+		endif()
+	endif()
+	
+	if(CMAKE_C_COMPILER_ID MATCHES "Clang")
+		set(extra_flags "-Wno-parentheses-equality -Wno-unused-value" PARENT_SCOPE)
+	else()
+		set(extra_flags "" PARENT_SCOPE)
+	endif()
+]])
+
+string(CONCAT CMakeLists_txt [[
+
+cmake_minimum_required(VERSION 3.1)
+
+project(minizip C)
+
+find_package(ZLIB CONFIG QUIET)
+find_package(ZLIB MODULE QUIET)
+include(GNUInstallDirs)
+
+set(MINIZIP_SOURCE_DIR "" CACHE PATH "Path to minizip sources")
+
+set(MINIZIP_SOURCES
+  "${MINIZIP_SOURCE_DIR}/ioapi.c"
+  "${MINIZIP_SOURCE_DIR}/mztools.c"
+  "${MINIZIP_SOURCE_DIR}/unzip.c"
+  "${MINIZIP_SOURCE_DIR}/zip.c"
+)
+if(WIN32)
+	list(APPEND MINIZIP_SOURCES "${MINIZIP_SOURCE_DIR}/iowin32.c")
+endif()
+
+set(MINIZIP_HEADERS
+  "${MINIZIP_SOURCE_DIR}/crypt.h"
+  "${MINIZIP_SOURCE_DIR}/ioapi.h"
+  "${MINIZIP_SOURCE_DIR}/mztools.h"
+  "${MINIZIP_SOURCE_DIR}/unzip.h"
+  "${MINIZIP_SOURCE_DIR}/zip.h"
+)
+if(WIN32)
+	list(APPEND MINIZIP_HEADERS "${MINIZIP_SOURCE_DIR}/iowin32.h")
+endif()
+
+add_library(minizip ${MINIZIP_SOURCES})
+target_compile_definitions(minizip PUBLIC NOCRYPT USE_FILE32API)
+target_link_libraries(minizip PUBLIC ZLIB::ZLIB)
+
+install(TARGETS minizip
+  RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+  ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+  LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+)
+install(FILES ${MINIZIP_HEADERS}
+  DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/minizip"
+)
+]])
+
+superbuild_package(
+  NAME           minizip
+  VERSION        zlib-${patch_version}
+  DEPENDS
+    source:zlib-${patch_version}
+    zlib
+  
+  SOURCE_WRITE
+    CMakeLists.txt CMakeLists_txt
+  
+  USING            USE_SYSTEM_MINIZIP patch_version extra_flags
+  BUILD_CONDITION  ${test_system_minizip}
+  BUILD [[
+    CMAKE_ARGS
+      "-DMINIZIP_SOURCE_DIR=<SOURCE_DIR>/../zlib-${patch_version}/contrib/minizip"
+      "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
+      "-DCMAKE_C_FLAGS=${CMAKE_C_FLAGS} ${extra_flags}"
+      "-DCMAKE_BUILD_TYPE:STRING=$<CONFIG>"
+      -DBUILD_SHARED_LIBS=ON
+   INSTALL_COMMAND
+      "${CMAKE_COMMAND}" --build . --target install/strip/fast
+    COMMAND
+      "${CMAKE_COMMAND}" -E copy
+        "<SOURCE_DIR>/../zlib-patches-${patch_version}/copyright"
+        "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/minizip-zlib-${patch_version}.txt"
+  ]]
+)
