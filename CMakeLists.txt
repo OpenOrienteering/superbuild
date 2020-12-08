@@ -1399,7 +1399,8 @@ function(superbuild_package)
 	get_property(default_version GLOBAL PROPERTY SB_DEFAULT_${SB_PACKAGE_NAME})
 	string(REPLACE "-" "." default_version "${default_version}")
 	if(NOT SB_PACKAGE_NO_DEFAULT
-	   AND version VERSION_GREATER default_version)
+	   AND (NOT default_version
+	        OR version VERSION_GREATER default_version))
 		set_property(GLOBAL PROPERTY SB_DEFAULT_${SB_PACKAGE_NAME} ${SB_PACKAGE_VERSION})
 	endif()
 endfunction()
