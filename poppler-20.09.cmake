@@ -115,6 +115,7 @@ superbuild_package(
       -DBUILD_QT5_TESTS=OFF
       -DENABLE_LIBCURL=OFF
       -DRUN_GPERF_IF_PRESENT=OFF
+      -DCMAKE_DISABLE_FIND_PACKAGE_Boost=ON
       -DCMAKE_DISABLE_FIND_PACKAGE_NSS3=ON
       ${poppler_font_configuration}
       $<$<BOOL:@ANDROID@>:
