@@ -60,6 +60,12 @@ set(test_system_gdal [[
 		endif()
 		get_filename_component(EXPAT_DIR "${EXPAT_INCLUDE_DIR}" DIRECTORY CACHE)
 		
+		find_path(LIBKML_INCLUDE_DIR NAMES kml/engine.h QUIET)
+		if(NOT LIBKML_INCLUDE_DIR)
+			message(FATAL_ERROR "Could not find kml/engine.h")
+		endif()
+		get_filename_component(LIBKML_DIR "${LIBKML_INCLUDE_DIR}" DIRECTORY CACHE)
+		
 		find_path(SQLITE3_INCLUDE_DIR NAMES sqlite3.h QUIET)
 		if(NOT SQLITE3_INCLUDE_DIR)
 			message(FATAL_ERROR "Could not find sqlite3.h")
@@ -69,6 +75,7 @@ set(test_system_gdal [[
 	
 	set(extra_cflags   "-Wno-strict-overflow -Wno-null-dereference" PARENT_SCOPE)
 	set(extra_cxxflags "-Wno-strict-overflow -Wno-null-dereference -Wno-old-style-cast" PARENT_SCOPE)
+	set(extra_ldflags  "-lminizip")
 ]])
 
 set(libjpeg_patch [[
@@ -166,6 +173,7 @@ superbuild_package(
     giflib
     libiconv
     libjpeg
+    libkml
     liblzma
     libpng
     libwebp
@@ -190,7 +198,7 @@ superbuild_package(
     COMMAND
       patch -p1 < libjpeg.patch
   
-  USING            USE_SYSTEM_GDAL patch_version extra_cflags extra_cxxflags
+  USING            USE_SYSTEM_GDAL patch_version extra_cflags extra_cxxflags extra_ldflags
   BUILD_CONDITION  ${test_system_gdal}
   BUILD [[
     # Cannot do out-of-source build of gdal
@@ -216,20 +224,20 @@ superbuild_package(
         "--with-expat=${EXPAT_DIR}"
         --with-gif
         --with-jpeg
+        "--with-libkml=${LIBKML_DIR}"
         --with-liblzma
         --with-libtiff
-        --with-poppler
-        --with-webp
         --with-libz
         --with-openjpeg
         --with-pcre
         --with-png
+        --with-poppler
         --with-proj
         "--with-sqlite3=${SQLITE3_DIR}"
+        --with-webp
         --without-geos
         --without-java
         --without-jpeg12
-        --without-libkml
         --without-netcdf
         --without-odbc
         --without-ogdi
@@ -248,7 +256,7 @@ superbuild_package(
         "CPPFLAGS=${SUPERBUILD_CPPFLAGS}"
         "CFLAGS=${SUPERBUILD_CFLAGS} ${extra_cflags}"
         "CXXFLAGS=${SUPERBUILD_CXXFLAGS} ${extra_cxxflags}"
-        "LDFLAGS=${SUPERBUILD_LDFLAGS}"
+        "LDFLAGS=${SUPERBUILD_LDFLAGS} ${extra_ldflags}"
     BUILD_COMMAND
       "$(MAKE)"
     INSTALL_COMMAND
