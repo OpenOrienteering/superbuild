@@ -81,6 +81,9 @@ superbuild_package(
     COMMAND
       "${CMAKE_COMMAND}" -E chdir "<SOURCE_DIR>/data"
         sh "<SOURCE_DIR>/datumgrids.shar" -c
+    COMMAND
+      # Verify existence of a file from datumgrids.shar
+      "${CMAKE_COMMAND}" -E md5sum "<SOURCE_DIR>/data/BETA2007.gsb"
     #COMMAND
     #  "${CMAKE_COMMAND}" -E chdir "<SOURCE_DIR>/data"
     #    sh "<SOURCE_DIR>/datumgrids-ch.shar" -c
