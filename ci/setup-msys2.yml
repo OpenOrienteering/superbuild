@@ -77,6 +77,7 @@ steps:
       make ^
       patch ^
       python ^
+      sharutils ^
       mingw-w64-%MSYSTEM_CARCH%-binutils ^
       mingw-w64-%MSYSTEM_CARCH%-cmake ^
       mingw-w64-%MSYSTEM_CARCH%-gcc ^
