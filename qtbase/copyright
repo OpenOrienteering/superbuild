@@ -43,7 +43,7 @@ Copyright: 2013 Aleix Pol Gonzalez <aleixpol@kde.org>
            2013 Richard J. Moore <rich@kde.org>
            2013 Ruslan Nigmatullin <euroelessar@yandex.ru>
            2013-2014 Samuel Gaist <samuel.gaist@edeltech.ch>
-           2016-2018 The Qt Company Ltd.
+           2016-2020 The Qt Company Ltd.
            2011 Thiago Macieira <thiago@kde.org>
            2014-2016 by Southwest Research Institute (R)
 License: LGPL-3 or GPL-2
@@ -2549,7 +2549,7 @@ License: CC0-1.0 (sha3_keccak)
     has no duty or obligation with respect to this CC0 or use of the Work.
 
 Files: src/3rdparty/tinycbor/*
-Copyright: 2018 Intel Corporation
+Copyright: 2015-2019 Intel Corporation
 License: MIT (tinycbor)
  MIT License
  .
@@ -2575,7 +2575,7 @@ License: MIT (tinycbor)
 
 Files: src/3rdparty/wintab/*
 Copyright: 1991-1998 by LCS/Telegraphics.
-License: public-domain
+License: urn:dje:license:lcs-telegraphics (wintab)
  The text and information contained in this file may be freely used,
  copied, or distributed without compensation or licensing restrictions.
 
