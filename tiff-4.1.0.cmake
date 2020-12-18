@@ -29,11 +29,11 @@
 
 # https://tracker.debian.org/pkg/tiff
 
-set(version        4.1.0+git191117)
-set(download_hash  SHA256=67e1d045e994adb7144b0cca228d70dd6d520aaf8c75c342064bc0fd601e6e42)
-set(patch_version  ${version}-2+deb10u1)
-set(patch_hash     SHA256=e9dcc77d338663f6be84efe32ae5d4ec9b48923c731aa939f37aa909e60d9f10)
-set(base_url       https://snapshot.debian.org/archive/debian/20200125T212854Z/pool/main/t/tiff/)
+set(version        4.1.0+git201212)
+set(download_hash  SHA256=bebb2ad5537638159ff026c933ae769ab720afb8cd7b9f3bf7533db673b8636c)
+set(patch_version  ${version}-1)
+set(patch_hash     SHA256=4a5a87e944b8028fc64d22be950bf6b69ed85d4bd9269c70b27f240ac8e2073c)
+set(base_url       https://snapshot.debian.org/archive/debian/20201214T025122Z/pool/main/t/tiff/)
 
 option(USE_SYSTEM_LIBTIFF "Use the system libtiff if possible" ON)
 
@@ -63,10 +63,10 @@ set(extra_flags "-Wno-unused-parameter -Wno-unused-but-set-variable -Wno-tautolo
 
 superbuild_package(
   NAME           tiff-patches
-  VERSION        ${version}-2+deb10u1
+  VERSION        ${patch_version}
   
   SOURCE
-    URL            ${base_url}tiff_${version}-2~deb10u1.debian.tar.xz
+    URL            ${base_url}tiff_${patch_version}.debian.tar.xz
     URL_HASH       ${patch_hash}
 )
   
