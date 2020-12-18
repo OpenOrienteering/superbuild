@@ -1,0 +1,87 @@
+From aced4ce5e3f37a7efa1d05660b9cf79ce5fd4870 Mon Sep 17 00:00:00 2001
+From: Eirik Aavitsland <eirik.aavitsland@qt.io>
+Date: Tue, 21 Apr 2020 15:04:15 +0200
+Subject: Assistant: keep text at the top visible when resizing
+
+After following a link to look up a keyword, resizing the width of the
+window would lead to the looked-up position being scroled away.  This
+fix is adapted from the corresponding fix in Qt Creator,
+https://codereview.qt-project.org/c/qt-creator/qt-creator/+/274996
+
+Fixes: QTBUG-34525
+Change-Id: Ia9c2aab4b2c8039965eff098ff51dbdcc4967a01
+Reviewed-by: Eike Ziller <eike.ziller@qt.io>
+Reviewed-by: Eskil Abrahamsen Blomfeldt <eskil.abrahamsen-blomfeldt@qt.io>
+(cherry picked from commit b3cdd63d4bdaea09222fb93ffcd5104a2dc0bf2e)
+---
+ src/assistant/assistant/helpviewer.h       |  2 ++
+ src/assistant/assistant/helpviewer_qtb.cpp | 21 +++++++++++++++++++++
+ 2 files changed, 23 insertions(+)
+
+diff --git a/src/assistant/assistant/helpviewer.h b/src/assistant/assistant/helpviewer.h
+index 00e941000..57dc1d280 100644
+--- a/src/assistant/assistant/helpviewer.h
++++ b/src/assistant/assistant/helpviewer.h
+@@ -130,6 +130,7 @@ protected:
+     void wheelEvent(QWheelEvent *event) override;
+     void mousePressEvent(QMouseEvent *event) override;
+     void mouseReleaseEvent(QMouseEvent *event) override;
++    void resizeEvent(QResizeEvent *e) override;
+ 
+ private slots:
+     void actionChanged();
+@@ -141,6 +142,7 @@ private:
+     void contextMenuEvent(QContextMenuEvent *event) override;
+     QVariant loadResource(int type, const QUrl &name) TEXTBROWSER_OVERRIDE;
+     bool handleForwardBackwardMouseButtons(QMouseEvent *e);
++    void scrollToTextPosition(int position);
+ 
+ private:
+     HelpViewerPrivate *d;
+diff --git a/src/assistant/assistant/helpviewer_qtb.cpp b/src/assistant/assistant/helpviewer_qtb.cpp
+index b522e1ba2..48eaea978 100644
+--- a/src/assistant/assistant/helpviewer_qtb.cpp
++++ b/src/assistant/assistant/helpviewer_qtb.cpp
+@@ -38,6 +38,7 @@
+ 
+ #include <QtGui/QContextMenuEvent>
+ #include <QtWidgets/QMenu>
++#include <QtWidgets/QScrollBar>
+ #ifndef QT_NO_CLIPBOARD
+ #include <QtGui/QClipboard>
+ #endif
+@@ -312,6 +313,14 @@ void HelpViewer::mouseReleaseEvent(QMouseEvent *e)
+     QTextBrowser::mouseReleaseEvent(e);
+ }
+ 
++
++void HelpViewer::resizeEvent(QResizeEvent *e)
++{
++    const int topTextPosition = cursorForPosition({width() / 2, 0}).position();
++    QTextBrowser::resizeEvent(e);
++    scrollToTextPosition(topTextPosition);
++}
++
+ // -- private slots
+ 
+ void HelpViewer::actionChanged()
+@@ -377,4 +386,16 @@ QVariant HelpViewer::loadResource(int type, const QUrl &name)
+     return ba;
+ }
+ 
++
++void HelpViewer::scrollToTextPosition(int position)
++{
++    QTextCursor tc(document());
++    tc.setPosition(position);
++    const int dy = cursorRect(tc).top();
++    if (verticalScrollBar()) {
++        verticalScrollBar()->setValue(
++                    std::min(verticalScrollBar()->value() + dy, verticalScrollBar()->maximum()));
++    }
++}
++
+ QT_END_NAMESPACE
+-- 
+cgit v1.2.1
+

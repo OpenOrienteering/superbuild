@@ -1,0 +1,41 @@
+From 6e7fe099f41068aa75fe01e52f1496dfdc12ed79 Mon Sep 17 00:00:00 2001
+From: Eirik Aavitsland <eirik.aavitsland@qt.io>
+Date: Mon, 24 Feb 2020 12:00:21 +0100
+Subject: tiff: do not try to read 32bpc as 16bpc
+
+The header reader would assume that bits per sample above 8 had to be
+16, but other values are also possible, so check explicitly.
+
+Fixes: QTBUG-82412
+Change-Id: I7f0799de4d4cdc84023a34900aa595a7bf73eca1
+Reviewed-by: Allan Sandfeld Jensen <allan.jensen@qt.io>
+(cherry picked from commit 0c4d4dc12a68124451113e21d2c4fdc5d06d01d0)
+---
+ src/plugins/imageformats/tiff/qtiffhandler.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/plugins/imageformats/tiff/qtiffhandler.cpp b/src/plugins/imageformats/tiff/qtiffhandler.cpp
+index e6c7175..2cfdac2 100644
+--- a/src/plugins/imageformats/tiff/qtiffhandler.cpp
++++ b/src/plugins/imageformats/tiff/qtiffhandler.cpp
+@@ -275,7 +275,7 @@ bool QTiffHandlerPrivate::readHeaders(QIODevice *device)
+     else if ((grayscale || photometric == PHOTOMETRIC_PALETTE) && bitPerSample == 8 && samplesPerPixel == 1)
+         format = QImage::Format_Indexed8;
+     else if (samplesPerPixel < 4)
+-        if (bitPerSample > 8 && photometric == PHOTOMETRIC_RGB)
++        if (bitPerSample == 16 && photometric == PHOTOMETRIC_RGB)
+             format = QImage::Format_RGBX64;
+         else
+             format = QImage::Format_RGB32;
+@@ -291,7 +291,7 @@ bool QTiffHandlerPrivate::readHeaders(QIODevice *device)
+         if (!gotField || !count || extrasamples[0] == EXTRASAMPLE_UNSPECIFIED)
+             premultiplied = false;
+ 
+-        if (bitPerSample > 8 && photometric == PHOTOMETRIC_RGB) {
++        if (bitPerSample == 16 && photometric == PHOTOMETRIC_RGB) {
+             // We read 64-bit raw, so unassoc remains unpremultiplied.
+             if (gotField && count && extrasamples[0] == EXTRASAMPLE_UNASSALPHA)
+                 premultiplied = false;
+-- 
+cgit v1.2.1
+
