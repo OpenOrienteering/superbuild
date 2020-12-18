@@ -32,8 +32,6 @@ cmake_minimum_required(VERSION 3.2)
 
 project(qt-5.12-openorienteering VERSION 5.12.0 LANGUAGES NONE)
 
-set(VERSION ${PROJECT_VERSION} CACHE STRING "The Qt version")
-
 configure_file(init-copyright.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/init-copyright.cmake" @ONLY)
 
 set(qt_modules
@@ -50,7 +48,7 @@ set(qt_modules
 add_custom_target(update-copyright)
 
 foreach(module ${qt_modules})
-    set(module_source_dir "${CMAKE_CURRENT_LIST_DIR}/../${module}-everywhere-src-${VERSION}")
+    get_filename_component(module_source_dir "source/${module}" REALPATH)
     if(NOT EXISTS "${module_source_dir}")
        continue()
     endif()
