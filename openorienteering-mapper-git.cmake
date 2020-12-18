@@ -107,6 +107,7 @@ foreach(git_tag ${Mapper_GIT_TAGS})
 	  >
 	  $<$<NOT:$<BOOL:@CMAKE_CROSSCOMPILING@>>:
 	    TEST_COMMAND
+	      "${CMAKE_COMMAND}" -E env "LD_LIBRARY_PATH=${CMAKE_STAGING_PREFIX}/lib"
 	      "${CMAKE_CTEST_COMMAND}" -T Test --no-compress-output
 	    TEST_BEFORE_INSTALL 1
 	  >
