@@ -27,11 +27,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        2.10.2+dfsg)
-set(download_hash  SHA256=c1f32cbb42a1519ae7d69046d84d359f44bfdea15c800c4f0b60a36c78b46d70)
-set(patch_version  ${version}-4)
-set(patch_hash     SHA256=5bebdcf8e764b5a4a6a5f4f4201abb7b3356599cadaed3aae37f344ef346341f)
-set(base_url       https://snapshot.debian.org/archive/debian/20201021T155324Z/pool/main/f/freetype/)
+set(version        2.10.4+dfsg)
+set(download_hash  SHA256=db0c0938b3b75cf314775baa75198098e41583b3aaa4804b454f183ce45120a9)
+set(patch_version  ${version}-1)
+set(patch_hash     SHA256=96276d66eb56247545cd9e60ffae0bd5b5aee0490e4e7171337a6666bc51b125)
+set(base_url       https://snapshot.debian.org/archive/debian/20201208T212129Z/pool/main/f/freetype/)
 
 option(USE_SYSTEM_FREETYPE "Use the system Freetype if possible" ON)
 
