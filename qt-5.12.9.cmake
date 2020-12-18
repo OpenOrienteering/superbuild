@@ -39,6 +39,16 @@ string(CONFIGURE [[
 		set(BUILD_CONDITION 0)
 	elseif(ANDROID AND "${module}" STREQUAL "Qt5SerialPort")
 		set(BUILD_CONDITION 0)
+	elseif(ANDROID AND "${module}" STREQUAL "Qt5Help")
+		set(BUILD_CONDITION 0)
+	elseif("${module}" STREQUAL "qtattributionsscanner")
+		find_program(QTATTRIBUTIONSCANNER NAME "${module}" ONLY_CMAKE_FIND_ROOT_PATH QUIET)
+		string(FIND "${QTATTRIBUTIONSCANNER}" "${CMAKE_STAGING_PREFIX}/" staging_prefix_start)
+		if(CMAKE_CROSSCOMPILING)
+			set(BUILD_CONDITION 0)
+		elseif(QTATTRIBUTIONSCANNER AND NOT staging_prefix_start EQUAL 0)
+			message(STATUS "Found ${SYSTEM_NAME} ${module}: ${QTATTRIBUTIONSCANNER}")
+		endif()
 	elseif(USE_SYSTEM_QT)
 		find_package(Qt5Core @version@ CONFIG QUIET
 		  NO_CMAKE_FIND_ROOT_PATH
@@ -476,17 +486,50 @@ superbuild_package(
   DEPENDS        qttools-everywhere-src-${qttools_version}
 )
 
-set(module Qt5LinguistTools)
 superbuild_package(
   NAME           qttools-everywhere-src
   VERSION        ${qttools_version}
   DEPENDS
     source:qt-${short_version}-openorienteering-${openorienteering_version}
-    qtbase-${short_version}
+    qttools-linguist
+    qttools-assistant
+    qttools-qtattributionsscanner
   
   SOURCE
     URL             https://download.qt.io/archive/qt/${short_version}/${version}/submodules/qttools-everywhere-src-${version}.tar.xz
     URL_HASH        SHA256=860a97114d518f83c0a9ab3742071da16bb018e6eb387179d5764a8dcca03948
+)
+
+set(module Qt5LinguistTools)  # proxy
+superbuild_package(
+  NAME           qttools-copyright
+  VERSION        ${qttools_version}
+  DEPENDS
+    source:qt-${short_version}-openorienteering-${openorienteering_version}
+  
+  SOURCE         qttools-everywhere-src-${qttools_version}
+  
+  USING qmake USE_SYSTEM_QT module short_version openorienteering_version qttools_version
+  BUILD_CONDITION  ${use_system_qt}
+  BUILD [[
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND
+      "${CMAKE_COMMAND}" -E copy
+        "<SOURCE_DIR>/../qt-${short_version}-openorienteering-${openorienteering_version}/qttools/copyright"
+        "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/qttools-${qttools_version}.txt"
+  ]]
+)
+
+set(module Qt5Help)
+superbuild_package(
+  NAME           qttools-assistant
+  VERSION        ${qttools_version}
+  DEPENDS
+    qtbase-${short_version}
+    qttools-copyright-${qttools_version}
+  
+  SOURCE         qttools-everywhere-src-${qttools_version}
   
   USING qmake USE_SYSTEM_QT module short_version openorienteering_version qttools_version
   BUILD_CONDITION  ${use_system_qt}
@@ -495,33 +538,65 @@ superbuild_package(
       "${CMAKE_COMMAND}" -E make_directory src/assistant
     COMMAND
       "${CMAKE_COMMAND}" -E chdir src/assistant "@qmake@" "${SOURCE_DIR}/src/assistant"
-    COMMAND
-      "${CMAKE_COMMAND}" -E make_directory src/linguist
-    COMMAND
-      "${CMAKE_COMMAND}" -E chdir src/linguist "@qmake@" "${SOURCE_DIR}/src/linguist"
     BUILD_COMMAND
-      "$(MAKE)" -C src/linguist
-    $<$<NOT:$<BOOL:@ANDROID@>>:COMMAND
       "$(MAKE)" -C src/assistant
         sub-assistant-make_first
         sub-qcollectiongenerator-make_first
         sub-qhelpgenerator-make_first
-    >
     INSTALL_COMMAND
-      "$(MAKE)" -C src/linguist
-        install
-        INSTALL_ROOT=${DESTDIR}
-    $<$<NOT:$<BOOL:@ANDROID@>>:COMMAND
       "$(MAKE)" -C src/assistant
          sub-assistant-install_subtargets
          sub-qcollectiongenerator-install_subtargets
          sub-qhelpgenerator-install_subtargets
          INSTALL_ROOT=${DESTDIR}
-    >
+  ]]
+)
+
+set(module Qt5LinguistTools)
+superbuild_package(
+  NAME           qttools-linguist
+  VERSION        ${qttools_version}
+  DEPENDS
+    qtbase-${short_version}
+    qttools-copyright-${qttools_version}
+  
+  SOURCE         qttools-everywhere-src-${qttools_version}
+  
+  USING qmake USE_SYSTEM_QT module short_version openorienteering_version qttools_version
+  BUILD_CONDITION  ${use_system_qt}
+  BUILD [[
+    CONFIGURE_COMMAND
+      "${CMAKE_COMMAND}" -E make_directory src/linguist
     COMMAND
-      "${CMAKE_COMMAND}" -E copy
-        "<SOURCE_DIR>/../qt-${short_version}-openorienteering-${openorienteering_version}/qttools/copyright"
-        "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/qttools-${qttools_version}.txt"
+      "${CMAKE_COMMAND}" -E chdir src/linguist "@qmake@" "${SOURCE_DIR}/src/linguist"
+    BUILD_COMMAND
+      "$(MAKE)" -C src/linguist
+    INSTALL_COMMAND
+      "$(MAKE)" -C src/linguist install INSTALL_ROOT=${DESTDIR}
+  ]]
+)
+
+set(module qtattributionsscanner)  # dummy
+superbuild_package(
+  NAME           qttools-qtattributionsscanner
+  VERSION        ${qttools_version}
+  DEPENDS
+    qtbase-${short_version}
+    qttools-copyright-${qttools_version}
+  
+  SOURCE         qttools-everywhere-src-${qttools_version}
+  
+  USING qmake USE_SYSTEM_QT module short_version openorienteering_version qttools_version
+  BUILD_CONDITION  ${use_system_qt}
+  BUILD [[
+    CONFIGURE_COMMAND
+      "${CMAKE_COMMAND}" -E make_directory src/qtattributionsscanner
+    COMMAND
+      "${CMAKE_COMMAND}" -E chdir src/qtattributionsscanner "@qmake@" "${SOURCE_DIR}/src/qtattributionsscanner"
+    BUILD_COMMAND
+      "$(MAKE)" -C src/qtattributionsscanner
+    INSTALL_COMMAND
+      "$(MAKE)" -C src/qtattributionsscanner install INSTALL_ROOT=${DESTDIR}
   ]]
 )
 
@@ -575,7 +650,7 @@ if(GIT_EXECUTABLE AND PYTHONINTERP_FOUND
       NAME           qt-${short_version}-openorienteering
       VERSION        git
       DEPENDS
-        qttools-everywhere-src-${patch_version}  # for qtattributionsscanner
+        qttools-qtattributionsscanner-${patch_version}
         source:qtandroidextras-everywhere-src-${patch_version}
         source:qtbase-everywhere-src-${patch_version}
         source:qtimageformats-everywhere-src-${patch_version}
