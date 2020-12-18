@@ -644,15 +644,14 @@ superbuild_package(
 
 find_package(Git QUIET)
 find_package(PythonInterp 3 QUIET)
-if(GIT_EXECUTABLE AND PYTHONINTERP_FOUND
-   AND "${openorienteering_version}" STREQUAL "${patch_version}")
+if(GIT_EXECUTABLE AND PYTHONINTERP_FOUND)
     superbuild_package(
       NAME           qt-${short_version}-openorienteering
       VERSION        git
       DEPENDS
         qttools-qtattributionsscanner-${patch_version}
         source:qtandroidextras-everywhere-src-${patch_version}
-        source:qtbase-everywhere-src-${patch_version}
+        source:qtbase-everywhere-src-${qtbase_patch_version}
         source:qtimageformats-everywhere-src-${patch_version}
         source:qtlocation-everywhere-src-${patch_version}
         source:qtsensors-everywhere-src-${patch_version}
@@ -663,6 +662,24 @@ if(GIT_EXECUTABLE AND PYTHONINTERP_FOUND
       SOURCE
         GIT_REPOSITORY https://github.com/OpenOrienteering/superbuild.git
         GIT_TAG        qt-${short_version}-openorienteering
+      PATCH_COMMAND
+        "${CMAKE_COMMAND}" -E make_directory "source/"
+      COMMAND
+        "${CMAKE_COMMAND}" -E create_symlink "<SOURCE_DIR>/../qtandroidextras-everywhere-src-${patch_version}" "source/qtandroidextras"
+      COMMAND
+        "${CMAKE_COMMAND}" -E create_symlink "<SOURCE_DIR>/../qtbase-everywhere-src-${qtbase_patch_version}" "source/qtbase"
+      COMMAND
+        "${CMAKE_COMMAND}" -E create_symlink "<SOURCE_DIR>/../qtimageformats-everywhere-src-${patch_version}" "source/qtimageformats"
+      COMMAND
+        "${CMAKE_COMMAND}" -E create_symlink "<SOURCE_DIR>/../qtlocation-everywhere-src-${patch_version}" "source/qtlocation"
+      COMMAND
+        "${CMAKE_COMMAND}" -E create_symlink "<SOURCE_DIR>/../qtsensors-everywhere-src-${patch_version}" "source/qtsensors"
+      COMMAND
+        "${CMAKE_COMMAND}" -E create_symlink "<SOURCE_DIR>/../qtserialport-everywhere-src-${patch_version}" "source/qtserialport"
+      COMMAND
+        "${CMAKE_COMMAND}" -E create_symlink "<SOURCE_DIR>/../qttools-everywhere-src-${patch_version}" "source/qttools"
+      COMMAND
+        "${CMAKE_COMMAND}" -E create_symlink "<SOURCE_DIR>/../qttranslations-everywhere-src-${patch_version}" "source/qttranslations"
       
       USING patch_version PYTHON_EXECUTABLE
       BUILD [[
