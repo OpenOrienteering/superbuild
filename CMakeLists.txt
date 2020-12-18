@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2018 Kai Pastor
+# Copyright 2018-2020 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -81,9 +81,11 @@ foreach(module ${qt_modules})
     )
     add_dependencies(update-copyright update-copyright-${module})
     
+    file(STRINGS "${module_source_dir}/.qmake.conf" module_version REGEX "MODULE_VERSION")
+    string(REPLACE "MODULE_VERSION = " "" module_version "${module_version}")
     install(
       FILES "${copyright_file}"
-      RENAME "${module}-${VERSION}.txt"
+      RENAME "${module}-${module_version}.txt"
       DESTINATION "share/doc/copyright"
     )
 endforeach()
