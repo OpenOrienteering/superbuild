@@ -30,7 +30,7 @@
 set(short_version  5.12)
 set(version        5.12.7)
 set(patch_version  ${version}-0)
-set(openorienteering_version ${version}-qtbase-5.12.9-1)
+set(openorienteering_version ${version}-qtbase-5.12.10-0)
 
 option(USE_SYSTEM_QT "Use the system Qt if possible" ON)
 
@@ -102,14 +102,14 @@ superbuild_package(
   
   SOURCE
     URL            https://github.com/OpenOrienteering/superbuild/archive/qt-${short_version}-openorienteering_${openorienteering_version}.tar.gz
-    URL_HASH       SHA256=eb7467508ab79ed3a38101ae671b1751cdcb1dfe6c166d7726783f31e3f642aa
+    URL_HASH       SHA256=fa6bd764f42b32bdf3cea6999d26edb319f41cf1dba4995b062e31740076e5fe
 )
 
 
 
 # qtbase
 
-set(qtbase_version       5.12.9)
+set(qtbase_version       5.12.10)
 set(qtbase_patch_version ${qtbase_version}-0)
 superbuild_package(
   NAME           qtbase
@@ -134,7 +134,7 @@ superbuild_package(
   
   SOURCE
     URL             https://download.qt.io/archive/qt/${short_version}/${qtbase_version}/submodules/qtbase-everywhere-src-${qtbase_version}.tar.xz
-    URL_HASH        SHA256=331dafdd0f3e8623b51bd0da2266e7e7c53aa8e9dc28a8eb6f0b22609c5d337e
+    URL_HASH        SHA256=8088f174e6d28e779516c083b6087b6a9e3c8322b4bc161fd1b54195e3c86940
     
     # Don't accidently used bundled copies
     PATCH_COMMAND
@@ -341,6 +341,11 @@ superbuild_package(
     # Don't accidently used bundled copies
     PATCH_COMMAND
       "${CMAKE_COMMAND}" -E remove_directory src/3rdparty/libtiff
+    COMMAND
+      "${CMAKE_COMMAND}"
+        -Dpackage=qt-${short_version}-openorienteering-${openorienteering_version}/qtimageformats
+        -P "${APPLY_PATCHES_SERIES}"
+	  
   
   USING qmake USE_SYSTEM_QT module short_version openorienteering_version qtimageformats_version
   BUILD_CONDITION  ${use_system_qt}
@@ -498,6 +503,11 @@ superbuild_package(
   SOURCE
     URL             https://download.qt.io/archive/qt/${short_version}/${version}/submodules/qttools-everywhere-src-${version}.tar.xz
     URL_HASH        SHA256=860a97114d518f83c0a9ab3742071da16bb018e6eb387179d5764a8dcca03948
+    
+    PATCH_COMMAND
+      "${CMAKE_COMMAND}"
+        -Dpackage=qt-${short_version}-openorienteering-${openorienteering_version}/qttools
+        -P "${APPLY_PATCHES_SERIES}"
 )
 
 set(module Qt5LinguistTools)  # proxy
