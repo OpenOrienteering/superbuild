@@ -30,7 +30,7 @@
 set(short_version  5.12)
 set(version        5.12.7)
 set(patch_version  ${version}-0)
-set(openorienteering_version ${version}-qtbase-5.12.10-0)
+set(openorienteering_version ${version}-qtbase-5.12.10-1)
 
 option(USE_SYSTEM_QT "Use the system Qt if possible" ON)
 
@@ -102,7 +102,7 @@ superbuild_package(
   
   SOURCE
     URL            https://github.com/OpenOrienteering/superbuild/archive/qt-${short_version}-openorienteering_${openorienteering_version}.tar.gz
-    URL_HASH       SHA256=fa6bd764f42b32bdf3cea6999d26edb319f41cf1dba4995b062e31740076e5fe
+    URL_HASH       SHA256=fc5031097b0c4750f59ba28f84df08c5e378499267681902ad1b3b32435b0162
 )
 
 
@@ -110,7 +110,7 @@ superbuild_package(
 # qtbase
 
 set(qtbase_version       5.12.10)
-set(qtbase_patch_version ${qtbase_version}-0)
+set(qtbase_patch_version ${qtbase_version}-1)
 superbuild_package(
   NAME           qtbase
   VERSION        ${short_version}
