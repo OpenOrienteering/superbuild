@@ -1,3 +1,4 @@
 0001-Use-system-zlib-for-host-tools.patch
 QTBUG-4155-mingw-pkgconfig.patch
 libjpeg-pkg-config.patch
+0001-Revert-Android-Don-t-pause-when-in-multi-window-mode.patch
