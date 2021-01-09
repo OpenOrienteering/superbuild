@@ -1,3 +1,6 @@
 0001-Use-system-zlib-for-host-tools.patch
 QTBUG-4155-mingw-pkgconfig.patch
 libjpeg-pkg-config.patch
+QTBUG-87014-Big-Sur.patch
+QTBUG-86976-focus-changes.patch
+QTBUG-87803-android-29.patch

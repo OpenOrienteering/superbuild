@@ -1,0 +1,53 @@
+From c5d904639dbd690a36306e2b455610029704d821 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Tor=20Arne=20Vestb=C3=B8?= <tor.arne.vestbo@qt.io>
+Date: Tue, 17 Nov 2020 17:54:51 +0100
+Subject: macOS: Account for Big Sur always enabling layer backed views
+
+Previous versions of macOS (Mojave and Catalina) enabled layer backing
+only when the application's build SDK was 10.14 or above, to provide
+an opt-out workaround for applications that were not ready for layer
+backing. This seems to no longer be the case, as Big Sur will enable
+layer backing regardless of the SDK version used.
+
+Tested by passing -Wl,-sdk_version -Wl,10.13 -v -mlinker-version=519
+during linking, to simulate what the effects of linking to the 10.13
+would be. Also confirmed by real-world use of the 10.13 SDK via Xcode
+9.
+
+Change-Id: I867edc001b6709ba0ad0fd70918bd9b77d317cf8
+Fixes: QTBUG-87014
+Reviewed-by: Alexandru Croitor <alexandru.croitor@qt.io>
+Reviewed-by: Timur Pocheptsov <timur.pocheptsov@qt.io>
+(cherry picked from commit 2cae34354bd41ae286258c7a6b3653b746e786ae)
+Reviewed-by: Qt Cherry-pick Bot <cherrypick_bot@qt-project.org>
+---
+ src/plugins/platforms/cocoa/qnsview_drawing.mm | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+(limited to 'src')
+
+diff --git a/src/plugins/platforms/cocoa/qnsview_drawing.mm b/src/plugins/platforms/cocoa/qnsview_drawing.mm
+index 116a9a73df..14e45a038e 100644
+--- a/src/plugins/platforms/cocoa/qnsview_drawing.mm
++++ b/src/plugins/platforms/cocoa/qnsview_drawing.mm
+@@ -95,8 +95,15 @@
+     // by AppKit at a point where we've already set up other parts of the platform plugin
+     // based on the presence of layers or not. Once we've rewritten these parts to support
+     // dynamically picking up layer enablement we can let AppKit do its thing.
+-    return QMacVersion::buildSDK() >= QOperatingSystemVersion::MacOSMojave
+-        && QMacVersion::currentRuntime() >= QOperatingSystemVersion::MacOSMojave;
++
++    if (QMacVersion::currentRuntime() >= QOperatingSystemVersion::MacOSBigSur)
++        return true; // Big Sur always enables layer-backing, regardless of SDK
++
++    if (QMacVersion::currentRuntime() >= QOperatingSystemVersion::MacOSMojave
++        && QMacVersion::buildSDK() >= QOperatingSystemVersion::MacOSMojave)
++        return true; // Mojave and Catalina enable layers based on the app's SDK
++
++    return false; // Prior versions needed explicitly enabled layer backing
+ }
+ 
+ - (BOOL)layerExplicitlyRequested
+-- 
+cgit v1.2.1
+
