@@ -111,6 +111,7 @@ jobs:
     SUPERBUILD_INSTALL_DIR: $(HOME)/superbuild
     TARGET: armv7a-linux-androideabi
     TARGET_SUFFIX: -$(TARGET)
+    ANDROID_API_VERSION: android-29
   pool:
     vmImage: '$(IMAGE_NAME)'
   steps:
@@ -138,6 +139,7 @@ jobs:
     SUPERBUILD_INSTALL_DIR: $(HOME)/superbuild
     TARGET: aarch64-linux-android
     TARGET_SUFFIX: -$(TARGET)
+    ANDROID_API_VERSION: android-29
   pool:
     vmImage: '$(IMAGE_NAME)'
   steps:
@@ -165,6 +167,7 @@ jobs:
     SUPERBUILD_INSTALL_DIR: $(HOME)/superbuild
     TARGET: i686-linux-android
     TARGET_SUFFIX: -$(TARGET)
+    ANDROID_API_VERSION: android-29
   pool:
     vmImage: '$(IMAGE_NAME)'
   steps:
@@ -192,6 +195,7 @@ jobs:
     SUPERBUILD_INSTALL_DIR: $(HOME)/superbuild
     TARGET: x86_64-linux-android
     TARGET_SUFFIX: -$(TARGET)
+    ANDROID_API_VERSION: android-29
   pool:
     vmImage: '$(IMAGE_NAME)'
   steps:

@@ -34,6 +34,11 @@ set(openorienteering_version ${version}-qtbase-5.12.10-1)
 
 option(USE_SYSTEM_QT "Use the system Qt if possible" ON)
 
+# Note for Android
+# Set environment variable ANDROID_API_VERSION to specify the target API level.
+# Building Qt 5.12.10 needs "android-24" or higher.
+# Cf. https://bugreports.qt.io/browse/QTBUG-89616
+
 string(CONFIGURE [[
 	if("${module}" MATCHES "Android" AND NOT ANDROID)
 		set(BUILD_CONDITION 0)
