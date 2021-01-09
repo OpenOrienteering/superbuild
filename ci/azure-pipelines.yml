@@ -36,6 +36,7 @@ jobs:
 
 
 - job: macOS
+  condition: False
   timeoutInMinutes: 120
   dependsOn: Source
   variables:
@@ -60,6 +61,7 @@ jobs:
 
 
 - job: Linux
+  condition: False
   timeoutInMinutes: 120
   dependsOn: macOS
   variables:
@@ -158,6 +160,7 @@ jobs:
     - template: publish.yml
 
 - job: Android_x86
+  condition: False
   timeoutInMinutes: 120
   dependsOn: Android_x86_64
   variables:
@@ -185,6 +188,7 @@ jobs:
     - template: publish.yml
 
 - job: Android_x86_64
+  condition: False
   timeoutInMinutes: 120
   dependsOn: Source
   variables:
@@ -212,6 +216,7 @@ jobs:
     - template: publish.yml
 
 - job: Windows_mingw32
+  condition: False
   timeoutInMinutes: 240
   dependsOn: Source
   variables:
@@ -244,6 +249,7 @@ jobs:
         outputSuffix: -$(MINGW)
 
 - job: Windows_mingw64
+  condition: False
   timeoutInMinutes: 240
   dependsOn: Source
   variables:

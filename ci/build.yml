@@ -74,6 +74,9 @@ steps:
       -- ${{ parameters.buildArgs }}
   displayName: 'Toolchain information'
 
+- bash: ${ANDROID_SDK_ROOT}/tools/bin/sdkmanager --list
+  displayName: 'SDK info'
+
 - task: CMake@1
   inputs:
     workingDirectory: 'build'
