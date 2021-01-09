@@ -184,7 +184,7 @@ superbuild_package(
          --unset=CXXFLAGS
          --unset=LDFLAGS
          $<@android@:
-           ANDROID_API_VERSION=android-23
+           #ANDROID_API_VERSION=android-23
            # Required to satisfy qconfigure.pri
            PKG_CONFIG_SYSROOT_DIR=set-but-not-used
            PKG_CONFIG_LIBDIR=set-but-not-used
@@ -262,8 +262,9 @@ superbuild_package(
       >
       -I "${CMAKE_STAGING_PREFIX}/include"
       -L "${CMAKE_STAGING_PREFIX}/lib"
+      ANDROID_API_VERSION=android-24
     BUILD_COMMAND
-      $<@android@:"${CMAKE_COMMAND}" -E env ANDROID_API_VERSION=android-28>
+      #$<@android@:"${CMAKE_COMMAND}" -E env ANDROID_API_VERSION=android-28>
       "$(MAKE)"
     INSTALL_COMMAND
       "$(MAKE)" install INSTALL_ROOT=${DESTDIR}
