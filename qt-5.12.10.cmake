@@ -184,7 +184,7 @@ superbuild_package(
          --unset=CXXFLAGS
          --unset=LDFLAGS
          $<@android@:
-           ANDROID_API_VERSION=android-28
+           ANDROID_API_VERSION=android-23
            # Required to satisfy qconfigure.pri
            PKG_CONFIG_SYSROOT_DIR=set-but-not-used
            PKG_CONFIG_LIBDIR=set-but-not-used
