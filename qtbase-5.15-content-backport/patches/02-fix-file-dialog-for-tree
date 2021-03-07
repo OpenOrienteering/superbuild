@@ -1,0 +1,13 @@
+--- a/src/plugins/platforms/android/qandroidplatformfiledialoghelper.cpp
++++ b/src/plugins/platforms/android/qandroidplatformfiledialoghelper.cpp
+@@ -107,7 +107,9 @@
+     int modeFlags = QJNIObjectPrivate::getStaticField<jint>(
+             JniIntentClass, "FLAG_GRANT_READ_URI_PERMISSION");
+ 
+-    if (options()->acceptMode() == QFileDialogOptions::AcceptSave) {
++    if (options()->acceptMode() == QFileDialogOptions::AcceptSave
++        || options()->fileMode() == QFileDialogOptions::Directory
++        || options()->fileMode() == QFileDialogOptions::DirectoryOnly) {
+         modeFlags |= QJNIObjectPrivate::getStaticField<jint>(
+                 JniIntentClass, "FLAG_GRANT_WRITE_URI_PERMISSION");
+     }

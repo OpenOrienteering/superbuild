@@ -1,0 +1,190 @@
+--- a/src/android/jar/src/org/qtproject/qt5/android/QtNative.java
++++ b/src/android/jar/src/org/qtproject/qt5/android/QtNative.java
+@@ -160,6 +160,15 @@
+         }
+     }
+ 
++    private static String getCanonicalContentUri(String uri)
++    {
++        // Reliably turn "content:/" into "content://",
++        if (uri.length() > 8 && uri.charAt(9) != '/') {
++            uri = uri.substring(0, 8) + '/' + uri.substring(8);
++        }
++        return uri;
++    }
++
+     private static Uri getUriWithValidPermission(Context context, String uri, String openMode)
+     {
+         try {
+@@ -173,6 +182,9 @@
+             List<UriPermission> permissions = context.getContentResolver().getPersistedUriPermissions();
+             String uriStr = parsedUri.getPath();
+ 
++            Uri matchedTreeUri = null;
++            int matchedTreeUriLen = 0;
++
+             for (int i = 0; i < permissions.size(); ++i) {
+                 Uri iterUri = permissions.get(i).getUri();
+                 boolean isRightPermission = permissions.get(i).isReadPermission();
+@@ -182,6 +194,40 @@
+ 
+                 if (iterUri.getPath().equals(uriStr) && isRightPermission)
+                     return iterUri;
++
++                final String iterUriStr = iterUri.getPath();
++                final int len = iterUriStr.length();
++                if (len > matchedTreeUriLen
++                        && len < uriStr.length()
++                        && uriStr.startsWith(iterUriStr)
++                        && uriStr.charAt(len) == '/') {
++                    matchedTreeUri = iterUri;
++                    matchedTreeUriLen = len;
++                }
++            }
++
++            // If no explicit permission is given for the URI, but there is a document tree which
++            // matches path and openMode, then visit the tree and accept any matching cached URI.
++            if (matchedTreeUri != null) {
++                if (m_cachedUris.containsKey(uri))
++                    return m_cachedUris.get(uri);
++
++                String visitedUri = matchedTreeUri.toString();
++                while (true) {
++                    Log.w(QtTAG, "*** VISITING: " + visitedUri);
++                    // Populate m_cachedUris with children of matchedTreeUri
++                    listContentsFromTreeUri(context, visitedUri);
++                    if (m_cachedUris.containsKey(uri)) {
++                        return m_cachedUris.get(uri);
++                    }
++
++                    int nextSeparator = uri.indexOf('/', visitedUri.length() + 1);
++                    if (nextSeparator < 0) {
++                        break;
++                    } else {
++                        visitedUri = uri.substring(0, nextSeparator);
++                    }
++                }
+             }
+ 
+             // Android 6 and earlier could still manage to open the file so we can return the
+@@ -197,6 +243,7 @@
+ 
+     public static boolean openURL(Context context, String url, String mime)
+     {
++        url = getCanonicalContentUri(url);
+         Uri uri = getUriWithValidPermission(context, url, "r");
+ 
+         if (uri == null) {
+@@ -229,6 +276,7 @@
+ 
+     public static int openFdForContentUrl(Context context, String contentUrl, String openMode)
+     {
++        contentUrl = getCanonicalContentUri(contentUrl);
+         Uri uri = m_cachedUris.get(contentUrl);
+         if (uri == null)
+             uri = getUriWithValidPermission(context, contentUrl, openMode);
+@@ -255,6 +303,7 @@
+ 
+     public static long getSize(Context context, String contentUrl)
+     {
++        contentUrl = getCanonicalContentUri(contentUrl);
+         long size = -1;
+         Uri uri = m_cachedUris.get(contentUrl);
+         if (uri == null)
+@@ -263,8 +312,6 @@
+         if (uri == null) {
+             Log.e(QtTAG, "getSize(): No permissions to open Uri");
+             return size;
+-        } else if (!m_cachedUris.containsKey(contentUrl)) {
+-            m_cachedUris.put(contentUrl, uri);
+         }
+ 
+         try {
+@@ -289,6 +336,7 @@
+ 
+     public static boolean checkFileExists(Context context, String contentUrl)
+     {
++        contentUrl = getCanonicalContentUri(contentUrl);
+         boolean exists = false;
+         Uri uri = m_cachedUris.get(contentUrl);
+         if (uri == null)
+@@ -296,9 +344,6 @@
+         if (uri == null) {
+             Log.e(QtTAG, "checkFileExists(): No permissions to open Uri");
+             return exists;
+-        } else {
+-            if (!m_cachedUris.containsKey(contentUrl))
+-                m_cachedUris.put(contentUrl, uri);
+         }
+ 
+         try {
+@@ -322,11 +367,13 @@
+ 
+     public static boolean checkIfWritable(Context context, String contentUrl)
+     {
++        contentUrl = getCanonicalContentUri(contentUrl);
+         return getUriWithValidPermission(context, contentUrl, "w") != null;
+     }
+ 
+     public static boolean checkIfDir(Context context, String contentUrl)
+     {
++        contentUrl = getCanonicalContentUri(contentUrl);
+         boolean isDir = false;
+         Uri uri = m_cachedUris.get(contentUrl);
+         if (m_knownDirs.contains(contentUrl))
+@@ -337,9 +384,6 @@
+         if (uri == null) {
+             Log.e(QtTAG, "isDir(): No permissions to open Uri");
+             return isDir;
+-        } else {
+-            if (!m_cachedUris.containsKey(contentUrl))
+-                m_cachedUris.put(contentUrl, uri);
+         }
+ 
+         try {
+@@ -372,19 +416,32 @@
+             return false;
+         }
+     }
++
++    private static Uri getTreeUri(String contentUrl)
++    {
++        if (m_cachedUris.containsKey(contentUrl))
++            return m_cachedUris.get(contentUrl);
++
++        Uri uri = Uri.parse(contentUrl);
++        if (uri == null)
++            return null;
++
++        return DocumentsContract.buildDocumentUriUsingTree(uri, DocumentsContract.getTreeDocumentId(uri));
++    }
++
+     public static String[] listContentsFromTreeUri(Context context, String contentUrl)
+     {
+-        Uri treeUri = Uri.parse(contentUrl);
++        contentUrl = getCanonicalContentUri(contentUrl);
++        Uri treeUri = getTreeUri(contentUrl);
+         final ArrayList<String> results = new ArrayList<String>();
+         if (treeUri == null) {
+             Log.e(QtTAG, "listContentsFromTreeUri(): Invalid uri");
+             return results.toArray(new String[results.size()]);
+         }
++
+         final ContentResolver resolver = context.getContentResolver();
+-        final Uri docUri = DocumentsContract.buildDocumentUriUsingTree(treeUri,
+-                DocumentsContract.getTreeDocumentId(treeUri));
+-        final Uri childrenUri = DocumentsContract.buildChildDocumentsUriUsingTree(docUri,
+-                                DocumentsContract.getDocumentId(docUri));
++        final Uri childrenUri = DocumentsContract.buildChildDocumentsUriUsingTree(treeUri,
++                                DocumentsContract.getDocumentId(treeUri));
+         Cursor c = null;
+         final String dirStr = new String(DocumentsContract.Document.MIME_TYPE_DIR);
+         try {
+@@ -407,6 +464,7 @@
+         }
+         return results.toArray(new String[results.size()]);
+     }
++
+     // this method loads full path libs
+     public static void loadQtLibraries(final ArrayList<String> libraries)
+     {
