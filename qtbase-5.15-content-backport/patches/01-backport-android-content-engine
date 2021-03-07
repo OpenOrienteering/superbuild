@@ -1,0 +1,1100 @@
+--- /dev/null
++++ b/src/plugins/platforms/android/androidcontentfileengine.cpp
+@@ -0,0 +1,215 @@
++/****************************************************************************
++**
++** Copyright (C) 2019 Volker Krause <vkrause@kde.org>
++** Contact: https://www.qt.io/licensing/
++**
++** This file is part of the plugins of the Qt Toolkit.
++**
++** $QT_BEGIN_LICENSE:LGPL$
++** Commercial License Usage
++** Licensees holding valid commercial Qt licenses may use this file in
++** accordance with the commercial license agreement provided with the
++** Software or, alternatively, in accordance with the terms contained in
++** a written agreement between you and The Qt Company. For licensing terms
++** and conditions see https://www.qt.io/terms-conditions. For further
++** information use the contact form at https://www.qt.io/contact-us.
++**
++** GNU Lesser General Public License Usage
++** Alternatively, this file may be used under the terms of the GNU Lesser
++** General Public License version 3 as published by the Free Software
++** Foundation and appearing in the file LICENSE.LGPL3 included in the
++** packaging of this file. Please review the following information to
++** ensure the GNU Lesser General Public License version 3 requirements
++** will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
++**
++** GNU General Public License Usage
++** Alternatively, this file may be used under the terms of the GNU
++** General Public License version 2.0 or (at your option) the GNU General
++** Public license version 3 or any later version approved by the KDE Free
++** Qt Foundation. The licenses are as published by the Free Software
++** Foundation and appearing in the file LICENSE.GPL2 and LICENSE.GPL3
++** included in the packaging of this file. Please review the following
++** information to ensure the GNU General Public License requirements will
++** be met: https://www.gnu.org/licenses/gpl-2.0.html and
++** https://www.gnu.org/licenses/gpl-3.0.html.
++**
++** $QT_END_LICENSE$
++**
++****************************************************************************/
++
++#include "androidcontentfileengine.h"
++
++#include <private/qjni_p.h>
++#include <private/qjnihelpers_p.h>
++
++#include <QDebug>
++
++AndroidContentFileEngine::AndroidContentFileEngine(const QString &f)
++    : m_file(f)
++{
++    setFileName(f);
++}
++
++bool AndroidContentFileEngine::open(QIODevice::OpenMode openMode)
++{
++    QString openModeStr;
++    if (openMode & QFileDevice::ReadOnly) {
++        openModeStr += QLatin1Char('r');
++    }
++    if (openMode & QFileDevice::WriteOnly) {
++        openModeStr += QLatin1Char('w');
++    }
++    if (openMode & QFileDevice::Truncate) {
++        openModeStr += QLatin1Char('t');
++    } else if (openMode & QFileDevice::Append) {
++        openModeStr += QLatin1Char('a');
++    }
++
++    const auto fd = QJNIObjectPrivate::callStaticMethod<jint>("org/qtproject/qt5/android/QtNative",
++        "openFdForContentUrl",
++        "(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)I",
++        QtAndroidPrivate::context(),
++        QJNIObjectPrivate::fromString(fileName(DefaultName)).object(),
++        QJNIObjectPrivate::fromString(openModeStr).object());
++
++    if (fd < 0) {
++        return false;
++    }
++
++    return QFSFileEngine::open(openMode, fd, QFile::AutoCloseHandle);
++}
++
++qint64 AndroidContentFileEngine::size() const
++{
++    const jlong size = QJNIObjectPrivate::callStaticMethod<jlong>(
++            "org/qtproject/qt5/android/QtNative", "getSize",
++            "(Landroid/content/Context;Ljava/lang/String;)J", QtAndroidPrivate::context(),
++            QJNIObjectPrivate::fromString(fileName(DefaultName)).object());
++    return (qint64)size;
++}
++
++AndroidContentFileEngine::FileFlags AndroidContentFileEngine::fileFlags(FileFlags type) const
++{
++    FileFlags commonFlags(ReadOwnerPerm|ReadUserPerm|ReadGroupPerm|ReadOtherPerm|ExistsFlag);
++    FileFlags flags;
++    const bool isDir = QJNIObjectPrivate::callStaticMethod<jboolean>(
++            "org/qtproject/qt5/android/QtNative", "checkIfDir",
++            "(Landroid/content/Context;Ljava/lang/String;)Z", QtAndroidPrivate::context(),
++            QJNIObjectPrivate::fromString(fileName(DefaultName)).object());
++    // If it is a directory then we know it exists so there is no reason to explicitly check
++    const bool exists = isDir ? true : QJNIObjectPrivate::callStaticMethod<jboolean>(
++            "org/qtproject/qt5/android/QtNative", "checkFileExists",
++            "(Landroid/content/Context;Ljava/lang/String;)Z", QtAndroidPrivate::context(),
++            QJNIObjectPrivate::fromString(fileName(DefaultName)).object());
++    if (!exists && !isDir)
++        return flags;
++    if (isDir) {
++        flags = DirectoryType | commonFlags;
++    } else {
++        flags = FileType | commonFlags;
++        const bool writable = QJNIObjectPrivate::callStaticMethod<jboolean>(
++            "org/qtproject/qt5/android/QtNative", "checkIfWritable",
++            "(Landroid/content/Context;Ljava/lang/String;)Z", QtAndroidPrivate::context(),
++            QJNIObjectPrivate::fromString(fileName(DefaultName)).object());
++        if (writable)
++            flags |= WriteOwnerPerm|WriteUserPerm|WriteGroupPerm|WriteOtherPerm;
++    }
++    return type & flags;
++}
++
++QString AndroidContentFileEngine::fileName(FileName f) const
++{
++    switch (f) {
++        case PathName:
++        case AbsolutePathName:
++        case CanonicalPathName:
++        case DefaultName:
++        case AbsoluteName:
++        case CanonicalName:
++            return m_file;
++        case BaseName:
++        {
++            const int pos = m_file.lastIndexOf(QChar(QLatin1Char('/')));
++            return m_file.mid(pos);
++        }
++        default:
++            return QString();
++    }
++}
++
++QAbstractFileEngine::Iterator *AndroidContentFileEngine::beginEntryList(QDir::Filters filters, const QStringList &filterNames)
++{
++    return new AndroidContentFileEngineIterator(filters, filterNames);
++}
++
++QAbstractFileEngine::Iterator *AndroidContentFileEngine::endEntryList()
++{
++    return nullptr;
++}
++
++AndroidContentFileEngineHandler::AndroidContentFileEngineHandler() = default;
++AndroidContentFileEngineHandler::~AndroidContentFileEngineHandler() = default;
++
++QAbstractFileEngine* AndroidContentFileEngineHandler::create(const QString &fileName) const
++{
++    if (!fileName.startsWith(QLatin1String("content"))) {
++        return nullptr;
++    }
++
++    return new AndroidContentFileEngine(fileName);
++}
++
++AndroidContentFileEngineIterator::AndroidContentFileEngineIterator(QDir::Filters filters,
++                                                                   const QStringList &filterNames)
++    : QAbstractFileEngineIterator(filters, filterNames)
++{
++}
++
++AndroidContentFileEngineIterator::~AndroidContentFileEngineIterator()
++{
++}
++
++QString AndroidContentFileEngineIterator::next()
++{
++    if (!hasNext())
++        return QString();
++    ++m_index;
++    return currentFilePath();
++}
++
++bool AndroidContentFileEngineIterator::hasNext() const
++{
++    if (m_index == -1) {
++        if (path().isEmpty())
++            return false;
++        const bool isDir = QJNIObjectPrivate::callStaticMethod<jboolean>(
++                             "org/qtproject/qt5/android/QtNative", "checkIfDir",
++                             "(Landroid/content/Context;Ljava/lang/String;)Z",
++                             QtAndroidPrivate::context(),
++                             QJNIObjectPrivate::fromString(path()).object());
++        if (isDir) {
++            QJNIObjectPrivate objArray = QJNIObjectPrivate::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
++                                           "listContentsFromTreeUri",
++                                           "(Landroid/content/Context;Ljava/lang/String;)[Ljava/lang/String;",
++                                           QtAndroidPrivate::context(),
++                                           QJNIObjectPrivate::fromString(path()).object());
++            if (objArray.isValid()) {
++                QJNIEnvironmentPrivate env;
++                const jsize length = env->GetArrayLength(static_cast<jarray>(objArray.object()));
++                for (int i = 0; i != length; ++i) {
++                    m_entries << QJNIObjectPrivate(env->GetObjectArrayElement(
++                                static_cast<jobjectArray>(objArray.object()), i)).toString();
++                }
++            }
++        }
++        m_index = 0;
++    }
++    return m_index < m_entries.size();
++}
++
++QString AndroidContentFileEngineIterator::currentFileName() const
++{
++    if (m_index <= 0 || m_index > m_entries.size())
++        return QString();
++    return m_entries.at(m_index - 1);
++}
+--- /dev/null
++++ b/src/plugins/platforms/android/androidcontentfileengine.h
+@@ -0,0 +1,81 @@
++/****************************************************************************
++**
++** Copyright (C) 2019 Volker Krause <vkrause@kde.org>
++** Contact: https://www.qt.io/licensing/
++**
++** This file is part of the plugins of the Qt Toolkit.
++**
++** $QT_BEGIN_LICENSE:LGPL$
++** Commercial License Usage
++** Licensees holding valid commercial Qt licenses may use this file in
++** accordance with the commercial license agreement provided with the
++** Software or, alternatively, in accordance with the terms contained in
++** a written agreement between you and The Qt Company. For licensing terms
++** and conditions see https://www.qt.io/terms-conditions. For further
++** information use the contact form at https://www.qt.io/contact-us.
++**
++** GNU Lesser General Public License Usage
++** Alternatively, this file may be used under the terms of the GNU Lesser
++** General Public License version 3 as published by the Free Software
++** Foundation and appearing in the file LICENSE.LGPL3 included in the
++** packaging of this file. Please review the following information to
++** ensure the GNU Lesser General Public License version 3 requirements
++** will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
++**
++** GNU General Public License Usage
++** Alternatively, this file may be used under the terms of the GNU
++** General Public License version 2.0 or (at your option) the GNU General
++** Public license version 3 or any later version approved by the KDE Free
++** Qt Foundation. The licenses are as published by the Free Software
++** Foundation and appearing in the file LICENSE.GPL2 and LICENSE.GPL3
++** included in the packaging of this file. Please review the following
++** information to ensure the GNU General Public License requirements will
++** be met: https://www.gnu.org/licenses/gpl-2.0.html and
++** https://www.gnu.org/licenses/gpl-3.0.html.
++**
++** $QT_END_LICENSE$
++**
++****************************************************************************/
++
++#ifndef ANDROIDCONTENTFILEENGINE_H
++#define ANDROIDCONTENTFILEENGINE_H
++
++#include <private/qfsfileengine_p.h>
++
++class AndroidContentFileEngine : public QFSFileEngine
++{
++public:
++    AndroidContentFileEngine(const QString &fileName);
++    bool open(QIODevice::OpenMode openMode) override;
++    qint64 size() const override;
++    FileFlags fileFlags(FileFlags type = FileInfoAll) const override;
++    QString fileName(FileName file = DefaultName) const override;
++    QAbstractFileEngine::Iterator *beginEntryList(QDir::Filters filters, const QStringList &filterNames) override;
++    QAbstractFileEngine::Iterator *endEntryList() override;
++private:
++    QString m_file;
++
++};
++
++class AndroidContentFileEngineHandler : public QAbstractFileEngineHandler
++{
++public:
++    AndroidContentFileEngineHandler();
++    ~AndroidContentFileEngineHandler();
++    QAbstractFileEngine *create(const QString &fileName) const override;
++};
++
++class AndroidContentFileEngineIterator : public QAbstractFileEngineIterator
++{
++public:
++    AndroidContentFileEngineIterator(QDir::Filters filters, const QStringList &filterNames);
++    ~AndroidContentFileEngineIterator();
++    QString next() override;
++    bool hasNext() const override;
++    QString currentFileName() const override;
++private:
++    mutable QStringList m_entries;
++    mutable int m_index = -1;
++};
++
++#endif // ANDROIDCONTENTFILEENGINE_H
+--- a/src/plugins/platforms/android/androidjnimain.cpp
++++ b/src/plugins/platforms/android/androidjnimain.cpp
+@@ -49,6 +49,7 @@
+ #include "androidjniinput.h"
+ #include "androidjniclipboard.h"
+ #include "androidjnimenu.h"
++#include "androidcontentfileengine.h"
+ #include "androiddeadlockprotector.h"
+ #include "qandroidplatformdialoghelpers.h"
+ #include "qandroidplatformintegration.h"
+@@ -116,6 +117,7 @@
+ static double m_density = 1.0;
+ 
+ static AndroidAssetsFileEngineHandler *m_androidAssetsFileEngineHandler = nullptr;
++static AndroidContentFileEngineHandler *m_androidContentFileEngineHandler = nullptr;
+ 
+ 
+ 
+@@ -445,6 +447,7 @@
+ {
+     m_androidPlatformIntegration = nullptr;
+     m_androidAssetsFileEngineHandler = new AndroidAssetsFileEngineHandler();
++    m_androidContentFileEngineHandler = new AndroidContentFileEngineHandler();
+     m_mainLibraryHnd = nullptr;
+     { // Set env. vars
+         const char *nativeString = env->GetStringUTFChars(environmentString, 0);
+@@ -555,6 +558,8 @@
+     m_androidPlatformIntegration = nullptr;
+     delete m_androidAssetsFileEngineHandler;
+     m_androidAssetsFileEngineHandler = nullptr;
++    delete m_androidContentFileEngineHandler;
++    m_androidContentFileEngineHandler = nullptr;
+ }
+ 
+ static void terminateQt(JNIEnv *env, jclass /*clazz*/)
+--- a/src/plugins/platforms/android/android.pro
++++ b/src/plugins/platforms/android/android.pro
+@@ -20,6 +20,7 @@
+     $$QT_SOURCE_TREE/src/3rdparty/android
+ 
+ SOURCES += $$PWD/androidplatformplugin.cpp \
++           $$PWD/androidcontentfileengine.cpp \
+            $$PWD/androiddeadlockprotector.cpp \
+            $$PWD/androidjnimain.cpp \
+            $$PWD/androidjniaccessibility.cpp \
+@@ -46,9 +47,11 @@
+            $$PWD/qandroidplatformopenglcontext.cpp \
+            $$PWD/qandroidplatformforeignwindow.cpp \
+            $$PWD/qandroideventdispatcher.cpp \
+-           $$PWD/qandroidplatformoffscreensurface.cpp
++           $$PWD/qandroidplatformoffscreensurface.cpp \
++           $$PWD/qandroidplatformfiledialoghelper.cpp
+ 
+ HEADERS += $$PWD/qandroidplatformintegration.h \
++           $$PWD/androidcontentfileengine.h \
+            $$PWD/androiddeadlockprotector.h \
+            $$PWD/androidjnimain.h \
+            $$PWD/androidjniaccessibility.h \
+@@ -75,7 +78,8 @@
+            $$PWD/qandroidplatformopenglcontext.h \
+            $$PWD/qandroidplatformforeignwindow.h \
+            $$PWD/qandroideventdispatcher.h \
+-           $$PWD/qandroidplatformoffscreensurface.h
++           $$PWD/qandroidplatformoffscreensurface.h \
++           $$PWD/qandroidplatformfiledialoghelper.h
+ 
+ qtConfig(android-style-assets): SOURCES += $$PWD/extract.cpp
+ else: SOURCES += $$PWD/extract-dummy.cpp
+--- /dev/null
++++ b/src/plugins/platforms/android/qandroidplatformfiledialoghelper.cpp
+@@ -0,0 +1,254 @@
++/****************************************************************************
++**
++** Copyright (C) 2019 Klaralvdalens Datakonsult AB (KDAB)
++** Contact: https://www.qt.io/licensing/
++**
++** This file is part of the plugins of the Qt Toolkit.
++**
++** $QT_BEGIN_LICENSE:LGPL$
++** Commercial License Usage
++** Licensees holding valid commercial Qt licenses may use this file in
++** accordance with the commercial license agreement provided with the
++** Software or, alternatively, in accordance with the terms contained in
++** a written agreement between you and The Qt Company. For licensing terms
++** and conditions see https://www.qt.io/terms-conditions. For further
++** information use the contact form at https://www.qt.io/contact-us.
++**
++** GNU Lesser General Public License Usage
++** Alternatively, this file may be used under the terms of the GNU Lesser
++** General Public License version 3 as published by the Free Software
++** Foundation and appearing in the file LICENSE.LGPL3 included in the
++** packaging of this file. Please review the following information to
++** ensure the GNU Lesser General Public License version 3 requirements
++** will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
++**
++** GNU General Public License Usage
++** Alternatively, this file may be used under the terms of the GNU
++** General Public License version 2.0 or (at your option) the GNU General
++** Public license version 3 or any later version approved by the KDE Free
++** Qt Foundation. The licenses are as published by the Free Software
++** Foundation and appearing in the file LICENSE.GPL2 and LICENSE.GPL3
++** included in the packaging of this file. Please review the following
++** information to ensure the GNU General Public License requirements will
++** be met: https://www.gnu.org/licenses/gpl-2.0.html and
++** https://www.gnu.org/licenses/gpl-3.0.html.
++**
++** $QT_END_LICENSE$
++**
++****************************************************************************/
++
++#include "qandroidplatformfiledialoghelper.h"
++
++#include <androidjnimain.h>
++#include <jni.h>
++
++#include <QMimeType>
++#include <QMimeDatabase>
++#include <QRegularExpression>
++
++QT_BEGIN_NAMESPACE
++
++namespace QtAndroidFileDialogHelper {
++
++#define RESULT_OK -1
++#define REQUEST_CODE 1305 // Arbitrary
++
++const char JniIntentClass[] = "android/content/Intent";
++
++QAndroidPlatformFileDialogHelper::QAndroidPlatformFileDialogHelper()
++    : QPlatformFileDialogHelper(),
++      m_activity(QtAndroid::activity())
++{
++}
++
++bool QAndroidPlatformFileDialogHelper::handleActivityResult(jint requestCode, jint resultCode, jobject data)
++{
++    if (requestCode != REQUEST_CODE)
++        return false;
++
++    if (resultCode != RESULT_OK) {
++        Q_EMIT reject();
++        return true;
++    }
++
++    const QJNIObjectPrivate intent = QJNIObjectPrivate::fromLocalRef(data);
++
++    const QJNIObjectPrivate uri = intent.callObjectMethod("getData", "()Landroid/net/Uri;");
++    if (uri.isValid()) {
++        takePersistableUriPermission(uri);
++        m_selectedFile.append(QUrl(uri.toString()));
++        Q_EMIT fileSelected(m_selectedFile.first());
++        Q_EMIT accept();
++
++        return true;
++    }
++
++    const QJNIObjectPrivate uriClipData =
++            intent.callObjectMethod("getClipData", "()Landroid/content/ClipData;");
++    if (uriClipData.isValid()) {
++        const int size = uriClipData.callMethod<jint>("getItemCount");
++        for (int i = 0; i < size; ++i) {
++            QJNIObjectPrivate item = uriClipData.callObjectMethod(
++                    "getItemAt", "(I)Landroid/content/ClipData$Item;", i);
++
++            QJNIObjectPrivate itemUri = item.callObjectMethod("getUri", "()Landroid/net/Uri;");
++            takePersistableUriPermission(itemUri);
++            m_selectedFile.append(itemUri.toString());
++        }
++        Q_EMIT filesSelected(m_selectedFile);
++        Q_EMIT accept();
++    }
++
++    return true;
++}
++
++void QAndroidPlatformFileDialogHelper::takePersistableUriPermission(const QJNIObjectPrivate &uri)
++{
++    int modeFlags = QJNIObjectPrivate::getStaticField<jint>(
++            JniIntentClass, "FLAG_GRANT_READ_URI_PERMISSION");
++
++    if (options()->acceptMode() == QFileDialogOptions::AcceptSave) {
++        modeFlags |= QJNIObjectPrivate::getStaticField<jint>(
++                JniIntentClass, "FLAG_GRANT_WRITE_URI_PERMISSION");
++    }
++
++    QJNIObjectPrivate contentResolver = m_activity.callObjectMethod(
++            "getContentResolver", "()Landroid/content/ContentResolver;");
++    contentResolver.callMethod<void>("takePersistableUriPermission", "(Landroid/net/Uri;I)V",
++                                     uri.object(), modeFlags);
++}
++
++void QAndroidPlatformFileDialogHelper::setIntentTitle(const QString &title)
++{
++    const QJNIObjectPrivate extraTitle = QJNIObjectPrivate::getStaticObjectField(
++            JniIntentClass, "EXTRA_TITLE", "Ljava/lang/String;");
++    m_intent.callObjectMethod("putExtra",
++                              "(Ljava/lang/String;Ljava/lang/String;)Landroid/content/Intent;",
++                              extraTitle.object(), QJNIObjectPrivate::fromString(title).object());
++}
++
++void QAndroidPlatformFileDialogHelper::setOpenableCategory()
++{
++    const QJNIObjectPrivate CATEGORY_OPENABLE = QJNIObjectPrivate::getStaticObjectField(
++            JniIntentClass, "CATEGORY_OPENABLE", "Ljava/lang/String;");
++    m_intent.callObjectMethod("addCategory", "(Ljava/lang/String;)Landroid/content/Intent;",
++                              CATEGORY_OPENABLE.object());
++}
++
++void QAndroidPlatformFileDialogHelper::setAllowMultipleSelections(bool allowMultiple)
++{
++    const QJNIObjectPrivate allowMultipleSelections = QJNIObjectPrivate::getStaticObjectField(
++            JniIntentClass, "EXTRA_ALLOW_MULTIPLE", "Ljava/lang/String;");
++    m_intent.callObjectMethod("putExtra", "(Ljava/lang/String;Z)Landroid/content/Intent;",
++                              allowMultipleSelections.object(), allowMultiple);
++}
++
++QStringList nameFilterExtensions(const QString nameFilters)
++{
++    QStringList ret;
++#if QT_CONFIG(regularexpression)
++    QRegularExpression re("(\\*\\.?\\w*)");
++    QRegularExpressionMatchIterator i = re.globalMatch(nameFilters);
++    while (i.hasNext())
++        ret << i.next().captured(1);
++#endif // QT_CONFIG(regularexpression)
++    ret.removeAll("*");
++    return ret;
++}
++
++void QAndroidPlatformFileDialogHelper::setMimeTypes()
++{
++    QStringList mimeTypes = options()->mimeTypeFilters();
++    const QString nameFilter = options()->initiallySelectedNameFilter();
++
++    if (mimeTypes.isEmpty() && !nameFilter.isEmpty()) {
++        QMimeDatabase db;
++        for (const QString &filter : nameFilterExtensions(nameFilter))
++            mimeTypes.append(db.mimeTypeForFile(filter).name());
++    }
++
++    QString type = !mimeTypes.isEmpty() ? mimeTypes.at(0) : QLatin1String("*/*");
++    m_intent.callObjectMethod("setType", "(Ljava/lang/String;)Landroid/content/Intent;",
++                              QJNIObjectPrivate::fromString(type).object());
++
++    if (!mimeTypes.isEmpty()) {
++        const QJNIObjectPrivate extraMimeType = QJNIObjectPrivate::getStaticObjectField(
++                JniIntentClass, "EXTRA_MIME_TYPES", "Ljava/lang/String;");
++
++        QJNIObjectPrivate mimeTypesArray = QJNIObjectPrivate::callStaticObjectMethod(
++                "org/qtproject/qt5/android/QtNative",
++                "getStringArray",
++                "(Ljava/lang/String;)[Ljava/lang/String;",
++                QJNIObjectPrivate::fromString(mimeTypes.join(",")).object());
++
++        m_intent.callObjectMethod(
++                "putExtra", "(Ljava/lang/String;[Ljava/lang/String;)Landroid/content/Intent;",
++                extraMimeType.object(), mimeTypesArray.object());
++    }
++}
++
++QJNIObjectPrivate QAndroidPlatformFileDialogHelper::getFileDialogIntent(const QString &intentType)
++{
++    const QJNIObjectPrivate ACTION_OPEN_DOCUMENT = QJNIObjectPrivate::getStaticObjectField(
++            JniIntentClass, intentType.toLatin1(), "Ljava/lang/String;");
++    return QJNIObjectPrivate(JniIntentClass, "(Ljava/lang/String;)V",
++                             ACTION_OPEN_DOCUMENT.object());
++}
++
++bool QAndroidPlatformFileDialogHelper::show(Qt::WindowFlags windowFlags, Qt::WindowModality windowModality, QWindow *parent)
++{
++    Q_UNUSED(windowFlags)
++    Q_UNUSED(windowModality)
++    Q_UNUSED(parent)
++
++    bool isDirDialog = false;
++
++    m_selectedFile.clear();
++
++    if (options()->acceptMode() == QFileDialogOptions::AcceptSave) {
++        m_intent = getFileDialogIntent("ACTION_CREATE_DOCUMENT");
++    } else if (options()->acceptMode() == QFileDialogOptions::AcceptOpen) {
++        switch (options()->fileMode()) {
++        case QFileDialogOptions::FileMode::DirectoryOnly:
++        case QFileDialogOptions::FileMode::Directory:
++            m_intent = getFileDialogIntent("ACTION_OPEN_DOCUMENT_TREE");
++            isDirDialog = true;
++            break;
++        case QFileDialogOptions::FileMode::ExistingFiles:
++            m_intent = getFileDialogIntent("ACTION_OPEN_DOCUMENT");
++            setAllowMultipleSelections(true);
++            break;
++        case QFileDialogOptions::FileMode::AnyFile:
++        case QFileDialogOptions::FileMode::ExistingFile:
++            m_intent = getFileDialogIntent("ACTION_OPEN_DOCUMENT");
++            break;
++        }
++    }
++
++    if (!isDirDialog) {
++        setOpenableCategory();
++        setMimeTypes();
++    }
++
++    setIntentTitle(options()->windowTitle());
++
++    QtAndroidPrivate::registerActivityResultListener(this);
++    m_activity.callMethod<void>("startActivityForResult", "(Landroid/content/Intent;I)V",
++                              m_intent.object(), REQUEST_CODE);
++    return true;
++}
++
++void QAndroidPlatformFileDialogHelper::hide()
++{
++    if (m_eventLoop.isRunning())
++        m_eventLoop.exit();
++    QtAndroidPrivate::unregisterActivityResultListener(this);
++}
++
++void QAndroidPlatformFileDialogHelper::exec()
++{
++    m_eventLoop.exec(QEventLoop::DialogExec);
++}
++}
++
++QT_END_NAMESPACE
+--- /dev/null
++++ b/src/plugins/platforms/android/qandroidplatformfiledialoghelper.h
+@@ -0,0 +1,92 @@
++/****************************************************************************
++**
++** Copyright (C) 2019 Klaralvdalens Datakonsult AB (KDAB)
++** Contact: https://www.qt.io/licensing/
++**
++** This file is part of the plugins of the Qt Toolkit.
++**
++** $QT_BEGIN_LICENSE:LGPL$
++** Commercial License Usage
++** Licensees holding valid commercial Qt licenses may use this file in
++** accordance with the commercial license agreement provided with the
++** Software or, alternatively, in accordance with the terms contained in
++** a written agreement between you and The Qt Company. For licensing terms
++** and conditions see https://www.qt.io/terms-conditions. For further
++** information use the contact form at https://www.qt.io/contact-us.
++**
++** GNU Lesser General Public License Usage
++** Alternatively, this file may be used under the terms of the GNU Lesser
++** General Public License version 3 as published by the Free Software
++** Foundation and appearing in the file LICENSE.LGPL3 included in the
++** packaging of this file. Please review the following information to
++** ensure the GNU Lesser General Public License version 3 requirements
++** will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
++**
++** GNU General Public License Usage
++** Alternatively, this file may be used under the terms of the GNU
++** General Public License version 2.0 or (at your option) the GNU General
++** Public license version 3 or any later version approved by the KDE Free
++** Qt Foundation. The licenses are as published by the Free Software
++** Foundation and appearing in the file LICENSE.GPL2 and LICENSE.GPL3
++** included in the packaging of this file. Please review the following
++** information to ensure the GNU General Public License requirements will
++** be met: https://www.gnu.org/licenses/gpl-2.0.html and
++** https://www.gnu.org/licenses/gpl-3.0.html.
++**
++** $QT_END_LICENSE$
++**
++****************************************************************************/
++
++#ifndef QANDROIDPLATFORMFILEDIALOGHELPER_H
++#define QANDROIDPLATFORMFILEDIALOGHELPER_H
++
++#include <jni.h>
++#include <QEventLoop>
++#include <qpa/qplatformdialoghelper.h>
++#include <QtCore/private/qjnihelpers_p.h>
++#include <private/qjni_p.h>
++#include <QEventLoop>
++
++QT_BEGIN_NAMESPACE
++
++namespace QtAndroidFileDialogHelper {
++
++class QAndroidPlatformFileDialogHelper: public QPlatformFileDialogHelper, public QtAndroidPrivate::ActivityResultListener
++{
++    Q_OBJECT
++
++public:
++    QAndroidPlatformFileDialogHelper();
++
++    void exec() override;
++    bool show(Qt::WindowFlags windowFlags, Qt::WindowModality windowModality, QWindow *parent) override;
++    void hide() override;
++
++    QString selectedNameFilter() const override { return QString(); };
++    void selectNameFilter(const QString &filter) override { Q_UNUSED(filter) };
++    void setFilter() override {};
++    QList<QUrl> selectedFiles() const override { return m_selectedFile; };
++    void selectFile(const QUrl &file) override { Q_UNUSED(file) };
++    QUrl directory() const override { return QUrl(); };
++    void setDirectory(const QUrl &directory) override { Q_UNUSED(directory) };
++    bool defaultNameFilterDisables() const override { return false; };
++    bool handleActivityResult(jint requestCode, jint resultCode, jobject data) override;
++
++private:
++    QJNIObjectPrivate getFileDialogIntent(const QString &intentType);
++    void takePersistableUriPermission(const QJNIObjectPrivate &uri);
++    void setIntentTitle(const QString &title);
++    void setOpenableCategory();
++    void setAllowMultipleSelections(bool allowMultiple);
++    void setMimeTypes();
++
++    QEventLoop m_eventLoop;
++    QList<QUrl> m_selectedFile;
++    QJNIObjectPrivate m_intent;
++    const QJNIObjectPrivate m_activity;
++};
++
++}
++QT_END_NAMESPACE
++
++#endif // QANDROIDPLATFORMFILEDIALOGHELPER_H
+--- a/src/plugins/platforms/android/qandroidplatformtheme.cpp
++++ b/src/plugins/platforms/android/qandroidplatformtheme.cpp
+@@ -44,6 +44,7 @@
+ #include "qandroidplatformmenu.h"
+ #include "qandroidplatformmenuitem.h"
+ #include "qandroidplatformdialoghelpers.h"
++#include "qandroidplatformfiledialoghelper.h"
+ 
+ #include <QCoreApplication>
+ #include <QDebug>
+@@ -513,6 +514,8 @@
+ {
+     if (type == MessageDialog)
+         return qEnvironmentVariableIntValue("QT_USE_ANDROID_NATIVE_DIALOGS") == 1;
++    if (type == FileDialog)
++        return true;
+     return false;
+ }
+ 
+@@ -521,6 +524,8 @@
+     switch (type) {
+     case MessageDialog:
+         return new QtAndroidDialogHelpers::QAndroidPlatformMessageDialogHelper;
++    case FileDialog:
++        return new QtAndroidFileDialogHelper::QAndroidPlatformFileDialogHelper;
+     default:
+         return 0;
+     }
+--- a/src/android/jar/src/org/qtproject/qt5/android/QtNative.java
++++ b/src/android/jar/src/org/qtproject/qt5/android/QtNative.java
+@@ -41,8 +41,10 @@
+ package org.qtproject.qt5.android;
+ 
+ import java.io.File;
++import java.io.FileNotFoundException;
+ import java.util.ArrayList;
+ import java.util.concurrent.Semaphore;
++import java.util.HashMap;
+ 
+ import android.app.Activity;
+ import android.app.Service;
+@@ -51,6 +53,7 @@
+ import android.content.Intent;
+ import android.content.pm.PackageManager;
+ import android.content.pm.ActivityInfo;
++import android.content.UriPermission;
+ import android.net.Uri;
+ import android.os.Build;
+ import android.os.Handler;
+@@ -59,6 +62,7 @@
+ import android.content.ClipboardManager;
+ import android.content.ClipboardManager.OnPrimaryClipChangedListener;
+ import android.content.ClipData;
++import android.os.ParcelFileDescriptor;
+ import android.util.Log;
+ import android.view.ContextMenu;
+ import android.view.KeyEvent;
+@@ -66,11 +70,14 @@
+ import android.view.MotionEvent;
+ import android.view.View;
+ import android.view.InputDevice;
+-
++import android.database.Cursor;
++import android.provider.DocumentsContract;
++ 
+ import java.lang.reflect.Method;
+ import java.security.KeyStore;
+ import java.security.cert.X509Certificate;
+ import java.util.Iterator;
++import java.util.List;
+ import javax.net.ssl.TrustManagerFactory;
+ import javax.net.ssl.TrustManager;
+ import javax.net.ssl.X509TrustManager;
+@@ -103,6 +110,9 @@
+     private static boolean m_usePrimaryClip = false;
+     public static QtThread m_qtThread = new QtThread();
+     private static Method m_addItemMethod = null;
++    private static HashMap<String, Uri> m_cachedUris = new HashMap<String, Uri>();
++    private static ArrayList<String> m_knownDirs = new ArrayList<String>();
++
+     private static final Runnable runPendingCppRunnablesRunnable = new Runnable() {
+         @Override
+         public void run() {
+@@ -150,24 +160,253 @@
+         }
+     }
+ 
+-    public static boolean openURL(String url, String mime)
++    private static Uri getUriWithValidPermission(Context context, String uri, String openMode)
+     {
+-        boolean ok = true;
++        try {
++            Uri parsedUri = Uri.parse(uri);
++            String scheme = parsedUri.getScheme();
++
++            // We only want to check permissions for content Uris
++            if (scheme.compareTo("content") != 0)
++                return parsedUri;
++
++            List<UriPermission> permissions = context.getContentResolver().getPersistedUriPermissions();
++            String uriStr = parsedUri.getPath();
++
++            for (int i = 0; i < permissions.size(); ++i) {
++                Uri iterUri = permissions.get(i).getUri();
++                boolean isRightPermission = permissions.get(i).isReadPermission();
++
++                if (!openMode.equals("r"))
++                   isRightPermission = permissions.get(i).isWritePermission();
++
++                if (iterUri.getPath().equals(uriStr) && isRightPermission)
++                    return iterUri;
++            }
++
++            // Android 6 and earlier could still manage to open the file so we can return the
++            // parsed uri here
++            if (Build.VERSION.SDK_INT < 24)
++                return parsedUri;
++            return null;
++        } catch (SecurityException e) {
++            e.printStackTrace();
++            return null;
++        }
++    }
++
++    public static boolean openURL(Context context, String url, String mime)
++    {
++        Uri uri = getUriWithValidPermission(context, url, "r");
++
++        if (uri == null) {
++            Log.e(QtTAG, "openURL(): No permissions to open Uri");
++            return false;
++        }
+ 
+         try {
+-            Uri uri = Uri.parse(url);
+             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
++            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+             if (!mime.isEmpty())
+                 intent.setDataAndType(uri, mime);
++
+             activity().startActivity(intent);
++
++            return true;
++        } catch (IllegalArgumentException e) {
++            Log.e(QtTAG, "openURL(): Invalid Uri");
++            e.printStackTrace();
++            return false;
++        } catch (UnsupportedOperationException e) {
++            Log.e(QtTAG, "openURL(): Unsupported operation for given Uri");
++            e.printStackTrace();
++            return false;
+         } catch (Exception e) {
+             e.printStackTrace();
+-            ok = false;
++            return false;
++        }
++    }
++
++    public static int openFdForContentUrl(Context context, String contentUrl, String openMode)
++    {
++        Uri uri = m_cachedUris.get(contentUrl);
++        if (uri == null)
++            uri = getUriWithValidPermission(context, contentUrl, openMode);
++        int error = -1;
++
++        if (uri == null) {
++            Log.e(QtTAG, "openFdForContentUrl(): No permissions to open Uri");
++            return error;
+         }
+ 
+-        return ok;
++        try {
++            ContentResolver resolver = context.getContentResolver();
++            ParcelFileDescriptor fdDesc = resolver.openFileDescriptor(uri, openMode);
++            return fdDesc.detachFd();
++        } catch (FileNotFoundException e) {
++            e.printStackTrace();
++            return error;
++        } catch (IllegalArgumentException e) {
++            Log.e(QtTAG, "openFdForContentUrl(): Invalid Uri");
++            e.printStackTrace();
++            return error;
++        }
+     }
+ 
++    public static long getSize(Context context, String contentUrl)
++    {
++        long size = -1;
++        Uri uri = m_cachedUris.get(contentUrl);
++        if (uri == null)
++            uri = getUriWithValidPermission(context, contentUrl, "r");
++
++        if (uri == null) {
++            Log.e(QtTAG, "getSize(): No permissions to open Uri");
++            return size;
++        } else if (!m_cachedUris.containsKey(contentUrl)) {
++            m_cachedUris.put(contentUrl, uri);
++        }
++
++        try {
++            ContentResolver resolver = context.getContentResolver();
++            Cursor cur = resolver.query(uri, new String[] { DocumentsContract.Document.COLUMN_SIZE }, null, null, null);
++            if (cur != null) {
++                if (cur.moveToFirst())
++                    size = cur.getLong(0);
++                cur.close();
++            }
++            return size;
++        } catch (IllegalArgumentException e) {
++            Log.e(QtTAG, "getSize(): Invalid Uri");
++            e.printStackTrace();
++            return size;
++        }  catch (UnsupportedOperationException e) {
++            Log.e(QtTAG, "getSize(): Unsupported operation for given Uri");
++            e.printStackTrace();
++            return size;
++        }
++    }
++
++    public static boolean checkFileExists(Context context, String contentUrl)
++    {
++        boolean exists = false;
++        Uri uri = m_cachedUris.get(contentUrl);
++        if (uri == null)
++            uri = getUriWithValidPermission(context, contentUrl, "r");
++        if (uri == null) {
++            Log.e(QtTAG, "checkFileExists(): No permissions to open Uri");
++            return exists;
++        } else {
++            if (!m_cachedUris.containsKey(contentUrl))
++                m_cachedUris.put(contentUrl, uri);
++        }
++
++        try {
++            ContentResolver resolver = context.getContentResolver();
++            Cursor cur = resolver.query(uri, null, null, null, null);
++            if (cur != null) {
++                exists = true;
++                cur.close();
++            }
++            return exists;
++        } catch (IllegalArgumentException e) {
++            Log.e(QtTAG, "checkFileExists(): Invalid Uri");
++            e.printStackTrace();
++            return exists;
++        } catch (UnsupportedOperationException e) {
++            Log.e(QtTAG, "checkFileExists(): Unsupported operation for given Uri");
++            e.printStackTrace();
++            return false;
++        }
++    }
++
++    public static boolean checkIfWritable(Context context, String contentUrl)
++    {
++        return getUriWithValidPermission(context, contentUrl, "w") != null;
++    }
++
++    public static boolean checkIfDir(Context context, String contentUrl)
++    {
++        boolean isDir = false;
++        Uri uri = m_cachedUris.get(contentUrl);
++        if (m_knownDirs.contains(contentUrl))
++            return true;
++        if (uri == null) {
++            uri = getUriWithValidPermission(context, contentUrl, "r");
++        }
++        if (uri == null) {
++            Log.e(QtTAG, "isDir(): No permissions to open Uri");
++            return isDir;
++        } else {
++            if (!m_cachedUris.containsKey(contentUrl))
++                m_cachedUris.put(contentUrl, uri);
++        }
++
++        try {
++            final List<String> paths = uri.getPathSegments();
++            // getTreeDocumentId will throw an exception if it is not a directory so check manually
++            if (!paths.get(0).equals("tree"))
++                return false;
++            ContentResolver resolver = context.getContentResolver();
++            Uri docUri = DocumentsContract.buildDocumentUriUsingTree(uri, DocumentsContract.getTreeDocumentId(uri));
++            if (!docUri.toString().startsWith(uri.toString()))
++                return false;
++            Cursor cur = resolver.query(docUri, new String[] { DocumentsContract.Document.COLUMN_MIME_TYPE }, null, null, null);
++            if (cur != null) {
++                if (cur.moveToFirst()) {
++                    final String dirStr = new String(DocumentsContract.Document.MIME_TYPE_DIR);
++                    isDir = cur.getString(0).equals(dirStr);
++                    if (isDir)
++                        m_knownDirs.add(contentUrl);
++                }
++                cur.close();
++            }
++            return isDir;
++        } catch (IllegalArgumentException e) {
++            Log.e(QtTAG, "checkIfDir(): Invalid Uri");
++            e.printStackTrace();
++            return false;
++        } catch (UnsupportedOperationException e) {
++            Log.e(QtTAG, "checkIfDir(): Unsupported operation for given Uri");
++            e.printStackTrace();
++            return false;
++        }
++    }
++    public static String[] listContentsFromTreeUri(Context context, String contentUrl)
++    {
++        Uri treeUri = Uri.parse(contentUrl);
++        final ArrayList<String> results = new ArrayList<String>();
++        if (treeUri == null) {
++            Log.e(QtTAG, "listContentsFromTreeUri(): Invalid uri");
++            return results.toArray(new String[results.size()]);
++        }
++        final ContentResolver resolver = context.getContentResolver();
++        final Uri docUri = DocumentsContract.buildDocumentUriUsingTree(treeUri,
++                DocumentsContract.getTreeDocumentId(treeUri));
++        final Uri childrenUri = DocumentsContract.buildChildDocumentsUriUsingTree(docUri,
++                                DocumentsContract.getDocumentId(docUri));
++        Cursor c = null;
++        final String dirStr = new String(DocumentsContract.Document.MIME_TYPE_DIR);
++        try {
++            c = resolver.query(childrenUri, new String[] {
++                    DocumentsContract.Document.COLUMN_DOCUMENT_ID, DocumentsContract.Document.COLUMN_DISPLAY_NAME, DocumentsContract.Document.COLUMN_MIME_TYPE }, null, null, null);
++            while (c.moveToNext()) {
++                final String fileString = c.getString(1);
++                if (!m_cachedUris.containsKey(contentUrl + "/" + fileString)) {
++                    m_cachedUris.put(contentUrl + "/" + fileString,
++                                     DocumentsContract.buildDocumentUriUsingTree(treeUri, c.getString(0)));
++                }
++                results.add(fileString);
++                if (c.getString(2).equals(dirStr))
++                    m_knownDirs.add(contentUrl + "/" + fileString);
++            }
++            c.close();
++        } catch (Exception e) {
++            Log.w(QtTAG, "Failed query: " + e);
++            return results.toArray(new String[results.size()]);
++        }
++        return results.toArray(new String[results.size()]);
++    }
+     // this method loads full path libs
+     public static void loadQtLibraries(final ArrayList<String> libraries)
+     {
+--- a/src/corelib/io/qsavefile.cpp
++++ b/src/corelib/io/qsavefile.cpp
+@@ -244,9 +244,15 @@
+         return false;
+     };
+ 
++    bool requiresDirectWrite = false;
+ #ifdef Q_OS_WIN
+     // check if it is an Alternate Data Stream
+-    if (d->finalFileName == d->fileName && d->fileName.indexOf(QLatin1Char(':'), 2) > 1) {
++    requiresDirectWrite = d->finalFileName == d->fileName && d->fileName.indexOf(QLatin1Char(':'), 2) > 1;
++#elif defined(Q_OS_ANDROID)
++    // check if it is a content:// URL
++    requiresDirectWrite  = d->fileName.startsWith(QLatin1String("content://"));
++#endif
++    if (requiresDirectWrite) {
+         // yes, we can't rename onto it...
+         if (d->directWriteFallback) {
+             if (openDirectly())
+@@ -256,14 +262,12 @@
+             d->fileEngine = 0;
+         } else {
+             QString msg =
+-                    QSaveFile::tr("QSaveFile cannot open '%1' without direct write fallback "
+-                                  "enabled: path contains an Alternate Data Stream specifier")
+-                    .arg(QDir::toNativeSeparators(d->fileName));
++                    QSaveFile::tr("QSaveFile cannot open '%1' without direct write fallback enabled.")
++                     .arg(QDir::toNativeSeparators(d->fileName));
+             d->setError(QFileDevice::OpenError, msg);
+         }
+         return false;
+     }
+-#endif
+ 
+     d->fileEngine = new QTemporaryFileEngine(&d->finalFileName, QTemporaryFileEngine::Win32NonShared);
+     // if the target file exists, we'll copy its permissions below,
