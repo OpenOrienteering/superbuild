@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016-2020 Kai Pastor
+# Copyright 2016-2021 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -99,6 +99,35 @@ set(no_warn_unused
 
 
 # Global utilities
+function(_sb_configure_graphviz)
+	find_program(DOT_EXECUTABLE
+	  NAMES "dot"
+	  DOC "Path of the dot executable from Graphviz"
+	)
+	if(NOT DOT_EXECUTABLE)
+		return()
+	endif()
+	
+	set(GRAPHVIZ_IGNORE_TOOLCHAINS )
+	get_property(toolchains GLOBAL PROPERTY SB_TOOLCHAINS)
+	foreach(toolchain ${toolchains})
+		get_property(system_name TARGET ${toolchain} PROPERTY SB_PACKAGE_SYSTEM_NAME)
+		list(APPEND GRAPHVIZ_IGNORE_TOOLCHAINS ".*-${system_name}")
+	endforeach()
+	configure_file(CMakeGraphVizOptions.cmake.in CMakeGraphVizOptions.cmake @ONLY)
+	add_custom_target(superbuild-graphviz
+	  COMMAND "${CMAKE_COMMAND}" -E make_directory "graphviz"
+	  COMMAND "${CMAKE_COMMAND}" -E chdir "graphviz"
+	    "${CMAKE_COMMAND}" .. --graphviz=Superbuild.dot
+	)
+	add_custom_target(superbuild-graphviz-pdf
+	  COMMAND "${DOT_EXECUTABLE}" -Tpdf -Grankdir=LR -oSuperbuild.pdf "graphviz/Superbuild.dot"
+	  DEPENDS superbuild-graphviz
+	)
+endfunction()
+
+
+
 function(sb_install_dir var system_name)
 	if(DEFINED ${system_name}_INSTALL_DIR)
 		set(${var} "${${system_name}_INSTALL_DIR}" PARENT_SCOPE)
@@ -981,6 +1010,7 @@ function(_sb_handle_toolchains)
 			list(APPEND virtual_packages ${package})
 		endif()
 	endforeach()
+	set_property(GLOBAL PROPERTY SB_TOOLCHAINS "${toolchains}")
 	foreach(toolchain ${toolchains})
 		foreach(package ${regular_packages})
 			_sb_make_toolchained_build(${package} ${toolchain})
@@ -1433,3 +1463,4 @@ _sb_read_packages()
 _sb_create_toolchain_info() # after package reading, affected by toolchains
 _sb_resolve_dependencies()
 _sb_handle_toolchains()
+_sb_configure_graphviz()
