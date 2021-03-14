@@ -27,7 +27,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.10)
 
 project(Superbuild C)
 
@@ -76,12 +76,6 @@ list(REMOVE_DUPLICATES SUPERBUILD_HANDLE_ENV)
 set(SUPERBUILD_STEP_TARGETS "" CACHE STRING
   "CMake ExternalProject step targets to be created")
 
-if(DEFINED DISABLE_DEPENDENCIES)
-	message(WARNING "DISABLE_DEPENDENCIES is deprecated, use SUPERBUILD_DISABLE_DEPENDENCIES instead")
-	set(SUPERBUILD_DISABLE_DEPENDENCIES "${DISABLE_DEPENDENCIES}" CACHE BOOL
-	  "Disable dependencies between binary packages")
-	unset(DISABLE_DEPENDENCIES CACHE)
-endif()
 set(SUPERBUILD_DISABLE_DEPENDENCIES FALSE CACHE BOOL
   "Disable dependencies between binary packages")
 mark_as_advanced(SUPERBUILD_DISABLE_DEPENDENCIES)
@@ -1416,12 +1410,6 @@ foreach(file ${ci} ${documentation})
 endforeach()
 add_custom_target(doc SOURCES ${documentation})
 add_custom_target(CI SOURCES ${ci})
-
-# ExternalPackage < 3.8.0 has bug with UPDATE_DISCONNECTED
-if(NOT CMAKE_VERSION VERSION_LESS 3.8.0)
-	option(SUPERBUILD_UPDATE_DISCONNECTED "Skip package update steps" ON)
-	set_directory_properties(PROPERTIES EP_UPDATE_DISCONNECTED "${SUPERBUILD_UPDATE_DISCONNECTED}")
-endif()
 
 _sb_create_main_c()
 _sb_create_default_toolchain()
