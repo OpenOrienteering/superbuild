@@ -118,12 +118,20 @@ else()
 	set(ANDROID_COMPILE_SDK android-28)
 endif()
 
-if(ANDROID_SDK_ROOT AND ANDROID_NDK_ROOT)
-	set(sdk_host "") # external SDK and NDK
-elseif(APPLE AND CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+if(NOT CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+	message(FATAL_ERROR "System processor must be x86_64")
+elseif(APPLE)
 	set(sdk_host "darwin")
-elseif(UNIX AND NOT APPLE AND CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+elseif(UNIX)
 	set(sdk_host "linux")
+elseif(WIN32)
+	set(sdk_host "windows") # Untested
+else()
+	message(FATAL_ERROR "Unsupported sdk_host")
+endif()
+
+if(sdk_host AND NOT sdk_host STREQUAL "windows")
+	# Not relying on ANDROID_SDK_ROOT / ANDROID_NDK_ROOT
 elseif(NOT ANDROID_SDK_ROOT)
 	message(FATAL_ERROR "ANDROID_SDK_ROOT must be set to an external SDK")
 elseif(NOT ANDROID_NDK_ROOT)
