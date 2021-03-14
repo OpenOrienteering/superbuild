@@ -938,9 +938,10 @@ endfunction()
 # Setup package dependencies
 function(_sb_resolve_dependencies)
 	set(suffix "${ARGV0}")
+	get_property(source_packages GLOBAL PROPERTY SB_SOURCE_PACKAGES)
 	get_property(packages GLOBAL PROPERTY SB_PACKAGES)
 	get_property(aliases GLOBAL PROPERTY SB_ALIASES)
-	foreach(package ${packages})
+	foreach(package ${source_packages} ${packages})
 		if(NOT TARGET ${package}${suffix})
 			continue()
 		endif()
@@ -966,6 +967,9 @@ function(_sb_resolve_dependencies)
 				string(REGEX REPLACE "^source:" "" real_dependency ${dependency})
 				set(real_suffix "-source")
 				set(real_package ${package}-source)
+				if(NOT TARGET ${real_package})
+					string(REGEX REPLACE "-source-source$" "-source" real_package ${real_package})
+				endif()
 			else()
 				if(SUPERBUILD_DISABLE_DEPENDENCIES)
 					continue()
@@ -1343,6 +1347,9 @@ function(superbuild_package)
 	endif()
 	_sb_make_source(${package})
 	
+	set(binary_dependencies "${SB_PACKAGE_DEPENDS}")
+	list(FILTER binary_dependencies EXCLUDE REGEX "^source:.*")
+	
 	if(DEFINED SB_PACKAGE_BUILD
 	       OR "${package}" STREQUAL "toolchain-info")
 		if(TARGET ${package}-source)
@@ -1418,32 +1425,40 @@ function(superbuild_package)
 			add_dependencies(${executable}-${SB_PACKAGE_VERSION} ${package})
 			set(keyword "")
 		endforeach()
-	elseif(DEFINED SB_PACKAGE_DEPENDS)
+	elseif(binary_dependencies)
 		add_custom_target(${package})
-	else()
+	elseif(NOT DEFINED SB_PACKAGE_DEPENDS)
 		return()
 	endif()
 	
-	# Publish package properties
-	set_property(TARGET ${package} PROPERTY SB_PACKAGE_FILE ${CMAKE_CURRENT_LIST_FILE})
-	foreach(arg ${sb_options} ${sb_one_value_args} ${sb_multi_value_args})
-		set_property(TARGET ${package} PROPERTY SB_PACKAGE_${arg} ${SB_PACKAGE_${arg}})
-	endforeach()
-	
-	# Publish package via global properties
-	set_property(GLOBAL APPEND PROPERTY SB_PACKAGES ${package})
-	string(REPLACE "-" "." version ${SB_PACKAGE_VERSION})
-	get_property(default_version GLOBAL PROPERTY SB_DEFAULT_${SB_PACKAGE_NAME})
-	string(REPLACE "-" "." default_version "${default_version}")
-	if(NOT SB_PACKAGE_NO_DEFAULT
-	   AND (NOT default_version
-	        OR version VERSION_GREATER default_version))
-		set_property(GLOBAL PROPERTY SB_DEFAULT_${SB_PACKAGE_NAME} ${SB_PACKAGE_VERSION})
+	if(TARGET ${package})
+		# Publish package via global properties
+		set(target ${package})
+		set_property(GLOBAL APPEND PROPERTY SB_PACKAGES ${package})
+		
+		string(REPLACE "-" "." version ${SB_PACKAGE_VERSION})
+		get_property(default_version GLOBAL PROPERTY SB_DEFAULT_${SB_PACKAGE_NAME})
+		string(REPLACE "-" "." default_version "${default_version}")
+		if(NOT SB_PACKAGE_NO_DEFAULT
+		   AND (NOT default_version
+				OR version VERSION_GREATER default_version))
+			set_property(GLOBAL PROPERTY SB_DEFAULT_${SB_PACKAGE_NAME} ${SB_PACKAGE_VERSION})
+		endif()
+		
+		# Publish provided aliases
+		foreach(alias ${SB_PACKAGE_PROVIDES})
+			set_property(GLOBAL APPEND PROPERTY SB_ALIASES "${alias} ${package}")
+		endforeach()
+	else()
+		# Publish source package via global properties
+		set(target ${package}-source)
+		set_property(GLOBAL APPEND PROPERTY SB_SOURCE_PACKAGES ${target})
 	endif()
 	
-	# Publish provided aliases
-	foreach(alias ${SB_PACKAGE_PROVIDES})
-		set_property(GLOBAL APPEND PROPERTY SB_ALIASES "${alias} ${package}")
+	# Publish package properties
+	set_property(TARGET ${target} PROPERTY SB_PACKAGE_FILE ${CMAKE_CURRENT_LIST_FILE})
+	foreach(arg ${sb_options} ${sb_one_value_args} ${sb_multi_value_args})
+		set_property(TARGET ${target} PROPERTY SB_PACKAGE_${arg} ${SB_PACKAGE_${arg}})
 	endforeach()
 endfunction()
 
