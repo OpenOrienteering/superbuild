@@ -116,17 +116,11 @@ superbuild_package(
 
 set(qtbase_version       5.12.10)
 set(qtbase_patch_version ${qtbase_version}-1)
-superbuild_package(
-  NAME           qtbase
-  VERSION        ${short_version}
-  DEPENDS
-    qtbase-everywhere-src-${qtbase_patch_version}
-)
-
 set(module Qt5Core)
 superbuild_package(
   NAME         qtbase-everywhere-src
   VERSION      ${qtbase_patch_version}
+  PROVIDES     qtbase-${short_version}
   DEPENDS
     source:qt-${short_version}-openorienteering-${openorienteering_version}
     freetype
@@ -287,16 +281,11 @@ superbuild_package(
 # qtandroidextras
 
 set(qtandroidextras_version ${patch_version})
-superbuild_package(
-  NAME           qtandroidextras
-  VERSION        ${short_version}
-  DEPENDS        qtandroidextras-everywhere-src-${qtandroidextras_version}
-)
-
 set(module Qt5AndroidExtras)
 superbuild_package(
   NAME           qtandroidextras-everywhere-src
   VERSION        ${qtandroidextras_version}
+  PROVIDES       qtandroidextras-${short_version}
   DEPENDS
     source:qt-${short_version}-openorienteering-${openorienteering_version}
     qtbase-${short_version}
@@ -324,19 +313,15 @@ superbuild_package(
 # qtimageformats
 
 set(qtimageformats_version ${patch_version})
-superbuild_package(
-  NAME           qtimageformats
-  VERSION        ${short_version}
-  DEPENDS        qtimageformats-everywhere-src-${qtimageformats_version}
-)
-
 set(module Qt5Gui) # qtimageformats adds plugins to Qt5Gui
 superbuild_package(
   NAME           qtimageformats-everywhere-src
   VERSION        ${qtimageformats_version}
+  PROVIDES       qtimageformats-${short_version}
   DEPENDS        
     source:qt-${short_version}-openorienteering-${openorienteering_version}
     qtbase-${short_version}
+    libwebp
     tiff
   
   SOURCE
@@ -375,18 +360,11 @@ superbuild_package(
 # qtlocation
 
 set(qtlocation_version ${patch_version})
-superbuild_package(
-  NAME           qtlocation
-  VERSION        ${short_version}
-  DEPENDS        qtlocation-everywhere-src-${qtlocation_version}
-                 libwebp
-                 tiff
-)
-
 set(module Qt5Location)
 superbuild_package(
   NAME           qtlocation-everywhere-src
   VERSION        ${qtlocation_version}
+  PROVIDES       qtlocation-${short_version}
   DEPENDS
     source:qt-${short_version}-openorienteering-${openorienteering_version}
     qtbase-${short_version}
@@ -415,17 +393,11 @@ superbuild_package(
 # qtsensors
 
 set(qtsensors_version ${patch_version})
-superbuild_package(
-  NAME           qtsensors
-  VERSION        ${short_version}
-  DEPENDS
-    qtsensors-everywhere-src-${qtsensors_version}
-)
-
 set(module Qt5Sensors)
 superbuild_package(
   NAME           qtsensors-everywhere-src
   VERSION        ${qtsensors_version}
+  PROVIDES       qtsensors-${short_version}
   DEPENDS
     source:qt-${short_version}-openorienteering-${openorienteering_version}
     qtbase-${short_version}
@@ -453,16 +425,11 @@ superbuild_package(
 # qtserialport
 
 set(qtserialport_version ${patch_version})
-superbuild_package(
-  NAME           qtserialport
-  VERSION        ${short_version}
-  DEPENDS        qtserialport-everywhere-src-${qtserialport_version}
-)
-
 set(module Qt5SerialPort)
 superbuild_package(
   NAME           qtserialport-everywhere-src
   VERSION        ${qtserialport_version}
+  PROVIDES       qtserialport-${short_version}
   DEPENDS
     source:qt-${short_version}-openorienteering-${openorienteering_version}
     qtbase-${short_version}
@@ -491,16 +458,12 @@ superbuild_package(
 
 set(qttools_version ${patch_version})
 superbuild_package(
-  NAME           qttools
-  VERSION        ${short_version}
-  DEPENDS        qttools-everywhere-src-${qttools_version}
-)
-
-superbuild_package(
   NAME           qttools-everywhere-src
   VERSION        ${qttools_version}
+  PROVIDES       qttools-${short_version}
   DEPENDS
     source:qt-${short_version}-openorienteering-${openorienteering_version}
+    # FIXME: Dependers shall use the sub-packages.
     qttools-linguist
     qttools-assistant
     qttools-qtattributionsscanner
@@ -540,6 +503,7 @@ set(module Qt5Help)
 superbuild_package(
   NAME           qttools-assistant
   VERSION        ${qttools_version}
+  PROVIDES       qttools-assistant-${short_version}
   DEPENDS
     qtbase-${short_version}
     qttools-copyright-${qttools_version}
@@ -571,6 +535,7 @@ set(module Qt5LinguistTools)
 superbuild_package(
   NAME           qttools-linguist
   VERSION        ${qttools_version}
+  PROVIDES       qttools-linguist-${short_version}
   DEPENDS
     qtbase-${short_version}
     qttools-copyright-${qttools_version}
@@ -595,6 +560,7 @@ set(module qtattributionsscanner)  # dummy
 superbuild_package(
   NAME           qttools-qtattributionsscanner
   VERSION        ${qttools_version}
+  PROVIDES       qttools-qtattributionsscanner-${short_version}
   DEPENDS
     qtbase-${short_version}
     qttools-copyright-${qttools_version}
@@ -620,20 +586,15 @@ superbuild_package(
 # qttranslations
 
 set(qttranslations_version ${patch_version})
-superbuild_package(
-  NAME           qttranslations
-  VERSION        ${short_version}
-  DEPENDS        qttranslations-everywhere-src-${qttranslations_version}
-)
-
 set(module Qt5Core) # Can't find qttranslations via CMake.
 superbuild_package(
   NAME           qttranslations-everywhere-src
   VERSION        ${qttranslations_version}
+  PROVIDES       qttranslations-${short_version}
   DEPENDS
     source:qt-${short_version}-openorienteering-${openorienteering_version}
     qtbase-${short_version}
-    qttools-${short_version}
+    qttools-linguist-${short_version}
   
   SOURCE
     URL             https://download.qt.io/archive/qt/${short_version}/${version}/submodules/qttranslations-everywhere-src-${version}.tar.xz

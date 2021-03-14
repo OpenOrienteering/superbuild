@@ -57,11 +57,12 @@ foreach(git_tag ${Mapper_GIT_TAGS})
 	    qtimageformats-${Mapper_GIT_QT_VERSION}
 	    qtlocation-${Mapper_GIT_QT_VERSION}
 	    qtsensors-${Mapper_GIT_QT_VERSION}
-	    qttools-${Mapper_GIT_QT_VERSION}
+	    qttools-assistant-${Mapper_GIT_QT_VERSION}
+	    qttools-linguist-${Mapper_GIT_QT_VERSION}
 	    qttranslations-${Mapper_GIT_QT_VERSION}
 	    zlib
 	    host:doxygen
-	    host:qttools-${Mapper_GIT_QT_VERSION}
+	    host:qttools-assistant-${Mapper_GIT_QT_VERSION}
 
 	  SOURCE
 	    GIT_REPOSITORY https://github.com/OpenOrienteering/mapper.git

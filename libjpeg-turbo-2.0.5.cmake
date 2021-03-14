@@ -109,6 +109,7 @@ superbuild_package(
 superbuild_package(
   NAME           libjpeg-turbo
   VERSION        ${patch_version}
+  PROVIDES       libjpeg
   DEPENDS
     source:libjpeg-turbo-patches-${patch_version}
     host:nasm
@@ -145,11 +146,4 @@ superbuild_package(
         "<SOURCE_DIR>/../libjpeg-turbo-patches-${patch_version}/copyright"
         "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/libjpeg-turbo-${patch_version}.txt"
   ]]
-)
-
-superbuild_package(
-  NAME           libjpeg
-  VERSION        99-${patch_version}-turbo
-  DEPENDS
-    libjpeg-turbo-${patch_version}
 )

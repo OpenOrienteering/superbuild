@@ -939,6 +939,7 @@ endfunction()
 function(_sb_resolve_dependencies)
 	set(suffix "${ARGV0}")
 	get_property(packages GLOBAL PROPERTY SB_PACKAGES)
+	get_property(aliases GLOBAL PROPERTY SB_ALIASES)
 	foreach(package ${packages})
 		if(NOT TARGET ${package}${suffix})
 			continue()
@@ -979,6 +980,13 @@ function(_sb_resolve_dependencies)
 				set(dependee ${real_dependency}${real_suffix})
 			elseif(TARGET ${real_dependency}-${default_version}${real_suffix})
 				set(dependee ${real_dependency}-${default_version}${real_suffix})
+			else()
+				foreach(alias ${aliases})
+					if ("${alias}" MATCHES "${real_dependency} ")
+						string(REPLACE "${real_dependency} " "" dependee "${alias}${real_suffix}")
+						break()
+					endif()
+				endforeach()
 			endif()
 			if(dependee)
 				add_dependencies(${real_package} ${dependee})
@@ -1297,6 +1305,7 @@ function(superbuild_package)
 	  SOURCE
 	  BUILD
 	  PACKAGE
+	  PROVIDES
 	  USING
 	  EXECUTABLES
 	)
@@ -1431,6 +1440,11 @@ function(superbuild_package)
 	        OR version VERSION_GREATER default_version))
 		set_property(GLOBAL PROPERTY SB_DEFAULT_${SB_PACKAGE_NAME} ${SB_PACKAGE_VERSION})
 	endif()
+	
+	# Publish provided aliases
+	foreach(alias ${SB_PACKAGE_PROVIDES})
+		set_property(GLOBAL APPEND PROPERTY SB_ALIASES "${alias} ${package}")
+	endforeach()
 endfunction()
 
 

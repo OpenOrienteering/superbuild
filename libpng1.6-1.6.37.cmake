@@ -74,6 +74,7 @@ superbuild_package(
 superbuild_package(
   NAME           libpng1.6
   VERSION        ${patch_version}
+  PROVIDES       libpng
   DEPENDS
     source:libpng1.6-patches-${patch_version}
     common-licenses
@@ -112,10 +113,4 @@ superbuild_package(
         "<SOURCE_DIR>/../libpng1.6-patches-${patch_version}/copyright"
         "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/libpng1.6-${patch_version}.txt"
   ]]
-)
-
-superbuild_package(
-  NAME           libpng
-  VERSION        ${patch_version}
-  DEPENDS        libpng1.6
 )

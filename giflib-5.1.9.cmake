@@ -71,6 +71,7 @@ superbuild_package(
 superbuild_package(
   NAME           giflib
   VERSION        ${patch_version}_${openorienteering_version}
+  PROVIDES       libgif
   DEPENDS
     source:giflib-patches-${patch_version}
     source:giflib-openorienteering-${openorienteering_version}
@@ -105,10 +106,4 @@ superbuild_package(
     TEST_BEFORE_INSTALL
     >
   ]]
-)
-
-superbuild_package(
-  NAME           libgif
-  VERSION        ${patch_version}
-  DEPENDS        giflib-${patch_version}_${openorienteering_version}
 )
