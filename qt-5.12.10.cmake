@@ -337,6 +337,7 @@ superbuild_package(
   DEPENDS        
     source:qt-${short_version}-openorienteering-${openorienteering_version}
     qtbase-${short_version}
+    libwebp
     tiff
   
   SOURCE
@@ -379,8 +380,6 @@ superbuild_package(
   NAME           qtlocation
   VERSION        ${short_version}
   DEPENDS        qtlocation-everywhere-src-${qtlocation_version}
-                 libwebp
-                 tiff
 )
 
 set(module Qt5Location)
@@ -418,8 +417,7 @@ set(qtsensors_version ${patch_version})
 superbuild_package(
   NAME           qtsensors
   VERSION        ${short_version}
-  DEPENDS
-    qtsensors-everywhere-src-${qtsensors_version}
+  DEPENDS        qtsensors-everywhere-src-${qtsensors_version}
 )
 
 set(module Qt5Sensors)
