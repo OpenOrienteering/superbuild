@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2019 Kai Pastor
+# Copyright 2019-2021 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -76,3 +76,19 @@ steps:
   condition: and(succeeded(), in(variables['CREATE_ARTIFACTS'], '1', 'on', 'true', 'yes'))
   displayName: 'Publish binary artifacts'
 
+- bash: |
+    set -e
+    set -x
+    test -f build/Superbuild.pdf || exit 1
+    rm -Rf "${BUILD_ARTIFACTSTAGINGDIRECTORY}/dependencies"
+    mkdir "${BUILD_ARTIFACTSTAGINGDIRECTORY}/dependencies"
+    cp build/Superbuild.pdf "${BUILD_ARTIFACTSTAGINGDIRECTORY}/dependencies/"
+  condition: and(succeeded(), in(variables['WITH_GRAPHVIZ'], '1', 'on', 'true', 'yes'))
+  displayName: 'Prepare dependencies documentation publishing'
+
+- task: PublishPipelineArtifact@0
+  inputs:
+    artifactName: 'superbuild-dependencies'
+    targetPath: $(Build.ArtifactStagingDirectory)/dependencies
+  condition: and(succeeded(), in(variables['WITH_GRAPHVIZ'], '1', 'on', 'true', 'yes'))
+  displayName: 'Publish dependencies documentation'

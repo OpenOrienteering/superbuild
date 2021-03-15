@@ -58,12 +58,10 @@ superbuild_package(
 )
   
 superbuild_package(
-  NAME           libpolyclipping
+  NAME           libpolyclipping-multi
   VERSION        ${patch_version}
   DEPENDS
     source:libpolyclipping-patches-${patch_version}
-    libpolyclipping-cpp-${patch_version}
-    common-licenses
   
   SOURCE
     URL            ${base_url}libpolyclipping_${version}.orig.tar.bz2
@@ -80,18 +78,19 @@ superbuild_package(
       sed -i -e [[ s/polyclipping ARCHIVE DESTINATION/polyclipping RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}\/bin" ARCHIVE DESTINATION/ ]] cpp/CMakeLists.txt
 )
 
-# Build from a copy of the cpp directory, using ExternalPackage's CMake support
+# Build from a copy of the cpp directory
 superbuild_package(
-  NAME           libpolyclipping-cpp
+  NAME           libpolyclipping
   VERSION        ${patch_version}
+  PROVIDES       libpolyclipping
   DEPENDS
-    source:libpolyclipping-${patch_version}
+    source:libpolyclipping-multi-${patch_version}
     common-licenses
   
   SOURCE
     DOWNLOAD_COMMAND
       ${CMAKE_COMMAND} -E copy_directory 
-        <SOURCE_DIR>/../libpolyclipping-${patch_version}/cpp
+        <SOURCE_DIR>/../libpolyclipping-multi-${patch_version}/cpp
         <SOURCE_DIR>
   
   USING            USE_SYSTEM_POLYCLIPPING patch_version version

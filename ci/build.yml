@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2019-2020 Kai Pastor
+# Copyright 2019-2021 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -84,3 +84,14 @@ steps:
       -- ${{ parameters.buildArgs }}
   timeoutInMinutes: 210
   displayName: 'Build'
+
+- task: CMake@1
+  inputs:
+    workingDirectory: 'build'
+    cmakeArgs: >
+      $(CMAKE_WRAPPING)
+      --build .
+      --target superbuild-graphviz-pdf
+  timeoutInMinutes: 5
+  condition: and(succeeded(), in(variables['WITH_GRAPHVIZ'], '1', 'on', 'true', 'yes'))
+  displayName: 'Generate dependencies documentation'

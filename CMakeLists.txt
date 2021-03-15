@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016-2020 Kai Pastor
+# Copyright 2016-2021 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -27,7 +27,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.10)
 
 project(Superbuild C)
 
@@ -76,12 +76,6 @@ list(REMOVE_DUPLICATES SUPERBUILD_HANDLE_ENV)
 set(SUPERBUILD_STEP_TARGETS "" CACHE STRING
   "CMake ExternalProject step targets to be created")
 
-if(DEFINED DISABLE_DEPENDENCIES)
-	message(WARNING "DISABLE_DEPENDENCIES is deprecated, use SUPERBUILD_DISABLE_DEPENDENCIES instead")
-	set(SUPERBUILD_DISABLE_DEPENDENCIES "${DISABLE_DEPENDENCIES}" CACHE BOOL
-	  "Disable dependencies between binary packages")
-	unset(DISABLE_DEPENDENCIES CACHE)
-endif()
 set(SUPERBUILD_DISABLE_DEPENDENCIES FALSE CACHE BOOL
   "Disable dependencies between binary packages")
 mark_as_advanced(SUPERBUILD_DISABLE_DEPENDENCIES)
@@ -99,6 +93,35 @@ set(no_warn_unused
 
 
 # Global utilities
+function(_sb_configure_graphviz)
+	find_program(DOT_EXECUTABLE
+	  NAMES "dot"
+	  DOC "Path of the dot executable from Graphviz"
+	)
+	if(NOT DOT_EXECUTABLE)
+		return()
+	endif()
+	
+	set(GRAPHVIZ_IGNORE_TOOLCHAINS )
+	get_property(toolchains GLOBAL PROPERTY SB_TOOLCHAINS)
+	foreach(toolchain ${toolchains})
+		get_property(system_name TARGET ${toolchain} PROPERTY SB_PACKAGE_SYSTEM_NAME)
+		list(APPEND GRAPHVIZ_IGNORE_TOOLCHAINS ".*-${system_name}")
+	endforeach()
+	configure_file(CMakeGraphVizOptions.cmake.in CMakeGraphVizOptions.cmake @ONLY)
+	add_custom_target(superbuild-graphviz
+	  COMMAND "${CMAKE_COMMAND}" -E make_directory "graphviz"
+	  COMMAND "${CMAKE_COMMAND}" -E chdir "graphviz"
+	    "${CMAKE_COMMAND}" .. --graphviz=Superbuild.dot
+	)
+	add_custom_target(superbuild-graphviz-pdf
+	  COMMAND "${DOT_EXECUTABLE}" -Tpdf -Grankdir=LR -oSuperbuild.pdf "graphviz/Superbuild.dot"
+	  DEPENDS superbuild-graphviz
+	)
+endfunction()
+
+
+
 function(sb_install_dir var system_name)
 	if(DEFINED ${system_name}_INSTALL_DIR)
 		set(${var} "${${system_name}_INSTALL_DIR}" PARENT_SCOPE)
@@ -915,8 +938,10 @@ endfunction()
 # Setup package dependencies
 function(_sb_resolve_dependencies)
 	set(suffix "${ARGV0}")
+	get_property(source_packages GLOBAL PROPERTY SB_SOURCE_PACKAGES)
 	get_property(packages GLOBAL PROPERTY SB_PACKAGES)
-	foreach(package ${packages})
+	get_property(aliases GLOBAL PROPERTY SB_ALIASES)
+	foreach(package ${source_packages} ${packages})
 		if(NOT TARGET ${package}${suffix})
 			continue()
 		endif()
@@ -942,6 +967,9 @@ function(_sb_resolve_dependencies)
 				string(REGEX REPLACE "^source:" "" real_dependency ${dependency})
 				set(real_suffix "-source")
 				set(real_package ${package}-source)
+				if(NOT TARGET ${real_package})
+					string(REGEX REPLACE "-source-source$" "-source" real_package ${real_package})
+				endif()
 			else()
 				if(SUPERBUILD_DISABLE_DEPENDENCIES)
 					continue()
@@ -951,11 +979,22 @@ function(_sb_resolve_dependencies)
 				set(real_package ${package}${suffix})
 			endif()
 			get_property(default_version GLOBAL PROPERTY SB_DEFAULT_${real_dependency})
+			set(dependee NOTFOUND)
 			if(TARGET ${real_dependency}${real_suffix})
-				add_dependencies(${real_package} ${real_dependency}${real_suffix})
+				set(dependee ${real_dependency}${real_suffix})
 			elseif(TARGET ${real_dependency}-${default_version}${real_suffix})
-				add_dependencies(${real_package} ${real_dependency}-${default_version}${real_suffix})
-			elseif(NOT suffix)
+				set(dependee ${real_dependency}-${default_version}${real_suffix})
+			else()
+				foreach(alias ${aliases})
+					if ("${alias}" MATCHES "${real_dependency} ")
+						string(REPLACE "${real_dependency} " "" dependee "${alias}${real_suffix}")
+						break()
+					endif()
+				endforeach()
+			endif()
+			if(dependee)
+				add_dependencies(${real_package} ${dependee})
+			else()
 				message(SEND_ERROR "No rule to satisfy dependency '${dependency}' for package '${package}'")
 			endif()
 		endforeach()
@@ -981,6 +1020,7 @@ function(_sb_handle_toolchains)
 			list(APPEND virtual_packages ${package})
 		endif()
 	endforeach()
+	set_property(GLOBAL PROPERTY SB_TOOLCHAINS "${toolchains}")
 	foreach(toolchain ${toolchains})
 		foreach(package ${regular_packages})
 			_sb_make_toolchained_build(${package} ${toolchain})
@@ -1269,6 +1309,7 @@ function(superbuild_package)
 	  SOURCE
 	  BUILD
 	  PACKAGE
+	  PROVIDES
 	  USING
 	  EXECUTABLES
 	)
@@ -1305,6 +1346,9 @@ function(superbuild_package)
 		set(INSTALL_DIR   [[${${SYSTEM_NAME}_INSTALL_DIR}]])
 	endif()
 	_sb_make_source(${package})
+	
+	set(binary_dependencies "${SB_PACKAGE_DEPENDS}")
+	list(FILTER binary_dependencies EXCLUDE REGEX "^source:.*")
 	
 	if(DEFINED SB_PACKAGE_BUILD
 	       OR "${package}" STREQUAL "toolchain-info")
@@ -1381,28 +1425,41 @@ function(superbuild_package)
 			add_dependencies(${executable}-${SB_PACKAGE_VERSION} ${package})
 			set(keyword "")
 		endforeach()
-	elseif(DEFINED SB_PACKAGE_DEPENDS)
+	elseif(binary_dependencies)
 		add_custom_target(${package})
-	else()
+	elseif(NOT DEFINED SB_PACKAGE_DEPENDS)
 		return()
 	endif()
 	
-	# Publish package properties
-	set_property(TARGET ${package} PROPERTY SB_PACKAGE_FILE ${CMAKE_CURRENT_LIST_FILE})
-	foreach(arg ${sb_options} ${sb_one_value_args} ${sb_multi_value_args})
-		set_property(TARGET ${package} PROPERTY SB_PACKAGE_${arg} ${SB_PACKAGE_${arg}})
-	endforeach()
-	
-	# Publish package via global properties
-	set_property(GLOBAL APPEND PROPERTY SB_PACKAGES ${package})
-	string(REPLACE "-" "." version ${SB_PACKAGE_VERSION})
-	get_property(default_version GLOBAL PROPERTY SB_DEFAULT_${SB_PACKAGE_NAME})
-	string(REPLACE "-" "." default_version "${default_version}")
-	if(NOT SB_PACKAGE_NO_DEFAULT
-	   AND (NOT default_version
-	        OR version VERSION_GREATER default_version))
-		set_property(GLOBAL PROPERTY SB_DEFAULT_${SB_PACKAGE_NAME} ${SB_PACKAGE_VERSION})
+	if(TARGET ${package})
+		# Publish package via global properties
+		set(target ${package})
+		set_property(GLOBAL APPEND PROPERTY SB_PACKAGES ${package})
+		
+		string(REPLACE "-" "." version ${SB_PACKAGE_VERSION})
+		get_property(default_version GLOBAL PROPERTY SB_DEFAULT_${SB_PACKAGE_NAME})
+		string(REPLACE "-" "." default_version "${default_version}")
+		if(NOT SB_PACKAGE_NO_DEFAULT
+		   AND (NOT default_version
+				OR version VERSION_GREATER default_version))
+			set_property(GLOBAL PROPERTY SB_DEFAULT_${SB_PACKAGE_NAME} ${SB_PACKAGE_VERSION})
+		endif()
+		
+		# Publish provided aliases
+		foreach(alias ${SB_PACKAGE_PROVIDES})
+			set_property(GLOBAL APPEND PROPERTY SB_ALIASES "${alias} ${package}")
+		endforeach()
+	else()
+		# Publish source package via global properties
+		set(target ${package}-source)
+		set_property(GLOBAL APPEND PROPERTY SB_SOURCE_PACKAGES ${target})
 	endif()
+	
+	# Publish package properties
+	set_property(TARGET ${target} PROPERTY SB_PACKAGE_FILE ${CMAKE_CURRENT_LIST_FILE})
+	foreach(arg ${sb_options} ${sb_one_value_args} ${sb_multi_value_args})
+		set_property(TARGET ${target} PROPERTY SB_PACKAGE_${arg} ${SB_PACKAGE_${arg}})
+	endforeach()
 endfunction()
 
 
@@ -1417,12 +1474,6 @@ endforeach()
 add_custom_target(doc SOURCES ${documentation})
 add_custom_target(CI SOURCES ${ci})
 
-# ExternalPackage < 3.8.0 has bug with UPDATE_DISCONNECTED
-if(NOT CMAKE_VERSION VERSION_LESS 3.8.0)
-	option(SUPERBUILD_UPDATE_DISCONNECTED "Skip package update steps" ON)
-	set_directory_properties(PROPERTIES EP_UPDATE_DISCONNECTED "${SUPERBUILD_UPDATE_DISCONNECTED}")
-endif()
-
 _sb_create_main_c()
 _sb_create_default_toolchain()
 _sb_create_host_toolchain()
@@ -1433,3 +1484,4 @@ _sb_read_packages()
 _sb_create_toolchain_info() # after package reading, affected by toolchains
 _sb_resolve_dependencies()
 _sb_handle_toolchains()
+_sb_configure_graphviz()

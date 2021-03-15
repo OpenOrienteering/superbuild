@@ -5,4 +5,5 @@
 !COPYING
 !README.md
 !*.cmake
+!*.cmake.in
 *.local.cmake

@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2019-2020 Kai Pastor
+# Copyright 2019-2021 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -65,6 +65,7 @@ jobs:
   variables:
     IMAGE_NAME: 'ubuntu-18.04'
     SUPERBUILD_INSTALL_DIR: $(HOME)/superbuild
+    WITH_GRAPHVIZ: true
   pool:
     vmImage: '$(IMAGE_NAME)'
   steps:
