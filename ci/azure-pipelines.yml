@@ -36,7 +36,7 @@ jobs:
 
 
 - job: macOS
-  timeoutInMinutes: 120
+  timeoutInMinutes: 180
   dependsOn: Source
   variables:
     IMAGE_NAME: 'macOS-11'
@@ -105,7 +105,7 @@ jobs:
 
 
 - job: Android_armv7
-  timeoutInMinutes: 120
+  timeoutInMinutes: 180
   dependsOn: Source
   variables:
     IMAGE_NAME: 'macOS-11'
@@ -134,7 +134,7 @@ jobs:
     - template: publish.yml
 
 - job: Android_aarch64
-  timeoutInMinutes: 120
+  timeoutInMinutes: 180
   dependsOn: Android_armv7
   variables:
     IMAGE_NAME: 'macOS-11'
@@ -163,7 +163,7 @@ jobs:
     - template: publish.yml
 
 - job: Android_x86
-  timeoutInMinutes: 120
+  timeoutInMinutes: 180
   dependsOn: Android_x86_64
   variables:
     IMAGE_NAME: 'macOS-11'
@@ -192,7 +192,7 @@ jobs:
     - template: publish.yml
 
 - job: Android_x86_64
-  timeoutInMinutes: 120
+  timeoutInMinutes: 180
   dependsOn: Source
   variables:
     IMAGE_NAME: 'macOS-11'
