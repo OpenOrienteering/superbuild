@@ -258,6 +258,7 @@ jobs:
           -DUSE_SYSTEM_EXPAT=OFF
           -DUSE_SYSTEM_LIBICONV=OFF
           -DUSE_SYSTEM_LZMA=OFF
+          -DUSE_SYSTEM_SQLITE3=OFF
           -DUSE_SYSTEM_ZLIB=OFF
           -DMapper_GIT_GDAL_DATA_DIR=$(SUPERBUILD_INSTALL_DIR)/$(MINGW)/superbuild/share/gdal
           -DSUPERBUILD_DOWNLOAD_DIR=../download
@@ -291,6 +292,7 @@ jobs:
           -DUSE_SYSTEM_EXPAT=OFF
           -DUSE_SYSTEM_LIBICONV=OFF
           -DUSE_SYSTEM_LZMA=OFF
+          -DUSE_SYSTEM_SQLITE3=OFF
           -DUSE_SYSTEM_ZLIB=OFF
           -DMapper_GIT_GDAL_DATA_DIR=$(SUPERBUILD_INSTALL_DIR)/$(MINGW)/superbuild/share/gdal
           -DSUPERBUILD_DOWNLOAD_DIR=../download
