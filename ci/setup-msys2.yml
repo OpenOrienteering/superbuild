@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2019-2020 Kai Pastor
+# Copyright 2019-2024 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -135,14 +135,14 @@ steps:
     set PATH=%SUPERBUILD_INSTALL_DIR_NATIVE%\usr\bin;%WINDIR%\system32;%WINDIR%;%WINDIR%\system32\wbem
     pacman -Qo /%MINGW%/bin/libstdc++-6.dll ^
       | sed "s,-gcc-libs,-gcc," ^
-      | sed "s,^.*owned by mingw-w64-%MSYSTEM_CARCH%,http://repo.msys2.org/mingw/sources/mingw-w64,;s, ,-,;s, *$,.src.tar.gz," > urls.txt
+      | sed "s,^.*owned by mingw-w64-%MSYSTEM_CARCH%,http://repo.msys2.org/mingw/sources/mingw-w64,;s, ,-,;s, *$,.src.tar.zstd," > urls.txt
     pacman -Qo /%MINGW%/bin/libwinpthread-1.dll ^
       | sed "s,-libwinpthread,-winpthreads," ^
-      | sed "s,^.*owned by mingw-w64-%MSYSTEM_CARCH%,http://repo.msys2.org/mingw/sources/mingw-w64,;s, ,-,;s, *$,.src.tar.gz," >> urls.txt
-    pacman -Qo /%MINGW%/%MSYSTEM_CARCH%-w64-mingw32/include/windows.h ^
-      | sed "s,^.*owned by mingw-w64-%MSYSTEM_CARCH%,http://repo.msys2.org/mingw/sources/mingw-w64,;s, ,-,;s, *$,.src.tar.gz," >> urls.txt
+      | sed "s,^.*owned by mingw-w64-%MSYSTEM_CARCH%,http://repo.msys2.org/mingw/sources/mingw-w64,;s, ,-,;s, *$,.src.tar.zstd," >> urls.txt
+    pacman -Qo /%MINGW%/include/windows.h ^
+      | sed "s,^.*owned by mingw-w64-%MSYSTEM_CARCH%,http://repo.msys2.org/mingw/sources/mingw-w64,;s, ,-,;s, *$,.src.tar.zstd," >> urls.txt
     pacman -Qo /%MINGW%/bin/makensis.exe ^
-      | sed "s,^.*owned by mingw-w64-%MSYSTEM_CARCH%,http://repo.msys2.org/mingw/sources/mingw-w64,;s, ,-,;s, *$,.src.tar.gz," >> urls.txt
+      | sed "s,^.*owned by mingw-w64-%MSYSTEM_CARCH%,http://repo.msys2.org/mingw/sources/mingw-w64,;s, ,-,;s, *$,.src.tar.zstd," >> urls.txt
     
     type urls.txt
     wget --no-verbose -i urls.txt 2>&1
