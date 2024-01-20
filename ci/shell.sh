@@ -3,6 +3,7 @@ if [ -n "${MINGW}" ] ; then
   source /etc/profile
   unset CC
   unset PKG_CONFIG_PATH
+  echo "PATH:=$PATH"
 fi
 
 unset UNBUFFER

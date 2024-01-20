@@ -98,9 +98,6 @@ steps:
 - script: |
     set PATH=%SUPERBUILD_INSTALL_DIR_NATIVE%\usr\bin;%WINDIR%\system32;%WINDIR%;%WINDIR%\system32\wbem
     pacman --noconfirm -Scc
-    which make
-    make --version
-    cygpath -w /usr/bin/make
     exit /b 0
   condition: not(variables['openorienteering.superbuild.msysBuildId'])
   displayName: 'Reduce installation size for CI'
@@ -117,7 +114,7 @@ steps:
     REM Deprecation warning: Mapper still looks for gnustl*. It should use gcc-libs* instead.
     type superbuild\share\doc\copyright\gcc-libs-msys2.txt > superbuild\share\doc\copyright\gnustl-msys2.txt
     
-    type share\licenses\libwinpthread\mingw-w64-libraries\winpthreads\COPYING > superbuild\share\doc\copyright\winpthreads-msys2.txt
+    REM type share\licenses\libwinpthread\mingw-w64-libraries\winpthreads\COPYING > superbuild\share\doc\copyright\winpthreads-msys2.txt
     
     type share\licenses\libwinpthread\COPYING > superbuild\share\doc\copyright\mingw-w64-msys2.txt
   displayName: 'Generate copyright files for toolchain libraries'
