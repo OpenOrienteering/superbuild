@@ -98,6 +98,9 @@ steps:
 - script: |
     set PATH=%SUPERBUILD_INSTALL_DIR_NATIVE%\usr\bin;%WINDIR%\system32;%WINDIR%;%WINDIR%\system32\wbem
     pacman --noconfirm -Scc
+    which make
+    make --version
+    cygpath -w /usr/bin/make
     exit /b 0
   condition: not(variables['openorienteering.superbuild.msysBuildId'])
   displayName: 'Reduce installation size for CI'
