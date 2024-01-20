@@ -11,11 +11,12 @@ fi
 
 unset UNBUFFER
 if [ -f /usr/bin/stdbuf ] ; then
-  #UNBUFFER="/usr/bin/stdbuf -oL"
+  UNBUFFER="/usr/bin/stdbuf -oL"
 elif [ -f /usr/bin/unbuffer ] ; then
-  #UNBUFFER="/usr/bin/unbuffer"
+  UNBUFFER="/usr/bin/unbuffer"
 fi
 
 set -o pipefail
 
-${UNBUFFER} "$@" 2>&1 | ${UNBUFFER} sed -f "${BUILD_SOURCESDIRECTORY}/ci/filter-stderr.sed"
+#${UNBUFFER} "$@" 2>&1 | ${UNBUFFER} sed -f "${BUILD_SOURCESDIRECTORY}/ci/filter-stderr.sed"
+"$@"
