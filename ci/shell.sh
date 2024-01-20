@@ -1,11 +1,12 @@
 #!/bin/bash
 if [ -n "${MINGW}" ] ; then
   source /etc/profile
-  echo "CC:=$CC, unset"
   unset CC
   unset PKG_CONFIG_PATH
   echo "PATH:=$PATH"
   cygpath -w /usr/bin
+  which make
+  make --version
 fi
 
 unset UNBUFFER

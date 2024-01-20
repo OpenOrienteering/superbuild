@@ -31,7 +31,7 @@ steps:
 - script: |
     echo ##vso[task.setVariable variable=CHERE_INVOKING]enabled_from_arguments
     echo ##vso[task.setVariable variable=MSYSCON]defterm
-    echo ##vso[task.setVariable variable=CMAKE_WRAPPING]-E env "PATH=%SUPERBUILD_INSTALL_DIR_NATIVE%\usr\bin;%WINDIR%\system32;%WINDIR%;%WINDIR%\system32\wbem" $(SUPERBUILD_INSTALL_DIR_NATIVE)\usr\bin\bash.exe ../ci/shell.sh cmake
+    echo ##vso[task.setVariable variable=CMAKE_WRAPPING]-E env $(SUPERBUILD_INSTALL_DIR_NATIVE)\usr\bin\bash.exe ../ci/shell.sh cmake
     if msys-%MINGW%==msys-mingw32 (
       echo ##vso[task.setVariable variable=MSYSTEM]MINGW32
       echo ##vso[task.setVariable variable=MSYSTEM_CARCH]i686
