@@ -6,7 +6,9 @@ if [ -n "${MINGW}" ] ; then
 fi
 
 unset UNBUFFER
-if [ -f /usr/bin/stdbuf ] ; then
+if [ -n "${MINGW}" ] ; then
+  # breaking bash?
+elif [ -f /usr/bin/stdbuf ] ; then
   UNBUFFER="/usr/bin/stdbuf -oL"
 elif [ -f /usr/bin/unbuffer ] ; then
   UNBUFFER="/usr/bin/unbuffer"
