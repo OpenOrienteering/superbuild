@@ -42,7 +42,7 @@ jobs:
 
 
 - job: macOS
-  condition: and(succeeded(), contains('^${{ System.JobName }}$', '${{ parameters.jobPattern }}'))
+  condition: and(succeeded(), contains('^${{ variables.System.JobName }}$', '${{ parameters.jobPattern }}'))
   timeoutInMinutes: 180
   dependsOn: Source
   variables:
@@ -68,7 +68,7 @@ jobs:
 
 
 - job: Linux
-  condition: and(succeeded(), contains('^${{ System.JobName }}$', '${{ parameters.jobPattern }}'))
+  condition: and(succeeded(), contains('^${{ variables.System.JobName }}$', '${{ parameters.jobPattern }}'))
   timeoutInMinutes: 120
   dependsOn: macOS
   variables:
@@ -87,7 +87,7 @@ jobs:
 
 
 - job: MinGW_Linux
-  condition: and(succeeded(), eq('^{{ System.JobName }}', '${{ parameters.jobPattern }}'))
+  condition: and(succeeded(), eq('^{{ variables.System.JobName }}', '${{ parameters.jobPattern }}'))
   timeoutInMinutes: 120
   dependsOn: Source
   variables:
@@ -113,7 +113,7 @@ jobs:
 
 
 - job: Android_armv7
-  condition: and(succeeded(), contains('^${{ System.JobName }}$', '${{ parameters.jobPattern }}'))
+  condition: and(succeeded(), contains('^${{ variables.System.JobName }}$', '${{ parameters.jobPattern }}'))
   timeoutInMinutes: 180
   dependsOn: Android_armv7
   variables:
@@ -143,7 +143,7 @@ jobs:
     - template: publish.yml
 
 - job: Android_aarch64
-  condition: and(succeeded(), contains('^${{ System.JobName }}$', '${{ parameters.jobPattern }}'))
+  condition: and(succeeded(), contains('^${{ variables.System.JobName }}$', '${{ parameters.jobPattern }}'))
   timeoutInMinutes: 180
   dependsOn: Source
   variables:
@@ -173,7 +173,7 @@ jobs:
     - template: publish.yml
 
 - job: Android_x86
-  condition: and(succeeded(), contains('^${{ System.JobName }}$', '${{ parameters.jobPattern }}'))
+  condition: and(succeeded(), contains('^${{ variables.System.JobName }}$', '${{ parameters.jobPattern }}'))
   timeoutInMinutes: 180
   dependsOn: Source
   variables:
@@ -203,7 +203,7 @@ jobs:
     - template: publish.yml
 
 - job: Android_x86_64
-  condition: and(succeeded(), contains('^${{ System.JobName }}$', '${{ parameters.jobPattern }}'))
+  condition: and(succeeded(), contains('^${{ variables.System.JobName }}$', '${{ parameters.jobPattern }}'))
   timeoutInMinutes: 180
   dependsOn: Android_x86
   variables:
@@ -233,7 +233,7 @@ jobs:
     - template: publish.yml
 
 - job: Windows_mingw32
-  condition: and(succeeded(), contains('^${{ System.JobName }}$', '${{ parameters.jobPattern }}'))
+  condition: and(succeeded(), contains('^${{ variables.System.JobName }}$', '${{ parameters.jobPattern }}'))
   timeoutInMinutes: 240
   dependsOn: Source
   variables:
@@ -266,7 +266,7 @@ jobs:
         outputSuffix: -$(MINGW)
 
 - job: Windows_mingw64
-  condition: and(succeeded(), contains('^${{ System.JobName }}$', '${{ parameters.jobPattern }}'))
+  condition: and(succeeded(), contains('^${{ variables.System.JobName }}$', '${{ parameters.jobPattern }}'))
   timeoutInMinutes: 240
   dependsOn: Source
   variables:
