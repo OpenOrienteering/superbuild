@@ -27,6 +27,12 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+parameters:
+  - name: jobPattern
+    displayName: 'Enable jobs which contain this substring'
+    type: string
+    default: 'Windows_mingw64'
+
 jobs:
 - job: Source
   pool:
@@ -36,6 +42,7 @@ jobs:
 
 
 - job: macOS
+  condition: and(succeeded(), contains('^${{ System.JobName }}$', '${{ parameters.jobPattern }}'))
   timeoutInMinutes: 180
   dependsOn: Source
   variables:
@@ -61,6 +68,7 @@ jobs:
 
 
 - job: Linux
+  condition: and(succeeded(), contains('^${{ System.JobName }}$', '${{ parameters.jobPattern }}'))
   timeoutInMinutes: 120
   dependsOn: macOS
   variables:
@@ -79,9 +87,9 @@ jobs:
 
 
 - job: MinGW_Linux
+  condition: and(succeeded(), eq('^{{ System.JobName }}', '${{ parameters.jobPattern }}'))
   timeoutInMinutes: 120
   dependsOn: Source
-  condition: False
   variables:
     IMAGE_NAME: 'ubuntu-20.04'
     SUPERBUILD_INSTALL_DIR: $(HOME)/superbuild
@@ -105,8 +113,9 @@ jobs:
 
 
 - job: Android_armv7
+  condition: and(succeeded(), contains('^${{ System.JobName }}$', '${{ parameters.jobPattern }}'))
   timeoutInMinutes: 180
-  dependsOn: Source
+  dependsOn: Android_armv7
   variables:
     IMAGE_NAME: 'macOS-11'
     SUPERBUILD_INSTALL_DIR: $(HOME)/superbuild
@@ -134,8 +143,9 @@ jobs:
     - template: publish.yml
 
 - job: Android_aarch64
+  condition: and(succeeded(), contains('^${{ System.JobName }}$', '${{ parameters.jobPattern }}'))
   timeoutInMinutes: 180
-  dependsOn: Android_armv7
+  dependsOn: Source
   variables:
     IMAGE_NAME: 'macOS-11'
     SUPERBUILD_INSTALL_DIR: $(HOME)/superbuild
@@ -163,8 +173,9 @@ jobs:
     - template: publish.yml
 
 - job: Android_x86
+  condition: and(succeeded(), contains('^${{ System.JobName }}$', '${{ parameters.jobPattern }}'))
   timeoutInMinutes: 180
-  dependsOn: Android_x86_64
+  dependsOn: Source
   variables:
     IMAGE_NAME: 'macOS-11'
     SUPERBUILD_INSTALL_DIR: $(HOME)/superbuild
@@ -192,8 +203,9 @@ jobs:
     - template: publish.yml
 
 - job: Android_x86_64
+  condition: and(succeeded(), contains('^${{ System.JobName }}$', '${{ parameters.jobPattern }}'))
   timeoutInMinutes: 180
-  dependsOn: Source
+  dependsOn: Android_x86
   variables:
     IMAGE_NAME: 'macOS-11'
     SUPERBUILD_INSTALL_DIR: $(HOME)/superbuild
@@ -221,6 +233,7 @@ jobs:
     - template: publish.yml
 
 - job: Windows_mingw32
+  condition: and(succeeded(), contains('^${{ System.JobName }}$', '${{ parameters.jobPattern }}'))
   timeoutInMinutes: 240
   dependsOn: Source
   variables:
@@ -253,6 +266,7 @@ jobs:
         outputSuffix: -$(MINGW)
 
 - job: Windows_mingw64
+  condition: and(succeeded(), contains('^${{ System.JobName }}$', '${{ parameters.jobPattern }}'))
   timeoutInMinutes: 240
   dependsOn: Source
   variables:
