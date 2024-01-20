@@ -115,7 +115,7 @@ jobs:
 - job: Android_armv7
   condition: and(succeeded(), contains('^${{ variables.System.JobName }}$', '${{ parameters.jobPattern }}'))
   timeoutInMinutes: 180
-  dependsOn: Android_armv7
+  dependsOn: Android_aarch64
   variables:
     IMAGE_NAME: 'macOS-11'
     SUPERBUILD_INSTALL_DIR: $(HOME)/superbuild
