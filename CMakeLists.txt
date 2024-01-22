@@ -450,7 +450,7 @@ ExternalProject_Add(${package}-@SYSTEM_NAME@
   TMP_DIR      \"\${TMP_DIR}\"
   STAMP_DIR    \"\${TMP_DIR}/stamp\"
   INSTALL_DIR  \"\${INSTALL_DIR}\"
-  ${LOG_OPTIONS}
+  \${LOG_OPTIONS}
   DOWNLOAD_COMMAND \"${CMAKE_COMMAND}\" -E touch_nocreate \"<SOURCE_DIR>/placeholder/@STAMP@\"
 ${SB_PACKAGE_BUILD})
 ExternalProject_Add_StepDependencies(${package}-@SYSTEM_NAME@ configure

@@ -27,11 +27,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        0.9.4+dfsg)
-set(download_hash  SHA256=3558e9fce140f3587fe29bb3c7911dcc0c2abd32d34025f7d50b54e4469f4c37)
-set(patch_version  ${version}-1)
-set(patch_hash     SHA256=acd10773fc71dba64fa4072d295409dcdbffe0b589c8b052d5a6a794c6faf8f9)
-set(base_url       https://snapshot.debian.org/archive/debian/20201105T220209Z/pool/main/u/uriparser/)
+set(version        0.9.7+dfsg)
+set(download_hash  SHA256=f7e51d6be4d7830d377433bc740e450cf0e9fea316ada0403f8080a02bfb1e38)
+set(patch_version  ${version}-2)
+set(patch_hash     SHA256=d013e86dfc0626978894f2d4bc41e8fd4d3dde26ca2aab4739cf4b3755bf3373)
+set(base_url       https://snapshot.debian.org/archive/debian/20230202T212152Z/pool/main/u/uriparser/)
 
 option(USE_SYSTEM_URIPARSER "Use the system uriparser if possible" ON)
 

@@ -27,14 +27,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        5.2.4)
-set(download_hash  SHA256=9717ae363760dedf573dad241420c5fea86256b65bc21d2cf71b2b12f0544f4b)
-
-# Note: None of the patches from 5.2.2-1.2 are actually used.
-# They are Debian specific and require autotools for reconfiguration.
-set(patch_version  ${version}-1)
-set(patch_hash     SHA256=d37b558444b76e88a69601df008cf1c0343c58cb7765b7bbb2099b0a19619361)
-set(base_url       https://snapshot.debian.org/archive/debian/20190128T030507Z/pool/main/x/xz-utils)
+set(version        5.4.1)
+set(download_hash  SHA256=5d9827aa1875b21c288f78864bb26d2650b436ea8d2cad364e4921eb6266a5a5)
+set(patch_version  ${version}-0.2)
+set(patch_hash     SHA256=67eeab55ab3e4b35722d4ec255e0f735b3c61aab0437ab3c8274f5aa77c9c407)
+set(base_url       https://snapshot.debian.org/archive/debian/20231224T085540Z/pool/main/x/xz-utils/)
 
 option(USE_SYSTEM_LZMA "Use the system XZ-Utils/LZMA library if possible" ON)
 
@@ -63,7 +60,7 @@ superbuild_package(
   VERSION        ${patch_version}
   
   SOURCE
-    URL            ${base_url}/xz-utils_${patch_version}.debian.tar.xz
+    URL            ${base_url}xz-utils_${patch_version}.debian.tar.xz
     URL_HASH       ${patch_hash}
 )
   
