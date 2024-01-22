@@ -27,11 +27,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        2.15.02)
-set(download_hash  SHA256=f4fd1329b1713e1ccd34b2fc121c4bcd278c9f91cc4cb205ae8fcd2e4728dd14)
+set(version        2.16.01)
+set(download_hash  SHA256=c77745f4802375efeee2ec5c0ad6b7f037ea9c87c92b149a9637ff099f162558 )
 set(patch_version  ${version}-1)
-set(patch_hash     SHA256=730bc65e099138e6d00c3270d6fec34a5ff63c132258d0c23b51aefbc0b2da99)
-set(base_url       https://snapshot.debian.org/archive/debian/20200704T025342Z/pool/main/n/nasm/)
+set(patch_hash     SHA256=b493a68a78e6087bcb106b4bc9f24dd411949ca94db717e5bad6297658eec71f )
+set(base_url       https://snapshot.debian.org/archive/debian/20221231T090612Z/pool/main/n/nasm/)
 
 option(USE_SYSTEM_NASM "Use the system nasm if possible" ON)
 
@@ -85,7 +85,11 @@ superbuild_package(
   BUILD_CONDITION  ${test_system_nasm}
   BUILD [[
     CONFIGURE_COMMAND
-      "${SOURCE_DIR}/configure"
+      "${CMAKE_COMMAND}" -E copy_directory "<SOURCE_DIR>" .
+    COMMAND
+      "${CMAKE_COMMAND}" -E touch "./configure"
+    COMMAND
+      "./configure"
         "--prefix=${CMAKE_INSTALL_PREFIX}"
         $<$<BOOL:@CMAKE_CROSSCOMPILING@>:
           --host=${SUPERBUILD_TOOLCHAIN_TRIPLET}
@@ -94,6 +98,8 @@ superbuild_package(
         "CPPFLAGS=${SUPERBUILD_CPPFLAGS}"
         "CFLAGS=${SUPERBUILD_CFLAGS} -Wno-format"
         "LDFLAGS=${SUPERBUILD_LDFLAGS}"
+    BUILD_COMMAND
+      "$(MAKE)"
     INSTALL_COMMAND
       "$(MAKE)" install "DESTDIR=${DESTDIR}${INSTALL_DIR}"
     COMMAND

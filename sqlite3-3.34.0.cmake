@@ -77,6 +77,10 @@ superbuild_package(
       # POSIX version of strerror_r, issueing a warning.
       # Just rely on configure's feature detection.
       sed -e "/STRERROR_R_CHAR_P/ s/ .. defined.__USE_GNU.//" -i -- sqlite3.c
+    COMMAND
+      ${CMAKE_COMMAND} -E touch aclocal.m4
+    COMMAND
+      ${CMAKE_COMMAND} -E touch Makefile.in configure
   
   USING            USE_SYSTEM_SQLITE3 version patch_version
   BUILD_CONDITION  ${test_system_sqlite3}

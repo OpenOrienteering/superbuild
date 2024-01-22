@@ -27,8 +27,8 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        1.16)
-set(download_hash  SHA256=e6a1b1b589654277ee790cce3734f07876ac4ccfaecbee8afa0b649cf529cc04)
+set(version        1.17)
+set(download_hash  SHA256=8f74213b56238c85a50a5329f77e06198771e70dd9a739779f4c02f65d971313)
 set(patch_version  ${version}-0)
 set(base_url       https://ftp.gnu.org/pub/gnu/libiconv)
 

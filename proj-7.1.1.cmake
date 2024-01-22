@@ -111,6 +111,9 @@ superbuild_package(
       "${CMAKE_COMMAND}"
         -Dpackage=proj-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
+    COMMAND
+      sed -e [[s,\${CMAKE_INSTALL_PREFIX}/\${CMAKECONFIGSUBDIR} \${CMAKE_INSTALL_PREFIX},/\${CMAKECONFIGSUBDIR} /,]]
+        -i -- "cmake/CMakeLists.txt"
   
   USING            USE_SYSTEM_PROJ patch_version
   BUILD_CONDITION  ${test_system_proj}

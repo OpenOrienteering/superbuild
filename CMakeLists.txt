@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016-2020 Kai Pastor
+# Copyright 2016-2024 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -27,7 +27,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.14...3.27)
 
 project(Superbuild C)
 
@@ -409,7 +409,8 @@ set(CMAKE_BUILD_TYPE \"@CMAKE_BUILD_TYPE@\")
 include(\"${dir}/${package}-config.cmake\")
 
 if(CMAKE_GENERATOR MATCHES \"Make\")
-	set(DESTDIR \"\$(DESTDIR)\")
+	# Circular, refused by make: set(DESTDIR \"\$(DESTDIR)\")
+	set(DESTDIR \"\")
 else()
 	set(DESTDIR \"\")
 endif()
@@ -430,6 +431,18 @@ endif()
 
 include(ExternalProject)
 
+set(LOG_OPTIONS
+  LOG_DIR      \"\${TMP_DIR}/log\"
+  LOG_CONFIGURE TRUE
+  LOG_BUILD TRUE
+  LOG_INSTALL TRUE
+  LOG_MERGED_STDOUTERR
+  LOG_OUTPUT_ON_FAILURE TRUE
+)
+if(MSYS)
+  set(LOG_OPTIONS \"\") # Log wrapper can't run msys
+endif()
+
 ExternalProject_Add(${package}-@SYSTEM_NAME@
   DOWNLOAD_DIR \"\${DOWNLOAD_DIR}\"
   SOURCE_DIR   \"\${SOURCE_DIR}\"
@@ -437,6 +450,7 @@ ExternalProject_Add(${package}-@SYSTEM_NAME@
   TMP_DIR      \"\${TMP_DIR}\"
   STAMP_DIR    \"\${TMP_DIR}/stamp\"
   INSTALL_DIR  \"\${INSTALL_DIR}\"
+  ${LOG_OPTIONS}
   DOWNLOAD_COMMAND \"${CMAKE_COMMAND}\" -E touch_nocreate \"<SOURCE_DIR>/placeholder/@STAMP@\"
 ${SB_PACKAGE_BUILD})
 ExternalProject_Add_StepDependencies(${package}-@SYSTEM_NAME@ configure
@@ -1051,12 +1065,17 @@ function(_sb_make_source package)
 		  INSTALL_COMMAND   ""
 		  EXCLUDE_FROM_ALL  1
 		)
+		set(extra_args "")
+		if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.19)
+			set(extra_args INDEPENDENT TRUE)
+		endif()
 		if(source_write_commands)
 			ExternalProject_Add_Step(${package}-source write
 			  ${source_write_commands}
 			  DEPENDS   "${source_write_files}"
 			  DEPENDEES download
 			  DEPENDERS patch update
+			  ${extra_args}
 			)
 		endif()
 		# There must be no stamp files when the source dir is missing.

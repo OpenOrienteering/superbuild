@@ -27,11 +27,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        2.0.5)
-set(download_hash  SHA256=16f8f6f2715b3a38ab562a84357c793dd56ae9899ce130563c72cd93d8357b5d)
-set(patch_version  ${version}-1.1)
-set(patch_hash     SHA256=d4370be8fabaef3be0007a75df92f964986f03d648c5f97cbeb750067f53a493)
-set(base_url       https://snapshot.debian.org/archive/debian/20200802T025122Z/pool/main/libj/libjpeg-turbo/)
+set(version        2.1.5)
+set(download_hash  SHA256=254f3642b04e309fee775123133c6464181addc150499561020312ec61c1bf7c )
+set(patch_version  ${version}-2)
+set(patch_hash     SHA256=cdb2433c2f7101345c1ffa14efb943787c675b86354691a32490845fe4bc9237 )
+set(base_url       https://snapshot.debian.org/archive/debian/20230204T031401Z/pool/main/libj/libjpeg-turbo/)
 
 option(USE_SYSTEM_LIBJPEG "Use the system libjpeg if possible" ON)
 
@@ -125,6 +125,10 @@ superbuild_package(
         -P "${APPLY_PATCHES_SERIES}"
     COMMAND
       patch -p1 < suffix.patch
+    COMMAND
+      sed -e [[s,INST_DIR \${CMAKE_INSTALL_PREFIX},INST_DIR "\${CMAKE_INSTALL_PREFIX}",]] -i --
+        "<SOURCE_DIR>/cmakescripts/BuildPackages.cmake"
+      
   
   USING            USE_SYSTEM_LIBJPEG patch_version
   BUILD_CONDITION  ${test_system_jpeg}
@@ -136,7 +140,7 @@ superbuild_package(
       -DENABLE_STATIC=OFF
       $<$<BOOL:@ANDROID@>:
         -DLIBJPEG_SUFFIX=-turbo  # needs suffix patch
-        -DCMAKE_ASM_FLAGS="--target=${SUPERBUILD_TOOLCHAIN_TRIPLET}${ANDROID_NATIVE_API_LEVEL}"
+        "-DCMAKE_ASM_FLAGS=--target=${SUPERBUILD_TOOLCHAIN_TRIPLET}${ANDROID_NATIVE_API_LEVEL}"
       >
     INSTALL_COMMAND
       "${CMAKE_COMMAND}" --build . --target install/strip/fast

@@ -27,11 +27,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        1.6.37)
-set(download_hash  SHA256=ca74a0dace179a8422187671aee97dd3892b53e168627145271cad5b5ac81307)
-set(patch_version  ${version}-1)
-set(patch_hash     SHA256=1be8793d8ef9265dd43f526540a55c5114c427f2a18862d2238a193bdad9b6a1)
-set(base_url       https://snapshot.debian.org/archive/debian/20190702T085226Z/pool/main/libp/libpng1.6)
+set(version        1.6.39)
+set(download_hash  SHA256=a00e9d2f2f664186e4202db9299397f851aea71b36a35e74910b8820e380d441)
+set(patch_version  ${version}-2)
+set(patch_hash     SHA256=c3a73a6143e18c9a62b32d6db80acbc525f03c795bca41079087d89febff0217)
+set(base_url       https://snapshot.debian.org/archive/debian/20221201T154914Z/pool/main/libp/libpng1.6/)
 
 option(USE_SYSTEM_LIBPNG "Use the system libpng if possible" ON)
 

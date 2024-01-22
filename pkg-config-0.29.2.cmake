@@ -70,17 +70,15 @@ superbuild_package(
     URL            ${base_url}pkg-config_${version}.orig.tar.gz
     URL_HASH       ${download_hash}
     PATCH_COMMAND
-      # Save unchanged m4 files.
-      ${CMAKE_COMMAND} -E tar cf unpatched.tar "glib/m4macros"
-    COMMAND
       "${CMAKE_COMMAND}" -P "${download_pkg-config_diff_cmake}"
     COMMAND
       gunzip -c "${SUPERBUILD_DOWNLOAD_DIR}/pkg-config_${patch_version}.diff.gz" > "pkg-config_${patch_version}.diff"
     COMMAND
       patch -N -p1 < "pkg-config_${patch_version}.diff"
     COMMAND
-      # Restore unchanged m4 files, or we will need aclocal.
-      ${CMAKE_COMMAND} -E tar xf unpatched.tar
+      ${CMAKE_COMMAND} -E touch glib/aclocal.m4 aclocal.m4
+    COMMAND
+      ${CMAKE_COMMAND} -E touch glib/Makefile.in Makefile.in configure
   
   USING            USE_SYSTEM_PKG_CONFIG patch_version extra_flags
   BUILD_CONDITION  ${test_system_pkg-config}
@@ -89,6 +87,7 @@ superbuild_package(
       "${SOURCE_DIR}/configure"
         "--prefix=${TOOLCHAIN_DIR}"
         "--with-internal-glib"
+        "--disable-compile-warnings"
         "--disable-host-tool"
         "CFLAGS=${extra_flags}"
     INSTALL_COMMAND

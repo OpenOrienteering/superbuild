@@ -299,14 +299,27 @@ if(NOT ANDROID_NDK_ROOT)
 		    COMMAND
 		      "${CMAKE_COMMAND}" -E create_symlink "${ANDROID_NDK_ROOT}" "android-${ANDROID_NDK_VERSION}"
 		)
+		set(android-libcxx-collect-copyright "${PROJECT_BINARY_DIR}/android-libcxx-collect-copyright.sh")
+		file(WRITE "${android-libcxx-collect-copyright}" [[
+			set -e
+			(
+			cat "$1/external/libcxx/LICENSE.TXT"
+			echo "\n" \
+			     "==============================================================================\n" \
+			     "libc++ CREDITS.TXT\n" \
+			     "==============================================================================\n"
+			cat "$1/external/libcxx/CREDITS.TXT"
+			) > "$2"
+		]])
 		foreach(abi ${enabled_abis})
 			superbuild_package(
 			  NAME         android-libcxx-${abi}
 			  VERSION      ${ANDROID_NDK_VERSION}
+			  
 			  SOURCE
 			    android-libcxx-${ANDROID_NDK_VERSION}
 			  
-			  USING ANDROID_NDK_ROOT abi sdk_host system_platform_${abi}
+			  USING ANDROID_NDK_ROOT abi sdk_host system_platform_${abi} android-libcxx-collect-copyright
 			  BUILD [[
 			    CONFIGURE_COMMAND ""
 			    BUILD_COMMAND
@@ -339,20 +352,7 @@ if(NOT ANDROID_NDK_ROOT)
 			        >
 			        "${ANDROID_NDK_ROOT}/sources/cxx-stl/llvm-libc++/libs/${abi}/"
 			    COMMAND
-			      "${CMAKE_COMMAND}" -E copy
-			        "<SOURCE_DIR>/external/libcxx/LICENSE.TXT"
-			        "${ANDROID_NDK_ROOT}/sources/cxx-stl/llvm-libc++/NOTICE"
-			    COMMAND
-			      echo
-			        "\\n"
-			        "==============================================================================\\n"
-			        "libc++ CREDITS.TXT\\n"
-			        "==============================================================================\\n"
-					>> "${ANDROID_NDK_ROOT}/sources/cxx-stl/llvm-libc++/NOTICE"
-			    COMMAND
-			      cat
-			        "<SOURCE_DIR>/external/libcxx/CREDITS.TXT"
-			        >> "${ANDROID_NDK_ROOT}/sources/cxx-stl/llvm-libc++/NOTICE"
+			      bash "${android-libcxx-collect-copyright}" "<SOURCE_DIR>" "${ANDROID_NDK_ROOT}/sources/cxx-stl/llvm-libc++/NOTICE"
 			  ]]
 			)
 		endforeach()

@@ -33,11 +33,11 @@
 # we use libz-mingw-w64 instead:
 # https://tracker.debian.org/pkg/libz-mingw-w64
 
-set(version        1.2.11+dfsg)   # libz-mingw-w64
-set(download_hash  SHA256=9d0404bc07629383dd71cb0b50749d7dcd156d28476f8a197bfb0f50005e4177)
-set(patch_version  ${version}-2)  # libz-mingw-w64
-set(patch_hash     SHA256=b01dfe018f2558b96ea4ca83a69f887d7a1b1882c61383df0a6050451a308610)
-set(base_url       https://snapshot.debian.org/archive/debian/20180509T221858Z/pool/main/libz/libz-mingw-w64)
+set(version        1.3+dfsg)   # libz-mingw-w64
+set(download_hash  SHA256=f3cea40eed0a5146439ab948a197e6541a5884a33e287c12a5795e90b5f70dd4)
+set(patch_version  ${version}-1)  # libz-mingw-w64
+set(patch_hash     SHA256=703f79924684ea675aafd1368dc02951cdd2eebbfb38efa0ee1a8aaf81b5e041  )
+set(base_url       https://snapshot.debian.org/archive/debian/20230823T090443Z/pool/main/libz/libz-mingw-w64)
 
 option(USE_SYSTEM_ZLIB "Use the system zlib if possible" ON)
 

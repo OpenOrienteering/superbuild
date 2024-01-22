@@ -27,11 +27,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        5.1.9)
-set(download_hash  SHA256=292b10b86a87cb05f9dcbe1b6c7b99f3187a106132dd14f1ba79c90f561c3295)
-set(patch_version  ${version}-1)
-set(patch_hash     SHA256=fa7d879571e40ecbea6934f0fa3100a7cba0f7313c2de8ff61d62294970ad86d)
-set(base_url       https://snapshot.debian.org/archive/debian/20191213T092546Z/pool/main/g/giflib/)
+set(version        5.2.1)
+set(download_hash  SHA256=31da5562f44c5f15d63340a09a4fd62b48c45620cd302f77a6d9acf0077879bd)
+set(patch_version  ${version}-2.5)
+set(patch_hash     SHA256=f76d1b1564b9933d1643e76c27689424f5b534011c1566b91cc60369ec3d4810)
+set(base_url       https://snapshot.debian.org/archive/debian/20220612T214420Z/pool/main/g/giflib/)
 set(openorienteering_version  5-0)
 set(openorienteering_hash     SHA256=62468f100a97af2b7517b152d6cfdf6a790db79dc212376df3acbad2d8e35613)
 
@@ -76,12 +76,15 @@ superbuild_package(
     source:giflib-openorienteering-${openorienteering_version}
   
   SOURCE
-    URL            ${base_url}giflib_${version}.orig.tar.bz2
+    URL            ${base_url}giflib_${version}.orig.tar.gz
     URL_HASH       ${download_hash}
     PATCH_COMMAND
       "${CMAKE_COMMAND}"
         -Dpackage=giflib-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
+    COMMAND
+      sed -e "/0003-tests-makefile/d" -i --
+        "<SOURCE_DIR>/../giflib-openorienteering-${openorienteering_version}/patches/series"
     COMMAND
       "${CMAKE_COMMAND}"
         -Dpackage=giflib-openorienteering-${openorienteering_version}

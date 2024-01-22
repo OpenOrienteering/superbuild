@@ -229,7 +229,7 @@ superbuild_package(
       -nomake tools
       -system-proxies
       -no-glib
-      -prefix         "${CMAKE_INSTALL_PREFIX}"
+      -prefix         "${CMAKE_INSTALL_PREFIX}/."
       -archdatadir    "${CMAKE_INSTALL_PREFIX}/lib/qt5"
       -datadir        "${CMAKE_INSTALL_PREFIX}/share/qt5"
       -examplesdir    "${CMAKE_INSTALL_PREFIX}/share/qt5/examples"

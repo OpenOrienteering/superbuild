@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2017-2020 Kai Pastor
+# Copyright 2020 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -27,54 +27,72 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        7.64.0)
-set(download_hash  SHA256=cb90d2eb74d4e358c1ed1489f8e3af96b50ea4374ad71f143fa4595e998d81b5)
-set(patch_version  ${version}-4+deb10u1)
-set(patch_hash     SHA256=911407ad8d73d0592db7f1a015656089563bb7dab279ec33bff855adf56bcf1b)
-set(base_url       https://snapshot.debian.org/archive/debian/20200225T210858Z/pool/main/c/curl/)
+set(version        3.8.2+dfsg)
+set(download_hash  SHA256=dff8a3c96dd34121828f62a7fa49e1f7765815b89e59f564e8d2a9e71c177be5)
+set(patch_version  ${version}-1)
+set(patch_hash     SHA256=e878473ddbc8601c1b9b8558fab86950ae6ae5b7c146802d587e284d5e1c9abb)
+set(base_url       https://snapshot.debian.org/archive/debian/20211003T024803Z/pool/main/b/bison/)
 
-option(USE_SYSTEM_CURL "Use the system curl if possible" ON)
+option(USE_SYSTEM_BISON "Use the system Bison if possible" ON)
 
-set(test_system_curl [[
-	if(USE_SYSTEM_CURL)
+set(test_system_bison [[
+	if(${USE_SYSTEM_BISON})
 		enable_language(C)
-		find_package(CURL CONFIG QUIET)
-		find_package(CURL MODULE QUIET)
-		string(FIND "${CURL_INCLUDE_DIRS}" "${CMAKE_STAGING_PREFIX}/" staging_prefix_start)
-		if(CURL_FOUND AND NOT staging_prefix_start EQUAL 0)
-			message(STATUS "Found ${SYSTEM_NAME} curl: ${CURL_LIBRARIES}")
+		# Doxygen 1.8.x needs at least Bison 2.7
+		find_package(BISON 2.7 QUIET)
+		string(FIND "${BISON_EXECUTABLE}" "${CMAKE_STAGING_PREFIX}/" staging_prefix_start)
+		if(BISON_EXECUTABLE AND NOT staging_prefix_start EQUAL 0)
+			message(STATUS "Found ${SYSTEM_NAME} Bison: ${BISON_EXECUTABLE} (${BISON_VERSION})")
 			set(BUILD_CONDITION 0)
 		endif()
+		if(BISON_VERSION AND BISON_VERSION VERSION_LESS 2.7)
+			message(WARNING "Ignoring ${SYSTEM_NAME} Bison (< 2.7)")
+			set(BUILD_CONDITION 1)
+		endif()
 	endif()
-	set(extra_flags "-Wno-old-style-cast" PARENT_SCOPE)
+]])
+
+set(bison_texi [[
+@setfilename bison.info
 ]])
 
 superbuild_package(
-  NAME           curl-patches
+  NAME           bison-patches
   VERSION        ${patch_version}
   
   SOURCE
-    URL            ${base_url}/curl_${patch_version}.debian.tar.xz
+    URL            ${base_url}bison_${patch_version}.debian.tar.xz
     URL_HASH       ${patch_hash}
 )
-  
+
 superbuild_package(
-  NAME           curl
+  NAME           bison
   VERSION        ${patch_version}
   DEPENDS
-    source:curl-patches-${patch_version}
-    zlib
+    source:bison-patches-${patch_version}
   
+  SOURCE_WRITE
+    bison.texi     bison_texi
   SOURCE
-    URL            ${base_url}/curl_${version}.orig.tar.gz
+    URL            ${base_url}bison_${version}.orig.tar.xz
     URL_HASH       ${download_hash}
     PATCH_COMMAND
       "${CMAKE_COMMAND}"
-        -Dpackage=curl-patches-${patch_version}
+        -Dpackage=bison-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
+    # Fix the issues resulting from Debian DFSG tarball and patching
+    COMMAND
+      "${CMAKE_COMMAND}"
+        -E copy bison.texi doc/bison.texi
+    COMMAND
+      touch -r doc/local.mk doc/bison.texi
+    COMMAND
+      touch -r doc/local.mk examples/c/lexcalc/local.mk
+    COMMAND
+      touch -r doc/local.mk examples/local.mk
   
-  USING            USE_SYSTEM_CURL patch_version extra_flags
-  BUILD_CONDITION  ${test_system_curl}
+  USING            USE_SYSTEM_BISON patch_version
+  BUILD_CONDITION  ${test_system_bison}
   BUILD [[
     CONFIGURE_COMMAND
       "${SOURCE_DIR}/configure"
@@ -82,50 +100,20 @@ superbuild_package(
         $<$<BOOL:@CMAKE_CROSSCOMPILING@>:
         --host=${SUPERBUILD_TOOLCHAIN_TRIPLET}
         >
+        --enable-relocatable
+        --disable-nls
         --disable-silent-rules
-        --enable-symbol-hiding
-        --disable-largefile
-        --enable-shared
-        --disable-static
-        --enable-pthreads
-        --enable-threadsafe
-        --disable-ldap
-        --disable-ldaps
-        --disable-rtsp
-        --disable-dict
-        --disable-telnet
-        --disable-tftp
-        --disable-pop3
-        --disable-imap
-        --disable-smb
-        --disable-smtp
-        --disable-gopher
-        --disable-manual
-        --enable-ipv6
-      $<$<STREQUAL:@CMAKE_SYSTEM_NAME@,Windows>:
-        --without-brotli
-        --without-libpsl
-        --without-libidn2
-        --without-nghttp2
-        --without-ssl
-        --with-winssl
-      > # Windows
-      $<$<STREQUAL:@CMAKE_SYSTEM_NAME@,Darwin>:
-        --with-darwinssl
-      > # Darwin
-      $<$<BOOL:@ANDROID@>:
-        --without-ssl
-      > # Android
         "CC=${SUPERBUILD_CC}"
+        "CXX=${SUPERBUILD_CXX}"
         "CPPFLAGS=${SUPERBUILD_CPPFLAGS}"
-        "CFLAGS=${SUPERBUILD_CFLAGS} ${extra_flags}"
-        "CXXFLAGS=${SUPERBUILD_CXXFLAGS} ${extra_flags}"
+        "CFLAGS=${SUPERBUILD_CFLAGS}"
+        "CXXFLAGS=${SUPERBUILD_CXXFLAGS}"
         "LDFLAGS=${SUPERBUILD_LDFLAGS}"
     INSTALL_COMMAND
       "$(MAKE)" install "DESTDIR=${DESTDIR}${INSTALL_DIR}"
     COMMAND
       "${CMAKE_COMMAND}" -E copy
-        "<SOURCE_DIR>/../curl-patches-${patch_version}/copyright"
-        "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/curl-${patch_version}.txt"
+        "<SOURCE_DIR>/../bison-patches-${patch_version}/copyright"
+        "${DESTDIR}${CMAKE_STAGING_PREFIX}/share/doc/copyright/bison-${patch_version}.txt"
   ]]
 )
