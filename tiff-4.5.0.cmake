@@ -29,11 +29,11 @@
 
 # https://tracker.debian.org/pkg/tiff
 
-set(version        4.1.0+git201212)
-set(download_hash  SHA256=bebb2ad5537638159ff026c933ae769ab720afb8cd7b9f3bf7533db673b8636c)
-set(patch_version  ${version}-1)
-set(patch_hash     SHA256=4a5a87e944b8028fc64d22be950bf6b69ed85d4bd9269c70b27f240ac8e2073c)
-set(base_url       https://snapshot.debian.org/archive/debian/20201214T025122Z/pool/main/t/tiff/)
+set(version        4.5.0)
+set(download_hash  SHA256=638f43d7dea33948d5dee7f39572fc0194d9cc3c74195de9dd26a4388a1f880a)
+set(patch_version  ${version}-6+deb12u1)
+set(patch_hash     SHA256=d70ba897e15f135b7ed8cbc823490ca522c91ceff5e6a4c4274fc348219dcde0)
+set(base_url       https://snapshot.debian.org/archive/debian/20231130T032551Z/pool/main/t/tiff/)
 
 option(USE_SYSTEM_LIBTIFF "Use the system libtiff if possible" ON)
 
@@ -81,12 +81,13 @@ superbuild_package(
     zlib
   
   SOURCE
-    URL            ${base_url}tiff_${version}.orig.tar.xz
+    URL            ${base_url}tiff_${version}.orig.tar.bz2
     URL_HASH       ${download_hash}
     PATCH_COMMAND
       "${CMAKE_COMMAND}"
         -Dpackage=tiff-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
+#[[
     COMMAND
       echo "\tTIFFReadRGBAStripExt" >> libtiff/libtiff.def
     COMMAND
@@ -97,6 +98,7 @@ superbuild_package(
     COMMAND
 	  # Cannot silence warnings via CMAKE_C_FLAGS parameter
       sed -e "s/  -W$/-W ${extra_flags}/" -i -- CMakeLists.txt
+]]
   
   USING            USE_SYSTEM_LIBTIFF patch_version
   BUILD_CONDITION  ${test_system_tiff}
