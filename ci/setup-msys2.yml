@@ -79,7 +79,6 @@ steps:
       patch ^
       sharutils ^
       mingw-w64-%MSYSTEM_CARCH%-binutils ^
-      mingw-w64-%MSYSTEM_CARCH%-cmake ^
       mingw-w64-%MSYSTEM_CARCH%-gcc ^
       mingw-w64-%MSYSTEM_CARCH%-headers-git ^
       mingw-w64-%MSYSTEM_CARCH%-nasm ^
@@ -104,6 +103,14 @@ steps:
     exit /b 0
   condition: not(variables['openorienteering.superbuild.msysBuildId'])
   displayName: 'Reduce installation size for CI'
+
+- script: |
+    curl -L -o cmake.zip https://github.com/Kitware/CMake/releases/download/v3.17.4/cmake-3.17.4-win64-x64.zip
+    if not errorlevel 1 unzip cmake.zip
+    if not errorlevel 1 xcopy /S /Y cmake-3.17.4-win64-x64\. %SUPERBUILD_INSTALL_DIR_NATIVE%\%MINGW%\
+
+  condition: Or(True, not(variables['openorienteering.superbuild.msysBuildId']))
+  displayName: 'Install CMake'
 
 - script: |
     cd /D %SUPERBUILD_INSTALL_DIR_NATIVE%\%MINGW%
