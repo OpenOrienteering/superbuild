@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016-2020 Kai Pastor
+# Copyright 2016-2024 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -57,6 +57,21 @@ $ i \
 rm -f tmp.xzi
 ]])
 
+set(gcc-13_patch [[
+diff --git a/src/proj_json_streaming_writer.hpp b/src/proj_json_streaming_writer.hpp
+index 6267684..cf19b83 100644
+--- a/src/proj_json_streaming_writer.hpp
++++ b/src/proj_json_streaming_writer.hpp
+@@ -31,6 +31,7 @@
+ 
+ /*! @cond Doxygen_Suppress */
+ 
++#include <cstdint>
+ #include <vector>
+ #include <string>
+ 
+]])
+
 superbuild_package(
   NAME           proj-patches
   VERSION        ${patch_version}
@@ -93,7 +108,7 @@ superbuild_package(
 
 superbuild_package(
   NAME           proj
-  VERSION        ${patch_version}
+  VERSION        ${patch_version}+openorienteering1
   DEPENDS
     source:proj-patches-${patch_version}  # source-time: patches
     host:proj-patches-${patch_version}    # install-time: data
@@ -104,6 +119,8 @@ superbuild_package(
     sqlite3
     tiff
   
+  SOURCE_WRITE
+    gcc-13.patch   gcc-13_patch
   SOURCE
     URL            ${base_url}proj_${version}.orig.tar.gz
     URL_HASH       ${download_hash}
@@ -111,7 +128,9 @@ superbuild_package(
       "${CMAKE_COMMAND}"
         -Dpackage=proj-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
-  
+    COMMAND
+      patch -p1 < gcc-13.patch
+    
   USING            USE_SYSTEM_PROJ patch_version
   BUILD_CONDITION  ${test_system_proj}
   BUILD [[
