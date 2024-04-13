@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2020 Kai Pastor
+# Copyright 2020, 2024 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -157,7 +157,7 @@ superbuild_package(
     COMMAND
       patch -p1 < "<DOWNLOAD_DIR>/libkml-${version}-mingw.patch"
     COMMAND
-      cmake -E copy "<DOWNLOAD_DIR>/libkml-${version}-strptime.c" "src/kml/base/contrib/netbsd-strptime.c"
+      "${CMAKE_COMMAND}" -E copy "<DOWNLOAD_DIR>/libkml-${version}-strptime.c" "src/kml/base/contrib/netbsd-strptime.c"
     COMMAND
       sed -f strptime_c.sed -i -- src/kml/base/CMakeLists.txt
     COMMAND
