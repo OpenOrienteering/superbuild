@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016-2020 Kai Pastor
+# Copyright 2016-2024 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -87,6 +87,32 @@ string(CONFIGURE [[
 	endif()
 ]] use_system_qt @ONLY)
 
+set(qtbase-gcc-13_patch [[
+diff --git a/src/corelib/global/qendian.h b/src/corelib/global/qendian.h
+index 615f5238..6258423e 100644
+--- a/src/corelib/global/qendian.h
++++ b/src/corelib/global/qendian.h
+@@ -47,6 +47,7 @@
+ // include stdlib.h and hope that it defines __GLIBC__ for glibc-based systems
+ #include <stdlib.h>
+ #include <string.h>
++#include <limits>
+ 
+ #ifdef min // MSVC
+ #undef min
+diff --git a/src/corelib/tools/qbytearraymatcher.h b/src/corelib/tools/qbytearraymatcher.h
+index dafaea9c..fd9038dc 100644
+--- a/src/corelib/tools/qbytearraymatcher.h
++++ b/src/corelib/tools/qbytearraymatcher.h
+@@ -40,6 +40,7 @@
+ #ifndef QBYTEARRAYMATCHER_H
+ #define QBYTEARRAYMATCHER_H
+ 
++#include <limits>
+ #include <QtCore/qbytearray.h>
+ 
+ QT_BEGIN_NAMESPACE
+]])
 
 
 # copyright and patches for superbuild of Qt
@@ -120,13 +146,13 @@ superbuild_package(
   NAME           qtbase
   VERSION        ${short_version}
   DEPENDS
-    qtbase-everywhere-src-${qtbase_patch_version}
+    qtbase-everywhere-src-${qtbase_patch_version}+openorienteering1
 )
 
 set(module Qt5Core)
 superbuild_package(
   NAME         qtbase-everywhere-src
-  VERSION      ${qtbase_patch_version}
+  VERSION      ${qtbase_patch_version}+openorienteering1
   DEPENDS
     source:qt-${short_version}-openorienteering-${openorienteering_version}
     freetype
@@ -137,6 +163,8 @@ superbuild_package(
     sqlite3
     zlib
   
+  SOURCE_WRITE
+    gcc-13.patch    qtbase-gcc-13_patch
   SOURCE
     URL             https://download.qt.io/archive/qt/${short_version}/${qtbase_version}/submodules/qtbase-everywhere-src-${qtbase_version}.tar.xz
     URL_HASH        SHA256=8088f174e6d28e779516c083b6087b6a9e3c8322b4bc161fd1b54195e3c86940
@@ -169,6 +197,8 @@ superbuild_package(
       # Cf. https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-qt5/0025-qt-5.8.0-force-using-make-on-msys.patch
       sed -i -e "/MAKEFILE_GENERATOR, MINGW/,/mingw32-make/ s/.equals.QMAKE_HOST.os, Windows./\\!isEmpty(QMAKE_SH)|\\!equals(QMAKE_HOST.os, Windows)/"
         mkspecs/features/configure_base.prf
+    COMMAND
+      patch -p1 < gcc-13.patch
   
   USING default crosscompiling windows android macos USE_SYSTEM_QT module short_version openorienteering_version qtbase_patch_version
   BUILD_CONDITION  ${use_system_qt}
@@ -664,7 +694,7 @@ if(GIT_EXECUTABLE AND PYTHONINTERP_FOUND)
       DEPENDS
         qttools-qtattributionsscanner-${patch_version}
         source:qtandroidextras-everywhere-src-${patch_version}
-        source:qtbase-everywhere-src-${qtbase_patch_version}
+        source:qtbase-everywhere-src-${qtbase_patch_version}+openorienteering1
         source:qtimageformats-everywhere-src-${patch_version}
         source:qtlocation-everywhere-src-${patch_version}
         source:qtsensors-everywhere-src-${patch_version}

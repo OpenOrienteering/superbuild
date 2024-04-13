@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016-2020 Kai Pastor
+# Copyright 2016-2024 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -76,6 +76,21 @@ set(test_system_gdal [[
 	set(extra_cflags   "-Wno-strict-overflow -Wno-null-dereference" PARENT_SCOPE)
 	set(extra_cxxflags "-Wno-strict-overflow -Wno-null-dereference -Wno-old-style-cast" PARENT_SCOPE)
 	set(extra_ldflags  "-lminizip")
+]])
+
+set(gcc-13_patch [[
+diff --git a/ogr/ogrsf_frmts/cad/libopencad/dwg/r2000.cpp b/ogr/ogrsf_frmts/cad/libopencad/dwg/r2000.cpp
+index b500df8..51666e3 100644
+--- a/ogr/ogrsf_frmts/cad/libopencad/dwg/r2000.cpp
++++ b/ogr/ogrsf_frmts/cad/libopencad/dwg/r2000.cpp
+@@ -36,6 +36,7 @@
+ #include <cassert>
+ #include <cstring>
+ #include <iostream>
++#include <limits>
+ #include <memory>
+ #include <string>
+ 
 ]])
 
 set(libjpeg_patch [[
@@ -164,7 +179,7 @@ superbuild_package(
   
 superbuild_package(
   NAME           gdal
-  VERSION        ${patch_version}
+  VERSION        ${patch_version}+openorienteering1
   DEPENDS
     source:gdal-patches-${patch_version}
     common-licenses
@@ -188,6 +203,7 @@ superbuild_package(
   
   SOURCE_WRITE
     libjpeg.patch  libjpeg_patch
+    gcc-13.patch   gcc-13_patch
   SOURCE
     URL            ${base_url}gdal_${version}.orig.tar.xz
     URL_HASH       ${download_hash}
@@ -197,6 +213,8 @@ superbuild_package(
         -P "${APPLY_PATCHES_SERIES}"
     COMMAND
       patch -p1 < libjpeg.patch
+    COMMAND
+      patch -p1 < gcc-13.patch
   
   USING            USE_SYSTEM_GDAL patch_version extra_cflags extra_cxxflags extra_ldflags
   BUILD_CONDITION  ${test_system_gdal}
