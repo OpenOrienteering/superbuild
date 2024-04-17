@@ -87,7 +87,7 @@ jobs:
 
 
 - job: MinGW_Linux
-  condition: and(False, succeeded(), eq('MinGW_Linux', '${{ parameters.jobPattern }}'))
+  condition: and(succeeded(), eq('MinGW_Linux', '${{ parameters.jobPattern }}'))
   timeoutInMinutes: 120
   dependsOn: Source
   variables:
