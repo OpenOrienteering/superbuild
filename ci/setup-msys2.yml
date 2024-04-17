@@ -70,6 +70,7 @@ steps:
 
 - script: |
     set PATH=%SUPERBUILD_INSTALL_DIR_NATIVE%\usr\bin;%WINDIR%\system32;%WINDIR%;%WINDIR%\system32\wbem
+    pacman -D --asdeps `pacman -Qqe | grep -v base`
     pacman --noconfirm -S --needed ^
       bison ^
       diffutils ^
@@ -88,12 +89,16 @@ steps:
       mingw-w64-%MSYSTEM_CARCH%-tools-git  ^
       mingw-w64-%MSYSTEM_CARCH%-winpthreads-git ^
       2>error.log
+    if not errorlevel 1 (
+      pacman -Qdtq | pacman -Rns - 2>error.log
+    )
     if errorlevel 1 (
       type error.log 1>&2
       exit /b 1
     ) else (
       type error.log
     )
+    pacman -Q
   condition: not(variables['openorienteering.superbuild.msysBuildId'])
   displayName: 'Install MSYS2 MinGW packages for OpenOrienteering Superbuild'
   
