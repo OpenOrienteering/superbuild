@@ -90,7 +90,8 @@ steps:
       mingw-w64-%MSYSTEM_CARCH%-winpthreads-git ^
       2>error.log
     if not errorlevel 1 (
-      pacman -Qdtq | pacman -Rns - 2>error.log
+      pacman -Qdtq
+      REM -PIPE- pacman -Rns - 2>error.log
     )
     if errorlevel 1 (
       type error.log 1>&2
