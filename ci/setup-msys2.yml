@@ -50,12 +50,12 @@ steps:
     pipelineId: ${{ parameters.msys_build_id }}
     artifactName: 'MSYS2-$(MINGW)-base'
     targetPath: $(SUPERBUILD_INSTALL_DIR_NATIVE)
-  condition: ne('-', ${{ parameters.msys_build_id }})
+  condition: ne('-', '${{ parameters.msys_build_id }}')
   displayName: 'Download MSYS2 base artifacts'
 
 - script: |
     choco install msys2 --params="/InstallDir:%SUPERBUILD_INSTALL_DIR_NATIVE% /NoUpdate /NoPath"
-  condition: eq('-', ${{ parameters.msys_build_id }})
+  condition: eq('-', '${{ parameters.msys_build_id }}')
   displayName: 'Install MSYS2'
 
 - script: |
@@ -68,7 +68,7 @@ steps:
       type error.log
     )
     %SUPERBUILD_INSTALL_DIR_NATIVE%\usr\bin\pacman --noconfirm -Syuu
-  condition: eq('-', ${{ parameters.msys_build_id }})
+  condition: eq('-', '${{ parameters.msys_build_id }}')
   displayName: 'Update MSYS2 and prepare for MinGW'
 
 - script: |
@@ -103,14 +103,14 @@ steps:
       type error.log
     )
     pacman -Q
-  condition: eq('-', ${{ parameters.msys_build_id }})
+  condition: eq('-', '${{ parameters.msys_build_id }}')
   displayName: 'Install MSYS2 MinGW packages for OpenOrienteering Superbuild'
   
 - script: |
     set PATH=%SUPERBUILD_INSTALL_DIR_NATIVE%\usr\bin;%WINDIR%\system32;%WINDIR%;%WINDIR%\system32\wbem
     pacman --noconfirm -Scc
     exit /b 0
-  condition: eq('-', ${{ parameters.msys_build_id }})
+  condition: eq('-', '${{ parameters.msys_build_id }}')
   displayName: 'Reduce installation size for CI'
 
 - script: |
@@ -118,7 +118,7 @@ steps:
     if not errorlevel 1 unzip cmake.zip
     if not errorlevel 1 xcopy /S /Y cmake-3.17.4-win64-x64\. %SUPERBUILD_INSTALL_DIR_NATIVE%\%MINGW%\
 
-  condition: eq('-', ${{ parameters.msys_build_id }})
+  condition: eq('-', '${{ parameters.msys_build_id }}')
   displayName: 'Install CMake'
 
 - script: |
