@@ -27,6 +27,9 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+variables:
+- msys_build_id: '-' # variables['openorienteering.superbuild.msysBuildId']
+
 steps:
 - script: |
     echo ##vso[task.setVariable variable=CHERE_INVOKING]enabled_from_arguments
@@ -44,15 +47,15 @@ steps:
 
 - task: DownloadPipelineArtifact@0
   inputs:
-    pipelineId: $(openorienteering.superbuild.msysBuildId)
+    pipelineId: $(msys_build_id)
     artifactName: 'MSYS2-$(MINGW)-base'
     targetPath: $(SUPERBUILD_INSTALL_DIR_NATIVE)
-  condition: ne('-', variables['openorienteering.superbuild.msysBuildId'])
+  condition: ne('-', $(msys_build_id))
   displayName: 'Download MSYS2 base artifacts'
 
 - script: |
     choco install msys2 --params="/InstallDir:%SUPERBUILD_INSTALL_DIR_NATIVE% /NoUpdate /NoPath"
-  condition: eq('-', variables['openorienteering.superbuild.msysBuildId'])
+  condition: eq('-', $(msys_build_id))
   displayName: 'Install MSYS2'
 
 - script: |
