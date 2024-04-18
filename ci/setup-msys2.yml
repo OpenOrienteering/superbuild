@@ -28,7 +28,7 @@
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 parameters:
-- msys_build_id: '-' # variables['openorienteering.superbuild.msysBuildId']
+  msys_build_id: '-' # variables['openorienteering.superbuild.msysBuildId']
 
 steps:
 - script: |
