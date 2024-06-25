@@ -114,6 +114,21 @@ index dafaea9c..fd9038dc 100644
  QT_BEGIN_NAMESPACE
 ]])
 
+set(qtbase-8467bed_patch [[
+diff --git a/src/plugins/platforms/cocoa/qiosurfacegraphicsbuffer.h b/src/plugins/platforms/cocoa/qiosurfacegraphicsbuffer.h
+index dd3ebca4a65..ee7ac5c0143 100644
+--- a/src/plugins/platforms/cocoa/qiosurfacegraphicsbuffer.h
++++ b/src/plugins/platforms/cocoa/qiosurfacegraphicsbuffer.h
+@@ -43,6 +43,8 @@
+ #include <qpa/qplatformgraphicsbuffer.h>
+ #include <private/qcore_mac_p.h>
+ 
++#include <CoreGraphics/CGColorSpace.h>
++
+ QT_BEGIN_NAMESPACE
+ 
+ class QIOSurfaceGraphicsBuffer : public QPlatformGraphicsBuffer
+]])
 
 # copyright and patches for superbuild of Qt
 
@@ -146,13 +161,13 @@ superbuild_package(
   NAME           qtbase
   VERSION        ${short_version}
   DEPENDS
-    qtbase-everywhere-src-${qtbase_patch_version}+openorienteering1
+    qtbase-everywhere-src-${qtbase_patch_version}+openorienteering2
 )
 
 set(module Qt5Core)
 superbuild_package(
   NAME         qtbase-everywhere-src
-  VERSION      ${qtbase_patch_version}+openorienteering1
+  VERSION      ${qtbase_patch_version}+openorienteering2
   DEPENDS
     source:qt-${short_version}-openorienteering-${openorienteering_version}
     freetype
@@ -165,6 +180,7 @@ superbuild_package(
   
   SOURCE_WRITE
     gcc-13.patch    qtbase-gcc-13_patch
+    qtbase-8467bed.patch  qtbase-8467bed_patch
   SOURCE
     URL             https://download.qt.io/archive/qt/${short_version}/${qtbase_version}/submodules/qtbase-everywhere-src-${qtbase_version}.tar.xz
     URL_HASH        SHA256=8088f174e6d28e779516c083b6087b6a9e3c8322b4bc161fd1b54195e3c86940
@@ -199,6 +215,8 @@ superbuild_package(
         mkspecs/features/configure_base.prf
     COMMAND
       patch -p1 < gcc-13.patch
+    COMMAND
+      patch -p1 < qtbase-8467bed.patch
   
   USING default crosscompiling windows android macos USE_SYSTEM_QT module short_version openorienteering_version qtbase_patch_version
   BUILD_CONDITION  ${use_system_qt}
@@ -694,7 +712,7 @@ if(GIT_EXECUTABLE AND PYTHONINTERP_FOUND)
       DEPENDS
         qttools-qtattributionsscanner-${patch_version}
         source:qtandroidextras-everywhere-src-${patch_version}
-        source:qtbase-everywhere-src-${qtbase_patch_version}+openorienteering1
+        source:qtbase-everywhere-src-${qtbase_patch_version}+openorienteering2
         source:qtimageformats-everywhere-src-${patch_version}
         source:qtlocation-everywhere-src-${patch_version}
         source:qtsensors-everywhere-src-${patch_version}
