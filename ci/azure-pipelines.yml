@@ -46,7 +46,7 @@ jobs:
   timeoutInMinutes: 180
   dependsOn: Source
   variables:
-    IMAGE_NAME: 'macOS-12'
+    IMAGE_NAME: 'macOS-13'
     SUPERBUILD_INSTALL_DIR: $(HOME)/superbuild
     QT_STYLE_OVERRIDE: fusion
   pool:

@@ -43,6 +43,7 @@ steps:
       $(Build.SourcesDirectory)
       -G "Unix Makefiles"
       -DCMAKE_BUILD_TYPE=Release
+      -DCMAKE_POLICY_DEFAULT_CMP0135=OLD
       -DSUPERBUILD_DOWNLOAD_DIR=$(Build.SourcesDirectory)/download
       -DSUPERBUILD_DISABLE_DEPENDENCIES=TRUE
       -DENABLE_armv7a-linux-androideabi=1
@@ -73,7 +74,7 @@ steps:
         esac
       done
     cd $(Build.SourcesDirectory)/download
-    sha256sum android-platform-*.tar.gz > android-platform.sums
+    sha256sum android-platform-*.tar.gz > android-platform.sums || true
   displayName: 'Download sources'
   env:
     VERBOSE: ''
