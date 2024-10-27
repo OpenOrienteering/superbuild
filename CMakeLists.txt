@@ -736,6 +736,11 @@ set(toolchain_info_var_env "Environment variables")
 foreach(var ]] "${env_vars}" [[)
 	list(APPEND toolchain_info_var_env "ENV{${var}}")
 endforeach()
+if(APPLE)
+    list(APPEND toolchain_info_var_env
+      ENV{MACOSX_DEPLOYMENT_TARGET}
+    )
+endif()
 
 function(print_toolchain_info)
 	foreach(group ${toolchain_info_groups})
