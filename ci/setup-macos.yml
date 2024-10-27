@@ -36,7 +36,7 @@ steps:
     
     brew install texinfo
     
-    sudo xcode-select -s /Applications/Xcode_13.4.1.app/Contents/Developer
+    sudo xcode-select -s /Applications/Xcode_14.1.app/Contents/Developer
     xcode-select --print-path
     
     set +x
