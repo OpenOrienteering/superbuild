@@ -49,6 +49,20 @@ set(test_system_curl [[
 	set(extra_flags "-Wno-old-style-cast" PARENT_SCOPE)
 ]])
 
+set(gcc-14_patch [[
+--- "a/configure"  2024-10-28 13:57:16.733739500 +0100
++++ "b/configure"  2024-10-28 13:57:43.207360900 +0100
+@@ -35613,7 +35613,7 @@
+ int main (void)
+ {
+ 
+-        int flags = 0;
++        unsigned long flags = 0;
+         if(0 != ioctlsocket(0, FIONBIO, &flags))
+           return 1;
+ 
+]])
+
 superbuild_package(
   NAME           curl-patches
   VERSION        ${patch_version}
@@ -65,6 +79,8 @@ superbuild_package(
     source:curl-patches-${patch_version}
     zlib
   
+  SOURCE_WRITE
+    gcc-14.patch   gcc-14_patch
   SOURCE
     URL            ${base_url}/curl_${version}.orig.tar.gz
     URL_HASH       ${download_hash}
@@ -72,6 +88,8 @@ superbuild_package(
       "${CMAKE_COMMAND}"
         -Dpackage=curl-patches-${patch_version}
         -P "${APPLY_PATCHES_SERIES}"
+    COMMAND
+      patch -p1 < gcc-14.patch
   
   USING            USE_SYSTEM_CURL patch_version extra_flags
   BUILD_CONDITION  ${test_system_curl}
