@@ -46,6 +46,7 @@ steps:
     echo "##vso[task.setVariable variable=CMAKE_WRAPPING]${CMAKE_WRAPPING:=-E env bash ${BUILD_SOURCESDIRECTORY}/ci/shell.sh cmake}"
     echo "##vso[task.setVariable variable=TARGET_SUFFIX]${TARGET_SUFFIX}"
     echo "##vso[task.setVariable variable=CTEST_OUTPUT_ON_FAILURE]1"
+    echo "##vso[task.setVariable variable=JAVA_HOME]${JAVA_HOME_8_X64}"
     env
   displayName: 'Update environment'
 
