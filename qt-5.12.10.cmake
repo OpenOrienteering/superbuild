@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016-2024 Kai Pastor
+# Copyright 2016-2021, 2024 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -535,6 +535,20 @@ superbuild_package(
 
 # qttools
 
+set(gcc-14_patch [[
+--- a/src/assistant/qcollectiongenerator/main.c
++++ b/src/assistant/qcollectiongenerator/main.c
+@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
+ 
+     argv[0] = newPath;
+ #ifdef _WIN32
+-    const intptr_t ret = _spawnvp(_P_WAIT, newPath, argv);
++    const intptr_t ret = _spawnvp(_P_WAIT, newPath, (const char* const *)argv);
+     if (ret == -1) {
+         fprintf(stderr, "Error while executing \"%s\" tool.\n", newPath);
+         return 3;
+]])
+
 set(qttools_version ${patch_version})
 superbuild_package(
   NAME           qttools
@@ -551,6 +565,8 @@ superbuild_package(
     qttools-assistant
     qttools-qtattributionsscanner
   
+  SOURCE_WRITE
+    gcc-14.patch gcc-14_patch
   SOURCE
     URL             https://download.qt.io/archive/qt/${short_version}/${version}/submodules/qttools-everywhere-src-${version}.tar.xz
     URL_HASH        SHA256=860a97114d518f83c0a9ab3742071da16bb018e6eb387179d5764a8dcca03948
@@ -559,6 +575,8 @@ superbuild_package(
       "${CMAKE_COMMAND}"
         -Dpackage=qt-${short_version}-openorienteering-${openorienteering_version}/qttools
         -P "${APPLY_PATCHES_SERIES}"
+    COMMAND
+      patch -p1 < gcc-14.patch
 )
 
 set(module Qt5LinguistTools)  # proxy
