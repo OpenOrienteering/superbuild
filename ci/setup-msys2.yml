@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2019-2024 Kai Pastor
+# Copyright 2019, 2020, 2024 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -42,8 +42,12 @@ steps:
     )
   displayName: 'Setup MSYS2 environment variables'
 
-- task: DownloadPipelineArtifact@0
+- task: DownloadPipelineArtifact@2
   inputs:
+    buildType: 'specific'
+    project: $(System.TeamProject)
+    definition: $(System.DefinitionId)
+    buildVersionToDownload: 'specific'
     pipelineId: $(openorienteering.superbuild.msysBuildId)
     artifactName: 'MSYS2-$(MINGW)-base'
     targetPath: $(SUPERBUILD_INSTALL_DIR_NATIVE)
