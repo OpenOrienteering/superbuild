@@ -35,10 +35,7 @@ parameters:
 steps:
 - task: DownloadPipelineArtifact@2
   inputs:
-    buildType: 'specific'
-    project: $(System.TeamProject)
-    definition: $(System.DefinitionId)
-    buildVersionToDownload: 'specific'
+    buildType: 'current'
     artifactName: 'superbuild-source'
     targetPath: $(Build.SourcesDirectory)/download
   displayName: 'Download source artifact'
