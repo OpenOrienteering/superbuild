@@ -41,6 +41,7 @@ steps:
 
     # - We target android-28 at the moment.
     # - androiddeployqt 5.12 can't handle the ext suffixes.
+    $(ANDROID_HOME)/tools/bin/sdkmanager --install "platforms;android-28"
     $(ANDROID_HOME)/tools/bin/sdkmanager --list |
       grep "platforms;android-" |
       while read I J; do
