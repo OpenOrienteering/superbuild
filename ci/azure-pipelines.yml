@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2019-2024 Kai Pastor
+# Copyright 2019-2025 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -36,7 +36,7 @@ parameters:
 jobs:
 - job: Source
   pool:
-    vmImage: 'ubuntu-20.04'
+    vmImage: 'ubuntu-22.04'
   steps:
   - template: source.yml
 
@@ -73,7 +73,7 @@ jobs:
   timeoutInMinutes: 120
   dependsOn: macOS
   variables:
-    IMAGE_NAME: 'ubuntu-20.04'
+    IMAGE_NAME: 'ubuntu-22.04'
     SUPERBUILD_INSTALL_DIR: $(HOME)/superbuild
   pool:
     vmImage: '$(IMAGE_NAME)'
@@ -92,7 +92,7 @@ jobs:
   timeoutInMinutes: 120
   dependsOn: Source
   variables:
-    IMAGE_NAME: 'ubuntu-20.04'
+    IMAGE_NAME: 'ubuntu-22.04'
     SUPERBUILD_INSTALL_DIR: $(HOME)/superbuild
     TARGET: x86_64-w64-mingw32
     TARGET_SUFFIX: -$(TARGET)
