@@ -43,5 +43,11 @@ steps:
           iwyu-*)             make "${TARGET}" ;;
         esac
       done
+  condition: False
   displayName: 'Build iwyu'
-
+- bash: |
+    set -x
+    set -e
+    sudo apt-get install iwyu
+  condition: True
+  displayName: 'Install system iwyu'
