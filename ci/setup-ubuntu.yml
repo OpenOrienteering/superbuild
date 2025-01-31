@@ -34,7 +34,7 @@ steps:
     
     sudo apt-get update
     sudo apt-get install \
-      doxygen graphviz python-lxml \
+      doxygen graphviz python3-lxml \
       g++-mingw-w64-x86-64 \
       '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxrender-dev libxi-dev \
       sharutils
