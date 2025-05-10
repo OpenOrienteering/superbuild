@@ -239,7 +239,7 @@ jobs:
   timeoutInMinutes: 240
   dependsOn: Source
   variables:
-    IMAGE_NAME: 'windows-2019'
+    IMAGE_NAME: 'windows-2022'
     MINGW: mingw32
     SUPERBUILD_INSTALL_DIR: 'C:/msys2'
     SUPERBUILD_INSTALL_DIR_NATIVE: 'C:\msys2'
@@ -273,7 +273,7 @@ jobs:
   timeoutInMinutes: 240
   dependsOn: Source
   variables:
-    IMAGE_NAME: 'windows-2019'
+    IMAGE_NAME: 'windows-2022'
     MINGW: mingw64
     SUPERBUILD_INSTALL_DIR: 'C:/msys2'
     SUPERBUILD_INSTALL_DIR_NATIVE: 'C:\msys2'
