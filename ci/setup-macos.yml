@@ -71,4 +71,6 @@ steps:
     echo "##vso[task.setvariable variable=ANDROID_NDK_HOME]$(HOME)/android-ndk-r19c"
     echo "##vso[task.setvariable variable=ANDROID_NDK_ROOT]$(HOME)/android-ndk-r19c"
     echo "##vso[task.setVariable variable=JAVA_HOME]${JAVA_HOME}"
+    echo "##vso[task.setvariable variable=CFLAGS]-Wno-deprecated-declarations"
+    echo "##vso[task.setvariable variable=CXXFLAGS]-Wno-deprecated-declarations"
   displayName: 'Prepare build tools'
