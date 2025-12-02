@@ -130,6 +130,37 @@ index dd3ebca4a65..ee7ac5c0143 100644
  class QIOSurfaceGraphicsBuffer : public QPlatformGraphicsBuffer
 ]])
 
+set(qtbase-9fbaac8_patch [[
+diff --git a/mkspecs/features/toolchain.prf b/mkspecs/features/toolchain.prf
+index 0c505fc96594..c70f2797c8db 100644
+--- a/mkspecs/features/toolchain.prf
++++ b/mkspecs/features/toolchain.prf
+@@ -288,9 +288,12 @@ isEmpty($${target_prefix}.INCDIRS) {
+                 }
+             }
+         }
+-        isEmpty(QMAKE_DEFAULT_LIBDIRS)|isEmpty(QMAKE_DEFAULT_INCDIRS): \
++        isEmpty(QMAKE_DEFAULT_INCDIRS): \
+             !integrity: \
+-                error("failed to parse default search paths from compiler output")
++                error("failed to parse default include paths from compiler output")
++        isEmpty(QMAKE_DEFAULT_LIBDIRS): \
++            !integrity:!darwin: \
++                error("failed to parse default library paths from compiler output")
+         QMAKE_DEFAULT_LIBDIRS = $$unique(QMAKE_DEFAULT_LIBDIRS)
+     } else: ghs {
+         cmd = $$QMAKE_CXX $$QMAKE_CXXFLAGS -$${LITERAL_HASH} -o /tmp/fake_output /tmp/fake_input.cpp
+@@ -412,7 +415,7 @@ isEmpty($${target_prefix}.INCDIRS) {
+         QMAKE_DEFAULT_INCDIRS = $$split(INCLUDE, $$QMAKE_DIRLIST_SEP)
+     }
+ 
+-    unix:if(!cross_compile|host_build) {
++    unix:!darwin:if(!cross_compile|host_build) {
+         isEmpty(QMAKE_DEFAULT_INCDIRS): QMAKE_DEFAULT_INCDIRS = /usr/include /usr/local/include
+         isEmpty(QMAKE_DEFAULT_LIBDIRS): QMAKE_DEFAULT_LIBDIRS = /lib /usr/lib
+     }
+]])
+
 # copyright and patches for superbuild of Qt
 
 set(default        [[$<STREQUAL:${SYSTEM_NAME},default>]])
@@ -181,6 +212,7 @@ superbuild_package(
   SOURCE_WRITE
     gcc-13.patch    qtbase-gcc-13_patch
     qtbase-8467bed.patch  qtbase-8467bed_patch
+    qtbase-9fbaac8.patch  qtbase-9fbaac8_patch
   SOURCE
     URL             https://download.qt.io/archive/qt/${short_version}/${qtbase_version}/submodules/qtbase-everywhere-src-${qtbase_version}.tar.xz
     URL_HASH        SHA256=8088f174e6d28e779516c083b6087b6a9e3c8322b4bc161fd1b54195e3c86940
@@ -217,6 +249,8 @@ superbuild_package(
       patch -p1 < gcc-13.patch
     COMMAND
       patch -p1 < qtbase-8467bed.patch
+    COMMAND
+      patch -p1 < qtbase-9fbaac8.patch
   
   USING default crosscompiling windows android macos USE_SYSTEM_QT module short_version openorienteering_version qtbase_patch_version
   BUILD_CONDITION  ${use_system_qt}
@@ -314,6 +348,10 @@ superbuild_package(
       >
       -I "${CMAKE_STAGING_PREFIX}/include"
       -L "${CMAKE_STAGING_PREFIX}/lib"
+      $<@macos@:
+        -I "$ENV{SDKROOT}/usr/include"
+        -L "$ENV{SDKROOT}/usr/lib"
+      >
     INSTALL_COMMAND
       "$(MAKE)" install INSTALL_ROOT=${DESTDIR}
     $<@android@:
