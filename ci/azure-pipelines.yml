@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2019-2025 Kai Pastor
+# Copyright 2019-2026 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -46,7 +46,7 @@ jobs:
   timeoutInMinutes: 180
   dependsOn: Source
   variables:
-    IMAGE_NAME: 'macOS-14'
+    IMAGE_NAME: 'macOS-15'
     MACOSX_DEPLOYMENT_TARGET: 11.7
     SUPERBUILD_INSTALL_DIR: $(HOME)/superbuild
     QT_STYLE_OVERRIDE: fusion
