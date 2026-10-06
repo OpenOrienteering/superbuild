@@ -51,20 +51,20 @@ steps:
     
     # Newer sdkmanager builds need at least one recent platform to run,
     # so keep the highest-versioned pre-installed platform instead of uninstalling it.
-    newest_platform=$($(ANDROID_HOME)/tools/bin/sdkmanager --list |
+    newest_platform=$($(ANDROID_HOME)/cmdline-tools/latest/bin/sdkmanager --list |
       grep "platforms;android-" |
       grep "platforms/" |
       awk '{print $1}' |
       sort -t- -k2 -V |
       tail -1)
     
-    $(ANDROID_HOME)/tools/bin/sdkmanager --list |
+    $(ANDROID_HOME)/cmdline-tools/latest/bin/sdkmanager --list |
       grep "platforms;android-" |
       while read I J; do
         case "$I,$J" in #(
-        *${ANDROID_API_VERSION:-NO_MATCH},*)  $(ANDROID_HOME)/tools/bin/sdkmanager --install "$I" ;;
+        *${ANDROID_API_VERSION:-NO_MATCH},*)  $(ANDROID_HOME)/cmdline-tools/latest/bin/sdkmanager --install "$I" ;;
         "$newest_platform",*) : ;;
-        *,*platforms/*) $(ANDROID_HOME)/tools/bin/sdkmanager --uninstall "$I" ;;
+        *,*platforms/*) $(ANDROID_HOME)/cmdline-tools/latest/bin/sdkmanager --uninstall "$I" ;;
         esac
       done
     
