@@ -56,6 +56,8 @@ steps:
       cut -d' ' -f1 |
       sort -V |
       tail -1)
+      
+    echo "Newest android platform: $NEWEST_PLATFORM"
 
     #  NEWEST_PLATFORM=$($(ANDROID_HOME)/cmdline-tools/latest/bin/sdkmanager --list |
     #  grep "platforms;android-" |
