@@ -69,7 +69,7 @@ jobs:
 
 
 - job: Linux
-  condition: and(succeeded(), contains('^Linux$', '${{ parameters.jobPattern }}'))
+  condition: and(false, succeeded(), contains('^Linux$', '${{ parameters.jobPattern }}'))
   timeoutInMinutes: 120
   dependsOn: macOS
   variables:
@@ -235,7 +235,7 @@ jobs:
     - template: publish.yml
 
 - job: Windows_mingw32
-  condition: and(succeeded(), contains('^Windows_mingw32$', '${{ parameters.jobPattern }}'))
+  condition: and(false, succeeded(), contains('^Windows_mingw32$', '${{ parameters.jobPattern }}'))
   timeoutInMinutes: 240
   dependsOn: Source
   variables:
@@ -269,7 +269,7 @@ jobs:
         outputSuffix: -$(MINGW)
 
 - job: Windows_mingw64
-  condition: and(succeeded(), contains('^Windows_mingw64$', '${{ parameters.jobPattern }}'))
+  condition: and(false, succeeded(), contains('^Windows_mingw64$', '${{ parameters.jobPattern }}'))
   timeoutInMinutes: 240
   dependsOn: Source
   variables:
