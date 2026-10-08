@@ -56,9 +56,9 @@ steps:
     #  cut -d' ' -f1 |
     #  sort -V |
     #  tail -1)
-    NEWEST_PLATFORM=$(${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --list | grep -o 'platforms;android-[0-9.]\+' | cut -d- -f2 | sort -V | tail -1)
+    NEWEST_PLATFORM=$(${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --list | grep -o 'platforms;android-[0-9.]\+' | cut -d- -f2 | sort -V | tail -1 || echo "")
     
-    ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --list | grep "platforms;android-"  
+    ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --list | grep "platforms;android-" || true
     echo "Newest android platform: $NEWEST_PLATFORM"
 
     #  NEWEST_PLATFORM=$($(ANDROID_HOME)/cmdline-tools/latest/bin/sdkmanager --list |
