@@ -49,6 +49,12 @@ steps:
     # - androiddeployqt 5.12 can't handle the ext suffixes.
     export JAVA_HOME="${JAVA_HOME_11_X64}"
     
+    # Check if cmdline-tools exist, and install/copy otherwise
+    if [ ! -d "$ANDROID_HOME/cmdline-tools/latest/bin" ]; then
+      echo "cmdline-tools not found. Installing/Updating SDK components..."
+      yes | sdkmanager --sdk_root="$ANDROID_HOME" "cmdline-tools;latest"
+    fi
+    
     # Newer sdkmanager builds need at least one recent platform to run,
     # so keep the highest-versioned pre-installed platform instead of uninstalling it.
     #NEWEST_PLATFORM=$(${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --list |
@@ -56,9 +62,9 @@ steps:
     #  cut -d' ' -f1 |
     #  sort -V |
     #  tail -1)
-    NEWEST_PLATFORM=$(${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --list | grep -o 'platforms;android-[0-9.]\+' | cut -d- -f2 | sort -V | tail -1 || echo "")
+    NEWEST_PLATFORM=$("${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager" --list | grep -o 'platforms;android-[0-9.]\+' | cut -d- -f2 | sort -V | tail -1 || echo "")
     
-    ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --list | grep "platforms;android-" || true
+    "${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager" --list | grep "platforms;android-" || true
     echo "Newest android platform: $NEWEST_PLATFORM"
 
     #  NEWEST_PLATFORM=$($(ANDROID_HOME)/cmdline-tools/latest/bin/sdkmanager --list |
