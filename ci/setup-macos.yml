@@ -58,7 +58,7 @@ steps:
     #  tail -1)
     NEWEST_PLATFORM=$(${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --list | grep -o 'platforms;android-[0-9.]\+' | cut -d- -f2 | sort -V | tail -1)
     
-    echo "=== All platforms ===" ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --list | grep "platforms;android-"  
+    ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --list | grep "platforms;android-"  
     echo "Newest android platform: $NEWEST_PLATFORM"
 
     #  NEWEST_PLATFORM=$($(ANDROID_HOME)/cmdline-tools/latest/bin/sdkmanager --list |
