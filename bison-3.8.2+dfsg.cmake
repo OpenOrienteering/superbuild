@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2020 Kai Pastor
+# Copyright 2020, 2026 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -27,11 +27,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(version        3.7.3+dfsg)
-set(download_hash  SHA256=5cdc0edfdf65aa04a4a9f12d6c3b4a09645ef39f61e62624e27895c9b1ebf82a)
+set(version        3.8.2+dfsg)
+set(download_hash  SHA256=dff8a3c96dd34121828f62a7fa49e1f7765815b89e59f564e8d2a9e71c177be5)
 set(patch_version  ${version}-1)
-set(patch_hash     SHA256=ed2aea01202e605de03513f59ad4bd63d22cba3dd1b0dc6a9168d15d91689177)
-set(base_url       https://snapshot.debian.org/archive/debian/20201018T090104Z/pool/main/b/bison/)
+set(patch_hash     SHA256=e878473ddbc8601c1b9b8558fab86950ae6ae5b7c146802d587e284d5e1c9abb)
+set(base_url       https://snapshot.debian.org/archive/debian/20261005T210159Z/pool/main/b/bison/)
 
 option(USE_SYSTEM_BISON "Use the system Bison if possible" ON)
 
