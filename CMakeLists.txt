@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016-2020 Kai Pastor
+# Copyright 2016-2020, 2026 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -41,6 +41,7 @@ set(ci
   ci/build-iwyu.yml
   ci/filter-stderr.sed
   ci/publish.yml
+  ci/setup-android.yml
   ci/setup-macos.yml
   ci/setup-msys2.yml
   ci/setup-ubuntu.yml

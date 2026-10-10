@@ -127,7 +127,7 @@ jobs:
   pool:
     vmImage: '$(IMAGE_NAME)'
   steps:
-    - template: setup-macos.yml
+    - template: setup-android.yml
     - template: build.yml
       parameters:
         cmakeArgs: >
@@ -157,7 +157,7 @@ jobs:
   pool:
     vmImage: '$(IMAGE_NAME)'
   steps:
-    - template: setup-macos.yml
+    - template: setup-android.yml
     - template: build.yml
       parameters:
         cmakeArgs: >
@@ -187,7 +187,7 @@ jobs:
   pool:
     vmImage: '$(IMAGE_NAME)'
   steps:
-    - template: setup-macos.yml
+    - template: setup-android.yml
     - template: build.yml
       parameters:
         cmakeArgs: >
@@ -217,7 +217,7 @@ jobs:
   pool:
     vmImage: '$(IMAGE_NAME)'
   steps:
-    - template: setup-macos.yml
+    - template: setup-android.yml
     - template: build.yml
       parameters:
         cmakeArgs: >
