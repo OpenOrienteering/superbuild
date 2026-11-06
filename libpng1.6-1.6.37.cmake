@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2016-2020 Kai Pastor
+# Copyright 2016-2020, 2026 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -96,6 +96,9 @@ superbuild_package(
     COMMAND
       # MSYS2 on Windows doesn't handle symlinks well.
       sed -i -e "s, AND NOT MSYS,," CMakeLists.txt
+    COMMAND
+      # No <fp.h> with XCode 16.4
+      sed -i -e "s,include <fp.h>,include <math.h>," pngpriv.h
   
   USING            USE_SYSTEM_LIBPNG patch_version extra_flags
   BUILD_CONDITION  ${test_system_png}
