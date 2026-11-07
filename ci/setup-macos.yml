@@ -54,17 +54,6 @@ steps:
     esac
     xcode-select --print-path
 
-    # - We target android-28 at the moment.
-    # - androiddeployqt 5.12 can't handle the ext suffixes.
-    $(ANDROID_HOME)/tools/bin/sdkmanager --list |
-      grep "platforms;android-" |
-      while read I J; do
-        case "$I,$J" in #(
-        *${ANDROID_API_VERSION:-NO_MATCH},*)  $(ANDROID_HOME)/tools/bin/sdkmanager --install "$I" ;;
-        *,*platforms/*) $(ANDROID_HOME)/tools/bin/sdkmanager --uninstall "$I" ;;
-        esac
-      done
-    
     # Some packages do not support CMake 4.
     wget https://github.com/Kitware/CMake/releases/download/v3.31.10/cmake-3.31.10-macos-universal.tar.gz
     tar xvzf cmake-3.31.10-macos-universal.tar.gz
@@ -72,13 +61,29 @@ steps:
     mv cmake-3.31.10-macos-universal "$(SUPERBUILD_INSTALL_DIR)/"
     "$(SUPERBUILD_INSTALL_DIR)/cmake-3.31.10-macos-universal/CMake.app/Contents/bin/cmake" --version
 
+    case "$TARGET" in #(
+    *-android*)
+      # - We target ${ANDROID_API_VERSION}
+      # - androiddeployqt 5.12 can't handle the ext suffixes.
+      $(ANDROID_HOME)/tools/bin/sdkmanager --list |
+        grep "platforms;android-" |
+        while read I J; do
+          case "$I,$J" in #(
+          *${ANDROID_API_VERSION:-NO_MATCH},*)  $(ANDROID_HOME)/tools/bin/sdkmanager --install "$I" ;;
+          *,*platforms/*) $(ANDROID_HOME)/tools/bin/sdkmanager --uninstall "$I" ;;
+          esac
+        done
+      set +x
+      echo "##vso[task.setvariable variable=ANDROID_NDK]$(HOME)/android-ndk-r19c"
+      echo "##vso[task.setvariable variable=ANDROID_NDK_HOME]$(HOME)/android-ndk-r19c"
+      echo "##vso[task.setvariable variable=ANDROID_NDK_ROOT]$(HOME)/android-ndk-r19c"
+      echo "##vso[task.setVariable variable=JAVA_HOME]${JAVA_HOME}"
+      ;;
+    esac
+
     set +x
     echo '##vso[task.prependpath]/usr/local/opt/bison/bin:/usr/local/opt/texinfo/bin:$(SUPERBUILD_INSTALL_DIR)/python3.11/bin'
     echo '##vso[task.setvariable variable=CMAKE]$(SUPERBUILD_INSTALL_DIR)/cmake-3.31.10-macos-universal/CMake.app/Contents/bin/cmake'
-    echo "##vso[task.setvariable variable=ANDROID_NDK]$(HOME)/android-ndk-r19c"
-    echo "##vso[task.setvariable variable=ANDROID_NDK_HOME]$(HOME)/android-ndk-r19c"
-    echo "##vso[task.setvariable variable=ANDROID_NDK_ROOT]$(HOME)/android-ndk-r19c"
-    echo "##vso[task.setVariable variable=JAVA_HOME]${JAVA_HOME}"
     echo "##vso[task.setvariable variable=CFLAGS]-Wno-deprecated-declarations"
     echo "##vso[task.setvariable variable=CXXFLAGS]-Wno-deprecated-declarations"
   displayName: 'Prepare build tools'
