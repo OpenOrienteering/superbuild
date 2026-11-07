@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2019, 2024, 2025 Kai Pastor
+# Copyright 2019, 2024-2026 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -40,7 +40,7 @@ steps:
     python --version
     pip install lxml
     
-    brew install texinfo
+    brew install texinfo bison
     
     sudo xcode-select -s /Applications/Xcode_15.0.app/Contents/Developer
     xcode-select --print-path
@@ -65,7 +65,7 @@ steps:
     "$(SUPERBUILD_INSTALL_DIR)/cmake-3.31.10-macos-universal/CMake.app/Contents/bin/cmake" --version
 
     set +x
-    echo '##vso[task.prependpath]/usr/local/opt/texinfo/bin:$(SUPERBUILD_INSTALL_DIR)/python3.11/bin'
+    echo '##vso[task.prependpath]/usr/local/opt/bison/bin:/usr/local/opt/texinfo/bin:$(SUPERBUILD_INSTALL_DIR)/python3.11/bin'
     echo '##vso[task.setvariable variable=CMAKE]$(SUPERBUILD_INSTALL_DIR)/cmake-3.31.10-macos-universal/CMake.app/Contents/bin/cmake'
     echo "##vso[task.setvariable variable=ANDROID_NDK]$(HOME)/android-ndk-r19c"
     echo "##vso[task.setvariable variable=ANDROID_NDK_HOME]$(HOME)/android-ndk-r19c"

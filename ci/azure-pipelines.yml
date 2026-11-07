@@ -1,6 +1,6 @@
 # This file is part of OpenOrienteering.
 
-# Copyright 2019-2025 Kai Pastor
+# Copyright 2019-2026 Kai Pastor
 #
 # Redistribution and use is allowed according to the terms of the BSD license:
 #
@@ -57,7 +57,7 @@ jobs:
     - template: build.yml
       parameters:
         cmakeArgs: >
-          "-DCMAKE_PREFIX_PATH=$(SUPERBUILD_INSTALL_DIR)\;/usr"
+          "-DCMAKE_PREFIX_PATH=$(SUPERBUILD_INSTALL_DIR)\;/usr/local/opt/bison;/usr"
           -DCMAKE_FIND_FRAMEWORK=LAST
           -DCMAKE_FIND_APPBUNDLE=LAST
           -DUSE_SYSTEM_OPENJPEG=OFF
